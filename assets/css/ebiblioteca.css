@@ -1,0 +1,201 @@
+/* estilos generales */
+:root{
+  --eb-primary:#0D6EFD;
+  --eb-leer:#F8F9FA;
+}
+
+body{
+  background:var(--eb-leer);
+}
+
+/* estilos para el header */
+.eb-navbar{
+  background:#fff;
+  border-bottom:1px solid rgba(0,0,0,.08);
+}
+
+.eb-eb{
+  font-weight:700;
+  letter-spacing:.2px;
+}
+
+@media (max-width: 991px) {
+    .navbar-nav { padding-top: 1rem; padding-bottom: 1rem; }
+    .botonesNav { flex-direction: column; width: 100%; }
+    .botonesNav .btn { width: 100%; }
+}
+
+
+/* estilos para VistaObra */
+.contenedorPortada {
+            width: 140px;
+            transition: width 0.3s ease;
+}
+
+.eb-leer{
+  font-family:"Merriweather", serif;
+  line-height:1.75;
+  font-size:1.05rem;
+  color:#212529;
+}
+
+@media (min-width: 768px) {
+    .contenedorPortada {
+        width: 200px; 
+    }
+}
+
+.font-serif {
+    font-family: 'Merriweather', serif;
+    line-height: 1.8;
+}
+
+@media (min-width: 992px) {
+    .offcanvas-end {
+        width: 25% !important;
+    }
+}
+
+@media (min-width: 1400px) {
+    .offcanvas-end {
+        width: 30% !important;
+    }
+}
+
+
+/* tarjetas libros  VistaCatalogo VistaPerfilAutor VistaUsuario */
+.tarjetaLibro {
+    transition: transform 0.3s ease, shadow 0.3s ease;
+    cursor: pointer;
+    height: 100%;
+}
+.tarjetaLibro:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+.portadaLibroWrapper {
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    background-color: #f8f9fa;
+}
+.portadaLibroWrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* sección filtros VistaCatalogo VistaAutores */
+.seccionFiltros {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+}
+
+
+/* insignias para tarjetas de libros */
+.bg-narrativa { background-color: #0d6efd !important; color: white; }
+.bg-ensayo { background-color: #198754 !important; color: white; }
+.bg-poesia { background-color: #dc3545 !important; color: white; }
+.bg-teatro { background-color: #fd7e14 !important; color: white; }
+.bg-infantil { background-color: #ffc107 !important; color: #212529; }
+
+
+/* VistaUsuario */
+.contenedorNavUsuario {
+    background-color: #f1f3f5;
+    border-radius: 50px;
+    padding: 6px;
+    max-width: 650px; 
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.botonPildoraUsuario {
+    border: none;
+    background: transparent;
+    border-radius: 50px;
+    padding: 8px 24px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #495057;
+    transition: all 0.3s ease;
+    flex: 1; 
+}
+
+.botonPildoraUsuario.active {
+    background-color: #ffffff;
+    color: #000000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.botonPildoraUsuario:hover:not(.active) {
+    background-color: rgba(0,0,0,0.03);
+}
+
+/* estilos para VistaColecciones */
+.contenedorColeccion {
+    position: relative;
+    height: 320px;
+    width: 220px;
+    margin: 0 auto;
+    transition: transform 0.3s ease;
+}
+
+.elementoColeccion {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    background: #eee;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.elementoColeccion img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.elemento-3 { transform: translate(20px, -15px) rotate(8deg); opacity: 0.6; z-index: 1; }
+.elemento-2 { transform: translate(10px, -8px) rotate(4deg); opacity: 0.8; z-index: 2; }
+.elemento-1 { transform: translate(0, 0) rotate(0deg); z-index: 3; }
+
+.enlaceColeccion:hover .elemento-3 { transform: translate(45px, -25px) rotate(12deg); opacity: 0.8; }
+.enlaceColeccion:hover .elemento-2 { transform: translate(25px, -15px) rotate(6deg); }
+.enlaceColeccion:hover .elemento-1 { transform: translate(-5px, 0) rotate(-2deg); }
+
+.contenedorInsigniaColeccion {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    z-index: 4;
+}
+
+/* estilos VistaLista */
+.contenedorListaP {
+    position: relative;
+    width: 120px;
+    height: 160px;
+}
+.elementoListaP {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.elementoListaP img { width: 100%; height: 100%; object-fit: cover; }
+.s3 { transform: translate(12px, -8px) rotate(6deg); opacity: 0.5; }
+.s2 { transform: translate(6px, -4px) rotate(3deg); opacity: 0.8; }
+.s1 { transform: translate(0, 0); }
+
+/* Efecto al pasar por encima de un libro en la lista */
+.filaLibro:hover {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+}
+.transicion {
+    transition: all 0.2s ease-in-out;
+}
