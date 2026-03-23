@@ -58,9 +58,10 @@
                                     <button 
                                         class="btn btn-primary btn-lg px-4" 
                                         data-bs-toggle="modal" 
-                                        data-bs-target="#lectorHTML"                                        
+                                        data-bs-target="#lectorEPUB"
+                                        data-epub-url="/recursosEPUB/Claros_del_bosque.epub"                                        
                                         data-book-title="Claros del bosque">
-                                        <i class="bi bi-book me-2"></i>Leer HTML
+                                        <i class="bi bi-book me-2"></i>Leer EPUB
                                     </button>                                    
 
                                     <button class="btn btn-light border btn-lg" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasComments">
@@ -180,35 +181,37 @@
         </div>
     </div>
 
-    <div class="modal fade" id="lectorHTML" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="lectorEPUB" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content border-0">
-                <div class="modal-header border-bottom py-2 px-4 bg-white sticky-top">
+                <div class="modal-header border-bottom py-2 px-4 bg-white sticky-top d-flex justify-content-between">
                     <div class="d-flex align-items-center">
                         <button type="button" class="btn-close me-3" data-bs-dismiss="modal" aria-label="Close"></button>
                         <div>
-                            <h6 class="mb-0 fw-bold">Claros del bosque</h6>
-                            <small class="text-muted text-uppercase" style="font-size: 0.6rem;">Modo lectura HTML</small>
+                            <h6 class="mb-0 fw-bold" id="tituloLibro">Cargando...</h6>
+                            <small class="text-muted text-uppercase" style="font-size: 0.6rem;">Lector ePub</small>
                         </div>
-                    </div>                    
+                    </div>
+                    <div class="navigation-controls">
+                        <button class="btn btn-outline-primary btn-sm" id="prev">⬅️ Anterior</button>
+                        <button class="btn btn-outline-primary btn-sm" id="next">Siguiente ➡️</button>
+                    </div>
                 </div>
                 
-                <div class="modal-body p-0 bg-reading" id="visorHTML">
-                    <div class="container-narrow py-5 px-4 mx-auto bg-white shadow-sm" style="max-width: 750px; min-height: 100%;">
-                        <article class="reader-content font-serif fs-5 text-dark">
-                            <?php include($_SERVER['DOCUMENT_ROOT'].'/recursosHTML/ClarosDelBosque.html'); ?>
-                        </article>
-                    </div>
+                <div class="modal-body p-0 bg-light">
+                    <div id="viewer" style="min-height: 85vh; width: 100%; background: white;"></div>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="/assets/js/jszip.min.js"></script>
+    <script src="/assets/js/epub.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/assets/js/ebiblioteca.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const lectorPDF = document.getElementById('lectorPDF');
+            const lectorEPUB= document.getElementById('lectorEPUB');
             
             if (lectorPDF) {
                 lectorPDF.addEventListener('show.bs.modal', function (event) {            
@@ -233,8 +236,65 @@
                     if (iframe) iframe.src = "";
                 });
             }
+
+            if(lectorEPUB){
+                let libro=null;
+                let visor=null;
+
+                lectorEPUB.addEventListener('show.bs.modal',function(event){
+                    const button=event.relatedTarget;
+                    const epubUrl=button.getAttribute('data-epub-url');
+                    const titulo=button.getAttribute('data-book-title');
+
+                    document.getElementById('tituloLibro').textContent=titulo;
+
+                    if(libro) {
+                        libro.destroy();
+                        document.getElementById("viewer").innerHTML = "";
+                    }
+                    
+                    libro=ePub(epubUrl);
+
+                    visor=libro.renderTo("viewer",{
+                        width:"100%",
+                        height:"100%",
+                        flow:"scrolled",
+                        manager:"default"
+                    });
+
+                    visor.display().then(function() {
+                        console.log("Renderizado completo");
+                        setTimeout(()=>{visor.resize();},500);
+                    });
+                });
+
+                lectorEPUB.addEventListener('shown.bs.modal', function() {
+                    if (visor) {
+                        visor.resize();
+                    }
+                });
+
+                document.getElementById("next").addEventListener("click",function(e){
+                    if(visor) visor.next();
+                    e.preventDefault();
+                });
+
+                document.getElementById("prev").addEventListener("click",function(e){
+                    if(visor) visor.prev();
+                    e.preventDefault();
+                });
+
+                lectorEPUB.addEventListener('hidden.bs.modal',function(){
+                    if(libro){
+                        libro.destroy();
+                        libro=null;
+                    }
+
+                    document.getElementById("viewer").innerHTML="";
+                });
+            }
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
   </body>
 </html>
