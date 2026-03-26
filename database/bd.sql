@@ -12,6 +12,7 @@ CREATE TABLE usuarios (
     es_admin TINYINT(1) DEFAULT 0,
     moderado TINYINT(1) DEFAULT 0,
     bio TEXT,
+    ruta_foto VARCHAR(255) DEFAULT 'assets/img/default/imgperfil.png',
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
