@@ -14,7 +14,7 @@ class Usuario{
     private $ruta_foto;
     private $fecha_registro;
 
-    public function __construct($id, $nombre, $nombre_usuario, $correo, $pass, $activo, $es_admin, $moderado, $bio, $ruta_foto, $fecha_registro) {
+    public function __construct($id, $nombre, $nombre_usuario, $correo, $pass, $activo, $es_admin, $moderado, $bio=null, $ruta_foto=null, $fecha_registro) {
         $this->id = $id;
         $this->nombre = $nombre;
         $this->nombre_usuario = $nombre_usuario;
@@ -34,6 +34,19 @@ class Usuario{
     public function setPass($pass) { $this->pass = password_hash($pass, PASSWORD_BCRYPT); }
     public function setBio($bio) { $this->bio = $bio; }
     public function setRutaFoto($ruta) { $this->ruta_foto = $ruta; }
+
+    public function getId(){ return $this->id; }
+    public function getNombre(){$this->nombre = $nombre;}
+    public function getNombreUsuario(){$this->nombre_usuario = $nombre_usuario;}
+    public function getCorreo(){$this->correo = $correo;}
+    public function getPass(){$this->pass = $pass;}
+    public function getActivo(){$this->activo = $activo;}
+    public function getEsAdmin(){$this->es_admin = $es_admin;}
+    public function getModerado(){$this->moderado = $moderado;}
+    public function getBio(){$this->bio = $bio;}
+    public function getRutaFoto(){$this->ruta_foto = $ruta_foto;}
+    public function getFechaRegistro(){$this->fecha_registro = $fecha_registro;}
+
 
     public static function guardar($nombre,$nombre_usuario,$correo,$pass){
         $db=Database::conectar();
@@ -65,7 +78,7 @@ class Usuario{
 
     public static function crearInstancia($nombre_usuario){
         $datos=self::buscarPorUsuario($nombre_usuario);
-        if(!datos) return null;
+        if(!$datos) return null;
 
         $usu=new Usuario($datos['id'],$datos['nombre'],$datos['nombre_usuario'],$datos['correo'],$datos['pass'],$datos['activo'],$datos['es_admin'],$datos['moderado'],$datos['bio'],$datos['ruta_foto'],$datos['fecha_registro']);
         return $usu;
@@ -122,7 +135,38 @@ class Usuario{
         return $this->actualizar();
     }
 
-    
+    public function seguir($usuario_id){
+        $bd=Database::conectar();
+        $stmt=$bd->prepare("INSERT INTO seguidores(seguidor_id,usuario_id) VALUES (?,?)");
+        return $stmt->execute([$this->id,$usuario_id]);
+    }
+
+    public function dejarSeguir($usuario_id){
+        $bd=Database::conectar();
+        $stmt=$bd->prepare("DELETE FROM seguidores WHERE seguidor_id=? AND usuario_id=?");
+        return $stmt->execute([$this->id,$usuario_id]);
+    }
+
+    public function obtenerSeguidos(){
+        $bd=Database::conectar();
+        $stmt=$bd->prepare("SELECT * FROM seguidores WHERE id_seguidor=?");
+        $stmt->execute([$this->id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerSeguidores(){
+        $bd=Database::conectar();
+        $stmt=$bd->prepare("SELECT * FROM seguidores WHERE id_seguido=?");
+        $stmt->execute([$this->id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function eliminarSeguidor($usuario_id){
+        $bd=Database::conectar();
+        $stmt=$bd->prepare("DELETE FROM seguidores WHERE id_seguidor=? AND id_seguido=?");
+        return $stmt->execute([$usuario_id,$this->id]);
+    }
+
 
 }
 ?>

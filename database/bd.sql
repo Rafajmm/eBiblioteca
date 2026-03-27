@@ -84,6 +84,7 @@ CREATE TABLE autores(
     fecha_nacimiento DATE,
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_borrado TIMESTAMP DEFAULT NULL,
+    ruta_foto VARCHAR(200) DEFAULT NULL,
     biografia TEXT
 );
 
