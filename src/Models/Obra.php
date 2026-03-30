@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../Config/Database.php';
 
 class Obra {
     private $id;
@@ -28,8 +29,9 @@ class Obra {
 
     public static function guardar($titulo, $sinopsis, $paginas, $fecha_publicacion, $ruta_pdf=null, $ruta_html=null, $genero) {
         $db=Database::conectar();
-        $stmt=$db->prepare("INSERT INTO obras(titulo,sinopsis,paginas,fecha_publicacion,fecha_registro,fecha_borrado,ruta_pdf,ruta_html,genero) VALUES (?,?,?,?,?,?,?,?,?)");
-        return $stmt->execute([$titulo,$sinopsis,$paginas,$fecha_publicacion,$ruta_pdf,$ruta_html,$genero]);
+        $stmt=$db->prepare("INSERT INTO obras(titulo,sinopsis,paginas,fecha_publicacion,ruta_pdf,ruta_html,genero) VALUES (?,?,?,?,?,?,?)");
+        $stmt->execute([$titulo,$sinopsis,$paginas,$fecha_publicacion,$ruta_pdf,$ruta_html,$genero]);
+        return $db->lastInsertId();
     }
 
     public static function buscarPorId($id) {
@@ -87,6 +89,17 @@ class Obra {
         return null;
     }
 
+    public static function obtenerId($titulo, $fecha_publicacion) {
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT id FROM obras WHERE titulo=? AND fecha_publicacion=?");
+        $stmt->execute([$titulo, $fecha_publicacion]);
+        $datos=$stmt->fetch(PDO::FETCH_ASSOC);
+        if($datos){
+            return $datos['id'];
+        }
+        return null;
+    }
+
     public static function buscarPorEtiqueta($etiqueta) {
         $db=Database::conectar();
         $stmt=$db->prepare("SELECT * FROM obras join obra_etiquetas on obras.id=obra_etiquetas.id_obra join etiquetas on obra_etiquetas.id_etiqueta=etiquetas.id WHERE etiquetas.nombre=?");
@@ -120,6 +133,14 @@ class Obra {
         return null;
     }
 
+    public static function crearInstancia($id) {
+        $datos=self::buscarPorId($id);
+        if(!$datos) return null;
+
+        $obra=new Obra($datos['id'],$datos['titulo'],$datos['sinopsis'],$datos['paginas'],$datos['fecha_publicacion'],$datos['fecha_registro'],$datos['fecha_borrado'],$datos['ruta_pdf'],$datos['ruta_html'],$datos['genero']);
+        return $obra;
+    }
+
     public function actualizar(){
         $db=Database::conectar();
         $stmt=$db->prepare("UPDATE obras SET titulo=?, sinopsis=?, paginas=?, fecha_publicacion=?, fecha_registro=?, fecha_borrado=?, ruta_pdf=?, ruta_html=?, genero=? WHERE id=?");
@@ -127,10 +148,10 @@ class Obra {
         return $stmt->rowCount() > 0;
     }
 
-    public function actualizarAutor(){
+    public function actualizarAutor($idAutor){
         $db=Database::conectar();
         $stmt=$db->prepare("UPDATE obra_autores SET id_autor=? WHERE id_obra=?");
-        $stmt->execute([$this->id_autor, $this->id_obra]);
+        $stmt->execute([$idAutor, $this->id]);
         return $stmt->rowCount() > 0;
     }
 
@@ -155,6 +176,14 @@ class Obra {
         return $stmt->rowCount() > 0;
     }
 
+    public function obtenerEtiquetas(){
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT * FROM etiquetas join obra_etiquetas on etiquetas.id=obra_etiquetas.id_etiqueta WHERE obra_etiquetas.id_obra=?");
+        $stmt->execute([$this->id]);
+        $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $datos;
+    }
+
     public function eliminarEtiqueta($idEtiqueta){
         $db=Database::conectar();
         $stmt=$db->prepare("DELETE FROM obra_etiquetas WHERE id_obra=? AND id_etiqueta=?");
@@ -162,7 +191,7 @@ class Obra {
         return $stmt->rowCount() > 0;
     }
 
-    public function getAutores(){
+    public function obtenerAutores(){
         $db=Database::conectar();
         $stmt=$db->prepare("SELECT * FROM obra_autores join autores on obra_autores.id_autor=autores.id WHERE id_obra=?");
         $stmt->execute([$this->id]);
@@ -173,17 +202,20 @@ class Obra {
         return null;
     }
 
-    public function getEtiquetas(){
+    public function obtenerComentarios(){
         $db=Database::conectar();
-        $stmt=$db->prepare("SELECT * FROM obra_etiquetas join etiquetas on obra_etiquetas.id_etiqueta=etiquetas.id WHERE id_obra=?");
+        $stmt=$db->prepare("SELECT * FROM comentarios WHERE id_obra=?");
         $stmt->execute([$this->id]);
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
-        if($datos){
-            return $datos;
-        }
-        return null;
+        return $datos;
     }
 
+    public function eliminar(){
+        $db=Database::conectar();
+        $stmt=$db->prepare("UPDATE obras SET fecha_borrado=CURRENT_TIMESTAMP WHERE id=?");
+        $stmt->execute([$this->id]);
+        return $stmt->rowCount() > 0;
+    }
 
     public function setTitulo($titulo){
         $this->titulo = $titulo;

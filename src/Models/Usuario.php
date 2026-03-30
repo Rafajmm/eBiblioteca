@@ -28,30 +28,31 @@ class Usuario{
         $this->fecha_registro = $fecha_registro;
     }
 
-    public function setNombre($nombre) { $this->nombre = $nombre; }
-    public function setNombreUsuario($nombre_usuario) { $this->nombre_usuario = $nombre_usuario; }
-    public function setCorreo($correo) { $this->correo = $correo; }
-    public function setPass($pass) { $this->pass = password_hash($pass, PASSWORD_BCRYPT); }
-    public function setBio($bio) { $this->bio = $bio; }
-    public function setRutaFoto($ruta) { $this->ruta_foto = $ruta; }
+    public function setNombre($nombre) { $this->nombre = $nombre;  self::actualizar(); }
+    public function setNombreUsuario($nombre_usuario) { $this->nombre_usuario = $nombre_usuario; self::actualizar(); }
+    public function setCorreo($correo) { $this->correo = $correo; self::actualizar(); }
+    public function setPass($pass) { $this->pass = password_hash($pass, PASSWORD_BCRYPT); self::actualizar(); }
+    public function setBio($bio) { $this->bio = $bio; self::actualizar(); }
+    public function setRutaFoto($ruta) { $this->ruta_foto = $ruta; self::actualizar(); }
 
     public function getId(){ return $this->id; }
-    public function getNombre(){$this->nombre = $nombre;}
-    public function getNombreUsuario(){$this->nombre_usuario = $nombre_usuario;}
-    public function getCorreo(){$this->correo = $correo;}
-    public function getPass(){$this->pass = $pass;}
-    public function getActivo(){$this->activo = $activo;}
-    public function getEsAdmin(){$this->es_admin = $es_admin;}
-    public function getModerado(){$this->moderado = $moderado;}
-    public function getBio(){$this->bio = $bio;}
-    public function getRutaFoto(){$this->ruta_foto = $ruta_foto;}
-    public function getFechaRegistro(){$this->fecha_registro = $fecha_registro;}
+    public function getNombre(){ return $this->nombre; }
+    public function getNombreUsuario(){ return $this->nombre_usuario; }
+    public function getCorreo(){ return $this->correo; }
+    public function getPass(){ return $this->pass; }
+    public function getActivo(){ return $this->activo; }
+    public function getEsAdmin(){ return $this->es_admin; }
+    public function getModerado(){ return $this->moderado; }
+    public function getBio(){ return $this->bio; }
+    public function getRutaFoto(){ return $this->ruta_foto; }
+    public function getFechaRegistro(){ return $this->fecha_registro; }
 
 
     public static function guardar($nombre,$nombre_usuario,$correo,$pass){
         $db=Database::conectar();
         $stmt=$db->prepare("INSERT INTO usuarios(nombre,nombre_usuario,correo,pass) VALUES (?,?,?,?)");
-        return $stmt->execute([$nombre,$nombre_usuario,$correo,password_hash($pass,PASSWORD_BCRYPT)]);
+        $stmt->execute([$nombre,$nombre_usuario,$correo,password_hash($pass,PASSWORD_BCRYPT)]);
+        return $db->lastInsertId();
     }
 
     public static function buscarPorUsuario($nombre_usuario){
@@ -135,16 +136,16 @@ class Usuario{
         return $this->actualizar();
     }
 
-    public function seguir($usuario_id){
+    public function seguir($id_seguido){
         $bd=Database::conectar();
-        $stmt=$bd->prepare("INSERT INTO seguidores(seguidor_id,usuario_id) VALUES (?,?)");
-        return $stmt->execute([$this->id,$usuario_id]);
+        $stmt=$bd->prepare("INSERT INTO seguidores(id_seguidor,id_seguido) VALUES (?,?)");
+        return $stmt->execute([$this->id,$id_seguido]);
     }
 
-    public function dejarSeguir($usuario_id){
+    public function dejarSeguir($id_seguido){
         $bd=Database::conectar();
-        $stmt=$bd->prepare("DELETE FROM seguidores WHERE seguidor_id=? AND usuario_id=?");
-        return $stmt->execute([$this->id,$usuario_id]);
+        $stmt=$bd->prepare("DELETE FROM seguidores WHERE id_seguidor=? AND id_seguido=?");
+        return $stmt->execute([$this->id,$id_seguido]);
     }
 
     public function obtenerSeguidos(){
@@ -161,12 +162,23 @@ class Usuario{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function eliminarSeguidor($usuario_id){
+    public function eliminarSeguidor($id_seguidor){
         $bd=Database::conectar();
         $stmt=$bd->prepare("DELETE FROM seguidores WHERE id_seguidor=? AND id_seguido=?");
-        return $stmt->execute([$usuario_id,$this->id]);
+        return $stmt->execute([$id_seguidor,$this->id]);
     }
 
+    public function cargarListas(){
+        $bd=Database::conectar();
+        $stmt=$bd->prepare("SELECT * FROM listas WHERE id_usuario=?");
+        $stmt->execute([$this->id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
+    public function crearLista($nombre){
+        $bd=Database::conectar();
+        $stmt=$bd->prepare("INSERT INTO listas(nombre,id_usuario) VALUES (?,?)");
+        return $stmt->execute([$nombre,$this->id]);
+    }
 }
 ?>
