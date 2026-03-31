@@ -78,13 +78,13 @@ class Comentario {
     public function getIdObra() {return $this->id_obra;}
     public function getRevisado() {return $this->revisado;}
     
-    public function setId($id) {$this->id = $id; self::actualizar();}
-    public function setContenido($contenido) {$this->contenido = $contenido; self::actualizar();}
-    public function setFechaComentario($fecha_comentario) {$this->fecha_comentario = $fecha_comentario; self::actualizar();}
-    public function setFechaBorrado($fecha_borrado) {$this->fecha_borrado = $fecha_borrado; self::actualizar();}
-    public function setIdUsuario($id_usuario) {$this->id_usuario = $id_usuario; self::actualizar();}
-    public function setIdObra($id_obra) {$this->id_obra = $id_obra; self::actualizar();}
-    public function setRevisado($revisado) {$this->revisado = $revisado; self::actualizar();}
+    public function setId($id) {$this->id = $id; $this->actualizar();}
+    public function setContenido($contenido) {$this->contenido = $contenido; $this->actualizar();}
+    public function setFechaComentario($fecha_comentario) {$this->fecha_comentario = $fecha_comentario; $this->actualizar();}
+    public function setFechaBorrado($fecha_borrado) {$this->fecha_borrado = $fecha_borrado; $this->actualizar();}
+    public function setIdUsuario($id_usuario) {$this->id_usuario = $id_usuario; $this->actualizar();}
+    public function setIdObra($id_obra) {$this->id_obra = $id_obra; $this->actualizar();}
+    public function setRevisado($revisado) {$this->revisado = $revisado; $this->actualizar();}
 
     private function actualizar() {
         $db=Database::conectar();

@@ -28,12 +28,12 @@ class Usuario{
         $this->fecha_registro = $fecha_registro;
     }
 
-    public function setNombre($nombre) { $this->nombre = $nombre;  self::actualizar(); }
-    public function setNombreUsuario($nombre_usuario) { $this->nombre_usuario = $nombre_usuario; self::actualizar(); }
-    public function setCorreo($correo) { $this->correo = $correo; self::actualizar(); }
-    public function setPass($pass) { $this->pass = password_hash($pass, PASSWORD_BCRYPT); self::actualizar(); }
-    public function setBio($bio) { $this->bio = $bio; self::actualizar(); }
-    public function setRutaFoto($ruta) { $this->ruta_foto = $ruta; self::actualizar(); }
+    public function setNombre($nombre) { $this->nombre = $nombre;  $this->actualizar(); }
+    public function setNombreUsuario($nombre_usuario) { $this->nombre_usuario = $nombre_usuario; $this->actualizar(); }
+    public function setCorreo($correo) { $this->correo = $correo; $this->actualizar(); }
+    public function setPass($pass) { $this->pass = password_hash($pass, PASSWORD_BCRYPT); $this->actualizar(); }
+    public function setBio($bio) { $this->bio = $bio; $this->actualizar(); }
+    public function setRutaFoto($ruta) { $this->ruta_foto = $ruta; $this->actualizar(); }
 
     public function getId(){ return $this->id; }
     public function getNombre(){ return $this->nombre; }

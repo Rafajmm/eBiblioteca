@@ -32,22 +32,22 @@ class Lista {
 
     public function setId($id) {
         $this->id = $id;
-        self::actualizar();
+        $this->actualizar();
     }
 
     public function setNombre($nombre) {
         $this->nombre = $nombre;
-        self::actualizar();
+        $this->actualizar();
     }
 
     public function setIdUsuario($id_usuario) {
         $this->id_usuario = $id_usuario;
-        self::actualizar();
+        $this->actualizar();
     }
 
     public function setFechaCreacion($fecha_creacion) {
         $this->fecha_creacion = $fecha_creacion;
-        self::actualizar();
+        $this->actualizar();
     }
     
     public function actualizar() {

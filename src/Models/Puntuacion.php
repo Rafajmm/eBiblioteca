@@ -61,14 +61,14 @@ class Puntuacion {
     
     public function actualizar() {
         $db = Database::conectar();
-        $stmt = $db->prepare("UPDATE puntuaciones SET valor = ?, id_usuario = ?, id_obra = ?, fecha_puntuacion = ? WHERE id = ?");
-        $stmt->execute([$this->valor, $this->id_usuario, $this->id_obra, $this->fecha_puntuacion]);
+        $stmt = $db->prepare("UPDATE puntuaciones SET valor = ?, id_usuario = ?, id_obra = ?, fecha_puntuacion = ? WHERE id_usuario = ? AND id_obra = ?");
+        $stmt->execute([$this->valor, $this->id_usuario, $this->id_obra, $this->fecha_puntuacion, $this->id_usuario, $this->id_obra]);
     }
 
-    public function sobreescribir() {
+    public function sobreescribir($valor) {
         $db = Database::conectar();
         $stmt = $db->prepare("UPDATE puntuaciones SET valor = ? WHERE id_usuario = ? AND id_obra = ?");
-        $stmt->execute([$this->valor, $this->id_usuario, $this->id_obra]);
+        $stmt->execute([$valor, $this->id_usuario, $this->id_obra]);
     }
 
     public static function buscarPorUsuarioYObra($id_usuario, $id_obra) {
