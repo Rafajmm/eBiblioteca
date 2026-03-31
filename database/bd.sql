@@ -103,6 +103,7 @@ CREATE TABLE comentarios(
     fecha_borrado TIMESTAMP DEFAULT NULL, 
     id_usuario INT NOT NULL,
     id_obra INT NOT NULL,
+    revisado TINYINT DEFAULT 0,
     CONSTRAINT fk_usuario_coment FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE,
     CONSTRAINT fk_obra_coment FOREIGN KEY (id_obra) REFERENCES obras(id) ON DELETE CASCADE
 );

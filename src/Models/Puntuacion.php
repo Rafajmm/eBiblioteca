@@ -1,13 +1,17 @@
 <?php
+require_once __DIR__ . '/../../config/Database.php';
+
 class Puntuacion {
     private $valor;
     private $id_usuario;
     private $id_obra;
+    private $fecha_puntuacion;
    
-    public function __construct($valor, $id_usuario, $id_obra) {
+    public function __construct($valor, $id_usuario, $id_obra, $fecha_puntuacion = null) {
         $this->valor = $valor;
         $this->id_usuario = $id_usuario;
         $this->id_obra = $id_obra;
+        $this->fecha_puntuacion = $fecha_puntuacion;
     }
 
     public function getValor() {
@@ -18,6 +22,9 @@ class Puntuacion {
     }    
     public function getIdObra() {
         return $this->id_obra;
+    }
+    public function getFechaPuntuacion() {
+        return $this->fecha_puntuacion;
     }
 
     public function setIdUsuario($id_usuario) {
@@ -30,6 +37,10 @@ class Puntuacion {
     }
     public function setValor($valor) {
         $this->valor = $valor;
+        $this->actualizar();
+    }
+    public function setFechaPuntuacion($fecha_puntuacion) {
+        $this->fecha_puntuacion = $fecha_puntuacion;
         $this->actualizar();
     }
     
@@ -45,13 +56,13 @@ class Puntuacion {
         $stmt = $db->prepare("SELECT * FROM puntuaciones WHERE id_usuario = ? AND id_obra = ?");
         $stmt->execute([$id_usuario, $id_obra]);
         $puntuacion = $stmt->fetch();
-        return new Puntuacion($puntuacion['valor'], $puntuacion['id_usuario'], $puntuacion['id_obra']);
+        return new Puntuacion($puntuacion['valor'], $puntuacion['id_usuario'], $puntuacion['id_obra'],$puntuacion['fecha_puntuacion']);
     }
     
     public function actualizar() {
         $db = Database::conectar();
-        $stmt = $db->prepare("UPDATE puntuaciones SET valor = ?, id_usuario = ?, id_obra = ? WHERE id = ?");
-        $stmt->execute([$this->valor, $this->id_usuario, $this->id_obra]);
+        $stmt = $db->prepare("UPDATE puntuaciones SET valor = ?, id_usuario = ?, id_obra = ?, fecha_puntuacion = ? WHERE id = ?");
+        $stmt->execute([$this->valor, $this->id_usuario, $this->id_obra, $this->fecha_puntuacion]);
     }
 
     public function sobreescribir() {
@@ -65,7 +76,7 @@ class Puntuacion {
         $stmt = $db->prepare("SELECT * FROM puntuaciones WHERE id_usuario = ? AND id_obra = ?");
         $stmt->execute([$id_usuario, $id_obra]);
         $puntuacion = $stmt->fetch();
-        return new Puntuacion($puntuacion['valor'], $puntuacion['id_usuario'], $puntuacion['id_obra']);
+        return new Puntuacion($puntuacion['valor'], $puntuacion['id_usuario'], $puntuacion['id_obra'], $puntuacion['fecha_puntuacion']);
     }
 }
 

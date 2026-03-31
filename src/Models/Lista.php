@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/Database.php';
+require_once __DIR__ . '/../../config/Database.php';
 
 class Lista {
     private $id;
@@ -100,7 +100,7 @@ class Lista {
 
     public static function obtenerObrasPorId($id) {
         $bd = Database::conectar();
-        $stmt = $bd->prepare("SELECT * FROM lista_obra WHERE id_lista = ?");
+        $stmt = $bd->prepare("SELECT * FROM lista_obras WHERE id_lista = ?");
         $stmt->execute([$id]);
         return $stmt->fetchAll();
     }
@@ -113,26 +113,26 @@ class Lista {
     
     public function addObra($id_obra) {
         $bd = Database::conectar();
-        $stmt = $bd->prepare("INSERT INTO lista_obra(id_lista, id_obra) VALUES (?, ?)");
+        $stmt = $bd->prepare("INSERT INTO lista_obras(id_lista, id_obra) VALUES (?, ?)");
         $stmt->execute([$this->id, $id_obra]);
     }
 
     public function eliminarObra($id_obra) {
         $bd = Database::conectar();
-        $stmt = $bd->prepare("DELETE FROM lista_obra WHERE id_lista = ? AND id_obra = ?");
+        $stmt = $bd->prepare("DELETE FROM lista_obras WHERE id_lista = ? AND id_obra = ?");
         $stmt->execute([$this->id, $id_obra]);
     }
 
     public function obtenerObras() {
         $bd = Database::conectar();
-        $stmt = $bd->prepare("SELECT * FROM lista_obra WHERE id_lista = ?");
+        $stmt = $bd->prepare("SELECT * FROM lista_obras WHERE id_lista = ?");
         $stmt->execute([$this->id]);
         return $stmt->fetchAll();
     }
 
     public function obtenerObrasConDetalles() {
         $bd = Database::conectar();
-        $stmt = $bd->prepare("SELECT o.* FROM lista_obra lo JOIN obras o ON lo.id_obra = o.id WHERE lo.id_lista = ?");
+        $stmt = $bd->prepare("SELECT o.* FROM lista_obras lo JOIN obras o ON lo.id_obra = o.id WHERE lo.id_lista = ?");
         $stmt->execute([$this->id]);
         return $stmt->fetchAll();
     }
