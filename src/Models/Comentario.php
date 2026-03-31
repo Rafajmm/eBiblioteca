@@ -141,5 +141,32 @@ class Comentario {
         return $result['count'] > 0;
     }
 
+    public function meGusta($id_usuario) {
+        $db=new Database();
+        $stmt=$db->prepare("INSERT INTO megusta_comentario (id_usuario, id_comentario) VALUES (?, ?)");
+        $stmt->execute([$id_usuario, $this->id]);
+    }
+
+    public function eliminarMeGusta($id_usuario) {
+        $db=new Database();
+        $stmt=$db->prepare("DELETE FROM megusta_comentario WHERE id_usuario=? AND id_comentario=?");
+        $stmt->execute([$id_usuario, $this->id]);
+    }
+
+    public function obtenerMeGusta() {
+        $db=new Database();
+        $stmt=$db->prepare("SELECT * FROM megusta_comentario WHERE id_comentario=?");
+        $stmt->execute([$this->id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function totalMeGusta() {
+        $db=new Database();
+        $stmt=$db->prepare("SELECT COUNT(*) as count FROM megusta_comentario WHERE id_comentario=?");
+        $stmt->execute([$this->id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['count'] > 0;
+    }
+
 }
 ?>

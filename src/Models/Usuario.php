@@ -180,5 +180,40 @@ class Usuario{
         $stmt=$bd->prepare("INSERT INTO listas(nombre,id_usuario) VALUES (?,?)");
         return $stmt->execute([$nombre,$this->id]);
     }
+
+    public function obtenerMeGustaC(){
+        $bd=Database::conectar();
+        $stmt=$bd->prepare("SELECT * FROM megusta_comentario WHERE id_usuario=?");
+        $stmt->execute([$this->id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerMeGustaL(){
+        $bd=Database::conectar();
+        $stmt=$bd->prepare("SELECT * FROM megusta_lista WHERE id_usuario=?");
+        $stmt->execute([$this->id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerComentarios(){
+        $bd=Database::conectar();
+        $stmt=$bd->prepare("SELECT * FROM comentarios WHERE id_usuario=?");
+        $stmt->execute([$this->id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerReportes(){
+        $bd=Database::conectar();
+        $stmt=$bd->prepare("SELECT * FROM reporte_comentarios WHERE id_usuario=?");
+        $stmt->execute([$this->id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerPuntuaciones(){
+        $bd=Database::conectar();
+        $stmt=$bd->prepare("SELECT * FROM puntuaciones WHERE id_usuario=?");
+        $stmt->execute([$this->id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

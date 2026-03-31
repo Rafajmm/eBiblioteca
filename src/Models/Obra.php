@@ -27,10 +27,10 @@ class Obra {
         $this->genero = $genero;
     }
 
-    public static function guardar($titulo, $sinopsis, $paginas, $fecha_publicacion, $ruta_pdf=null, $ruta_html=null, $genero) {
+    public static function guardar($titulo, $sinopsis, $paginas, $fecha_publicacion, $genero, $ruta_pdf=null, $ruta_html=null) {
         $db=Database::conectar();
-        $stmt=$db->prepare("INSERT INTO obras(titulo,sinopsis,paginas,fecha_publicacion,ruta_pdf,ruta_html,genero) VALUES (?,?,?,?,?,?,?)");
-        $stmt->execute([$titulo,$sinopsis,$paginas,$fecha_publicacion,$ruta_pdf,$ruta_html,$genero]);
+        $stmt=$db->prepare("INSERT INTO obras(titulo,sinopsis,paginas,fecha_publicacion,genero,ruta_pdf,ruta_html) VALUES (?,?,?,?,?,?,?)");
+        $stmt->execute([$titulo,$sinopsis,$paginas,$fecha_publicacion,$genero,$ruta_pdf,$ruta_html]);
         return $db->lastInsertId();
     }
 
@@ -215,6 +215,22 @@ class Obra {
         $stmt=$db->prepare("UPDATE obras SET fecha_borrado=CURRENT_TIMESTAMP WHERE id=?");
         $stmt->execute([$this->id]);
         return $stmt->rowCount() > 0;
+    }
+
+    public function obtenerPuntuaciones(){
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT * FROM puntuaciones WHERE id_obra=?");
+        $stmt->execute([$this->id]);
+        $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $datos;
+    }
+
+    public function obtenerPuntuacionMedia(){
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT AVG(valor) as puntuacion_media FROM puntuaciones WHERE id_obra=?");
+        $stmt->execute([$this->id]);
+        $datos=$stmt->fetch(PDO::FETCH_ASSOC);
+        return $datos['puntuacion_media'];
     }
 
     public function setTitulo($titulo){

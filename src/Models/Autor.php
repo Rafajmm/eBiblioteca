@@ -121,6 +121,13 @@ class Autor {
         return $stmt->execute([$this->id]);
     }
 
+    public function mostrarObras() {
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT * FROM obras join obra_autores on obras.id=obra_autores.id_obra WHERE obra_autores.id_autor=?");
+        $stmt->execute([$this->id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function setNombre($nombre) {
         $this->nombre = $nombre;
         $this->actualizar();

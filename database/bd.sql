@@ -118,6 +118,15 @@ CREATE TABLE reporte_comentarios(
     CONSTRAINT fk_comentario_rc FOREIGN KEY (id_comentario) REFERENCES comentarios(id)
 );
 
+CREATE TABLE megusta_comentario(
+    id_usuario INT NOT NULL,
+    id_comentario INT NOT NULL,
+    fecha_megusta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_usuario,id_comentario),
+    CONSTRAINT fk_usuario_mc FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
+    CONSTRAINT fk_comentario_mc FOREIGN KEY (id_comentario) REFERENCES comentarios(id)
+);
+
 CREATE TABLE puntuaciones(
     valor int not null check (valor between 1 and 5),
     id_usuario INT,
