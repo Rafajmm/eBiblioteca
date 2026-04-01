@@ -28,6 +28,7 @@ CREATE TABLE seguidores(
 CREATE TABLE listas(
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
+    descripcion TEXT,
     id_usuario INT NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_usuario_lista FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE

@@ -51,6 +51,14 @@ class Autor {
         return null;
     }
 
+    public static function busquedaAvanzada($nombre){
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT * FROM autores WHERE nombre LIKE ?");
+        $stmt->execute(["%$nombre%"]);
+        $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $datos;
+    }
+
     public static function buscarPorPais($pais) {
         $db=Database::conectar();
         $stmt=$db->prepare("SELECT * FROM autores WHERE pais=?");

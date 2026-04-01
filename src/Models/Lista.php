@@ -4,12 +4,14 @@ require_once __DIR__ . '/../../config/Database.php';
 class Lista {
     private $id;
     private $nombre;
+    private $descripcion;
     private $id_usuario;
     private $fecha_creacion;
 
-    public function __construct($id = null, $nombre = null, $id_usuario = null, $fecha_creacion = null) {
+    public function __construct($id = null, $nombre = null, $descripcion = null, $id_usuario = null, $fecha_creacion = null) {
         $this->id = $id;
         $this->nombre = $nombre;
+        $this->descripcion = $descripcion;
         $this->id_usuario = $id_usuario;
         $this->fecha_creacion = $fecha_creacion;
     }
@@ -20,6 +22,10 @@ class Lista {
 
     public function getNombre() {
         return $this->nombre;
+    }
+
+    public function getDescripcion() {
+        return $this->descripcion;
     }
 
     public function getIdUsuario() {
@@ -40,6 +46,11 @@ class Lista {
         $this->actualizar();
     }
 
+    public function setDescripcion($descripcion) {
+        $this->descripcion = $descripcion;
+        $this->actualizar();
+    }
+
     public function setIdUsuario($id_usuario) {
         $this->id_usuario = $id_usuario;
         $this->actualizar();
@@ -52,14 +63,14 @@ class Lista {
     
     public function actualizar() {
         $bd = Database::conectar();
-        $stmt = $bd->prepare("UPDATE listas SET nombre = ?, id_usuario = ?, fecha_creacion = ? WHERE id = ?");
-        $stmt->execute([$this->nombre, $this->id_usuario, $this->fecha_creacion, $this->id]);
+        $stmt = $bd->prepare("UPDATE listas SET nombre = ?, descripcion = ?, id_usuario = ?, fecha_creacion = ? WHERE id = ?");
+        $stmt->execute([$this->nombre, $this->descripcion, $this->id_usuario, $this->fecha_creacion, $this->id]);
     }
 
-    public static function guardar($nombre, $id_usuario) {
+    public static function guardar($nombre, $descripcion, $id_usuario) {
         $bd = Database::conectar();
-        $stmt = $bd->prepare("INSERT INTO listas(nombre, id_usuario) VALUES (?, ?)");
-        $stmt->execute([$nombre, $id_usuario]);
+        $stmt = $bd->prepare("INSERT INTO listas(nombre, descripcion, id_usuario) VALUES (?, ?, ?)");
+        $stmt->execute([$nombre, $descripcion, $id_usuario]);
         return $bd->lastInsertId();
     }
 
@@ -67,7 +78,7 @@ class Lista {
         $datos=self::buscarPorId($id);
         if(!$datos) return null;
 
-        $lista=new Lista($datos['id'], $datos['nombre'], $datos['id_usuario'], $datos['fecha_creacion']);
+        $lista=new Lista($datos['id'], $datos['nombre'], $datos['descripcion'], $datos['id_usuario'], $datos['fecha_creacion']);
         return $lista;
     }
     

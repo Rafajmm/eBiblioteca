@@ -80,7 +80,10 @@ class Obra {
 
     public static function cargarTodas() {
         $db=Database::conectar();
-        $stmt=$db->prepare("SELECT * FROM obras");
+        $stmt=$db->prepare("SELECT obras.*, autores.nombre as autor FROM obras 
+        LEFT JOIN obra_autores on obras.id=obra_autores.id_obra 
+        LEFT JOIN autores on obra_autores.id_autor=autores.id");
+        
         $stmt->execute();
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
         if($datos){
@@ -143,7 +146,7 @@ class Obra {
 
     public static function buscarTodo($parametro) {
         $db=Database::conectar();
-        $consulta="SELECT DISTINCT obras.* FROM obras 
+        $consulta="SELECT DISTINCT obras.*, autores.nombre as autor FROM obras 
         LEFT JOIN obra_autores on obras.id=obra_autores.id_obra 
         LEFT JOIN autores on obra_autores.id_autor=autores.id 
         LEFT JOIN obra_etiquetas on obras.id=obra_etiquetas.id_obra 
