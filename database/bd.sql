@@ -47,7 +47,7 @@ CREATE TABLE obras(
     titulo VARCHAR(100) NOT NULL,
     sinopsis TEXT,
     paginas INT,
-    fecha_publicacion DATE,
+    anio_publicacion INT,
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_borrado TIMESTAMP DEFAULT NULL,
     ruta_pdf VARCHAR(200),

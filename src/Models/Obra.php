@@ -67,10 +67,10 @@ class Obra {
         return null;
     }   
 
-    public static function buscarPorFechaPublicacion($fecha_publicacion) {
+    public static function buscarPorAnioPublicacion($anio) {
         $db=Database::conectar();
-        $stmt=$db->prepare("SELECT * FROM obras WHERE fecha_publicacion=?");
-        $stmt->execute([$fecha_publicacion]);
+        $stmt=$db->prepare("SELECT * FROM obras WHERE anio_publicacion=?");
+        $stmt->execute([$anio]);
         $datos=$stmt->fetch(PDO::FETCH_ASSOC);
         if($datos){
             return $datos;
@@ -89,10 +89,10 @@ class Obra {
         return null;
     }
 
-    public static function obtenerId($titulo, $fecha_publicacion) {
+    public static function obtenerId($titulo, $anio) {
         $db=Database::conectar();
-        $stmt=$db->prepare("SELECT id FROM obras WHERE titulo=? AND fecha_publicacion=?");
-        $stmt->execute([$titulo, $fecha_publicacion]);
+        $stmt=$db->prepare("SELECT id FROM obras WHERE titulo=? AND anio_publicacion=?");
+        $stmt->execute([$titulo, $anio]);
         $datos=$stmt->fetch(PDO::FETCH_ASSOC);
         if($datos){
             return $datos['id'];
@@ -137,14 +137,44 @@ class Obra {
         $datos=self::buscarPorId($id);
         if(!$datos) return null;
 
-        $obra=new Obra($datos['id'],$datos['titulo'],$datos['sinopsis'],$datos['paginas'],$datos['fecha_publicacion'],$datos['fecha_registro'],$datos['fecha_borrado'],$datos['ruta_pdf'],$datos['ruta_html'],$datos['genero']);
+        $obra=new Obra($datos['id'],$datos['titulo'],$datos['sinopsis'],$datos['paginas'],$datos['anio_publicacion'],$datos['fecha_registro'],$datos['fecha_borrado'],$datos['ruta_pdf'],$datos['ruta_html'],$datos['genero']);
         return $obra;
+    }
+
+    public static function buscarTodo($parametro) {
+        $db=Database::conectar();
+        $consulta="SELECT DISTINCT obras.* FROM obras 
+        LEFT JOIN obra_autores on obras.id=obra_autores.id_obra 
+        LEFT JOIN autores on obra_autores.id_autor=autores.id 
+        LEFT JOIN obra_etiquetas on obras.id=obra_etiquetas.id_obra 
+        LEFT JOIN etiquetas on obra_etiquetas.id_etiqueta=etiquetas.id 
+        WHERE titulo LIKE ? 
+        OR sinopsis LIKE ? 
+        OR genero LIKE ? 
+        OR autores.nombre LIKE ? 
+        OR etiquetas.nombre LIKE ?";
+
+        $parametros=["%$parametro%","%$parametro%","%$parametro%","%$parametro%","%$parametro%"];
+
+        if(is_numeric($parametro)){
+            $consulta.=" OR anio_publicacion=?";
+            $parametros[]=(int)$parametro;
+        }
+        
+        $stmt=$db->prepare($consulta);
+        $stmt->execute($parametros);
+        $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        if($datos){
+            return $datos;
+        }
+        return null;
     }
 
     public function actualizar(){
         $db=Database::conectar();
-        $stmt=$db->prepare("UPDATE obras SET titulo=?, sinopsis=?, paginas=?, fecha_publicacion=?, fecha_registro=?, fecha_borrado=?, ruta_pdf=?, ruta_html=?, genero=? WHERE id=?");
-        $stmt->execute([$this->titulo, $this->sinopsis, $this->paginas, $this->fecha_publicacion, $this->fecha_registro, $this->fecha_borrado, $this->ruta_pdf, $this->ruta_html, $this->genero, $this->id]);
+        $stmt=$db->prepare("UPDATE obras SET titulo=?, sinopsis=?, paginas=?, anio_publicacion=?, fecha_registro=?, fecha_borrado=?, ruta_pdf=?, ruta_html=?, genero=? WHERE id=?");
+        $stmt->execute([$this->titulo, $this->sinopsis, $this->paginas, $this->anio_publicacion, $this->fecha_registro, $this->fecha_borrado, $this->ruta_pdf, $this->ruta_html, $this->genero, $this->id]);
         return $stmt->rowCount() > 0;
     }
 
