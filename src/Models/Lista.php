@@ -111,8 +111,15 @@ class Lista {
 
     public static function obtenerObrasPorId($id) {
         $bd = Database::conectar();
-        $stmt = $bd->prepare("SELECT * FROM lista_obras WHERE id_lista = ?");
+        $stmt = $bd->prepare("SELECT id_obra FROM lista_obras WHERE id_lista = ?");
         $stmt->execute([$id]);
+        return $stmt->fetchAll();
+    }
+
+    public static function obtenerColecciones() {
+        $bd = Database::conectar();
+        $stmt = $bd->prepare("SELECT * FROM listas WHERE id_usuario = 0");
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 
@@ -136,7 +143,7 @@ class Lista {
 
     public function obtenerObras() {
         $bd = Database::conectar();
-        $stmt = $bd->prepare("SELECT * FROM lista_obras WHERE id_lista = ?");
+        $stmt = $bd->prepare("SELECT id_obra FROM lista_obras WHERE id_lista = ?");
         $stmt->execute([$this->id]);
         return $stmt->fetchAll();
     }

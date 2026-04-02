@@ -10,6 +10,7 @@ class BibliotecaController {
         $busqueda=$_GET['parametro'] ?? null;
         $genero=$_GET['genero'] ?? null;
         $autor=$_GET['autor'] ?? null;
+        $epoca=$_GET['epoca'] ?? null;
         $pagina=(int)$_GET['pagina'] ?? 1;
         $porPagina=(int)$_GET['porPagina'] ?? 15;
 
@@ -28,6 +29,13 @@ class BibliotecaController {
         if($autor) {
             $obras=array_filter($obras, function($obra) use ($autor) {
                 return $obra['autor'] === $autor;
+            });
+        }
+
+        if($epoca) {
+            $obras=array_filter($obras, function($obra) use ($epoca) {
+                $anio=(int)substr($obra['anio_publicacion'], 0, 4);
+                return ceil($anio / 100) === $epoca;
             });
         }
 
@@ -93,42 +101,23 @@ class BibliotecaController {
 
     }
 
-    public function verObra($id) {
-        if(!$id) {
-            http_response_code(400);
-            echo json_encode(['error' => 'ID de obra requerido']);
-            return;
+    public function colecciones(){
+        $colecciones=Lista::obtenerColecciones();
+        $obrasPorColeccion=[];
+        foreach($colecciones as $coleccion){
+            $obrasPorColeccion[$coleccion['id']]=Lista::obtenerObrasPorId($coleccion['id']);
         }
+        $total=count($colecciones);
         
-        $obra=Obra::crearInstancia($id);
-        
-        if(!$obra) {
-            http_response_code(404);
-            echo json_encode(['error' => 'Obra no encontrada']);
-            return;
-        }
 
-        $autores=$obra->obtenerAutores();
-        $etiquetas=$obra->obtenerEtiquetas();
-        $comentarios=$obra->obtenerComentarios();
-        $totalPuntuaciones=count($obra->obtenerPuntuaciones());
-        $puntuacionMedia=$obra->obtenerPuntuacionMedia();
-        $puntuacionUsuario=null;
-        
-        if(isset($_SESSION['id_usuario'])) {
-            $puntuacionUsuario=Puntuacion::buscarPorUsuarioYObra($_SESSION['id_usuario'], $obra->id);
-        }
-        
         header('Content-Type: application/json');
         echo json_encode([
-            'obra' => $obra,
-            'autores' => $autores,
-            'etiquetas' => $etiquetas,
-            'comentarios' => $comentarios,
-            'totalPuntuaciones' => $totalPuntuaciones,
-            'puntuacionMedia' => $puntuacionMedia,
-            'puntuacionUsuario' => $puntuacionUsuario
+            'colecciones' => $colecciones,
+            'obrasPorColeccion' => $obrasPorColeccion,
+            'total' => $total
         ]);
     }
+
+    
 }
 ?>
