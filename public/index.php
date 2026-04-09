@@ -35,5 +35,3 @@ error_reporting(E_ALL);
 // CÓMO: Require del archivo routes.php que contiene el Router
 // POR QUÉ: El archivo routes.php se encarga de despachar la petición
 require_once ROOT_PATH . 'config/routes.php';
-
-// NOTA: El dispatch() se ejecuta automáticamente al final de routes.php
