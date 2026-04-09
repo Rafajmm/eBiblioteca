@@ -62,8 +62,8 @@ $router->get('/obra/{id}', function($id) {
  * POR QUÉ: Funcionalidad core - lectura sin descarga
  */
 $router->get('/obra/{id}/leer', function($id) {
-    require_once __DIR__ . '/../src/Controllers/BibliotecaController.php';
-    $controller = new BibliotecaController();
+    require_once __DIR__ . '/../src/Controllers/ObraController.php';
+    $controller = new ObraController();
     $controller->leerObra($id);
 });
 
@@ -74,8 +74,8 @@ $router->get('/obra/{id}/leer', function($id) {
  * POR QUÉ: Usuarios pueden descargar para leer offline
  */
 $router->get('/obra/{id}/descargar/{formato}', function($id, $formato) {
-    require_once __DIR__ . '/../src/Controllers/BibliotecaController.php';
-    $controller = new BibliotecaController();
+    require_once __DIR__ . '/../src/Controllers/ObraController.php';
+    $controller = new ObraController();
     $controller->descargarObra($id, $formato);
 });
 
@@ -98,8 +98,8 @@ $router->get('/autores', function() {
  * POR QUÉ: Permite ver todas las obras de un autor específico
  */
 $router->get('/autor/{id}', function($id) {
-    require_once __DIR__ . '/../src/Controllers/BibliotecaController.php';
-    $controller = new BibliotecaController();
+    require_once __DIR__ . '/../src/Controllers/AutorController.php';
+    $controller = new AutorController();
     $controller->verAutor($id);
 });
 
@@ -110,9 +110,9 @@ $router->get('/autor/{id}', function($id) {
  * POR QUÉ: Permite descubrir nuevas obras a través de listas curadas
  */
 $router->get('/colecciones', function() {
-    require_once __DIR__ . '/../src/Controllers/ListaController.php';
-    $controller = new ListaController();
-    $controller->coleccionesPublicas();
+    require_once __DIR__ . '/../src/Controllers/BibliotecaController.php';
+    $controller = new BibliotecaController();
+    $controller->colecciones();
 });
 
 /**

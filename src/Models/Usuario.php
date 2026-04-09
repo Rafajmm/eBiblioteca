@@ -215,5 +215,65 @@ class Usuario{
         $stmt->execute([$this->id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function obtenerTablon(){
+        $bd=Database::conectar();
+        $stmt=$bd->prepare("SELECT
+                u.nombre_usuario AS actor,
+                'lista' AS tipo,
+                l.nombre AS objetivo,
+                l.fecha_creacion AS fecha,
+                l.id AS id_objetivo
+            FROM listas l
+            JOIN usuarios u ON l.id_usuario = u.id 
+            WHERE l.id_usuario IN (SELECT id_seguido FROM seguidores WHERE id_seguidor = ?)
+            AND u.activo=1
+
+            UNION ALL
+
+            SELECT 
+                u.nombre_usuario AS actor,
+                'comentario' AS tipo,
+                o.titulo AS objetivo,
+                c.fecha_comentario AS fecha,
+                o.id AS id_objetivo
+            FROM comentarios c
+            JOIN usuarios u ON c.id_usuario = u.id
+            JOIN obras o ON c.id_obra=o.id 
+            WHERE c.id_usuario IN (SELECT id_seguido FROM seguidores WHERE id_seguidor = ?)
+            AND u.activo=1 AND c.fecha_borrado IS NULL
+
+            UNION ALL
+
+            SELECT 
+                u.nombre_usuario AS actor,
+                'puntuacion' AS tipo,
+                o.titulo AS objetivo,
+                p.fecha_puntuacion AS fecha,
+                o.id AS id_objetivo
+            FROM puntuaciones p
+            JOIN usuarios u ON p.id_usuario = u.id 
+            JOIN obras o ON p.id_obra = o.id
+            WHERE p.id_usuario IN (SELECT id_seguido FROM seguidores WHERE id_seguidor = ?)
+            AND u.activo=1
+
+            UNION ALL
+
+            SELECT 
+                u.nombre_usuario AS actor,
+                'seguidor' AS tipo,
+                u2.nombre_usuario AS objetivo,
+                s.fecha_seguimiento AS fecha,
+                s.id_seguido AS id_objetivo
+            FROM seguidores s
+            JOIN usuarios u ON s.id_seguidor = u.id
+            JOIN usuarios u2 ON s.id_seguido = u2.id
+            WHERE s.id_seguidor IN (SELECT id_seguido FROM seguidores WHERE id_seguidor = ?)
+            AND u.activo=1 AND u2.activo=1
+        ");
+
+        $stmt->execute([$this->id,$this->id,$this->id,$this->id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

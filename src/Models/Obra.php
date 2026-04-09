@@ -226,7 +226,7 @@ class Obra {
 
     public function obtenerAutores(){
         $db=Database::conectar();
-        $stmt=$db->prepare("SELECT * FROM obra_autores join autores on obra_autores.id_autor=autores.id WHERE id_obra=?");
+        $stmt=$db->prepare("SELECT * FROM autores join obra_autores on obra_autores.id_autor=autores.id WHERE obra_autores.id_obra=?");
         $stmt->execute([$this->id]);
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
         if($datos){

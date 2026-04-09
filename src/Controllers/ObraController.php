@@ -6,44 +6,6 @@ require_once __DIR__ . '/../Models/Puntuacion.php';
 require_once __DIR__ . '/../Models/Etiqueta.php';
 
 class ObraController {
-public function verObra($id) {
-        if(!$id) {
-            http_response_code(400);
-            echo json_encode(['error' => 'ID de obra requerido']);
-            return;
-        }
-        
-        $obra=Obra::crearInstancia($id);
-        
-        if(!$obra) {
-            http_response_code(404);
-            echo json_encode(['error' => 'Obra no encontrada']);
-            return;
-        }
-
-        $autores=$obra->obtenerAutores();
-        $etiquetas=$obra->obtenerEtiquetas();
-        $comentarios=$obra->obtenerComentarios();
-        $totalPuntuaciones=count($obra->obtenerPuntuaciones());
-        $puntuacionMedia=$obra->obtenerPuntuacionMedia();
-        $puntuacionUsuario=null;
-        
-        if(isset($_SESSION['id_usuario'])) {
-            $puntuacionUsuario=Puntuacion::buscarPorUsuarioYObra($_SESSION['id_usuario'], $obra->id);
-        }
-        
-        header('Content-Type: application/json');
-        echo json_encode([
-            'obra' => $obra,
-            'autores' => $autores,
-            'etiquetas' => $etiquetas,
-            'comentarios' => $comentarios,
-            'totalPuntuaciones' => $totalPuntuaciones,
-            'puntuacionMedia' => $puntuacionMedia,
-            'puntuacionUsuario' => $puntuacionUsuario
-        ]);
-    }
-    
     public function agregarComentario($id_obra, $id_usuario) {
         $contenido=$_POST['contenido'];
         $idComentario=Comentario::guardar($contenido, $id_usuario, $id_obra);
@@ -51,8 +13,15 @@ public function verObra($id) {
         echo json_encode(['comentario' => $comentario]);
     }
 
-        public function descargar($id, $formato) {
-        if (!is_numeric($id)) {
+    public function agregarPuntuacion($id_obra, $id_usuario) {
+        $puntuacion=$_POST['puntuacion'];
+        $idPuntuacion=Puntuacion::guardar($puntuacion, $id_usuario, $id_obra);
+        $puntuacion=Puntuacion::crearInstancia($idPuntuacion);
+        echo json_encode(['puntuacion' => $puntuacion]);
+    }
+
+    public function descargar($id_obra, $formato) {
+        if (!is_numeric($id_obra)) {
             http_response_code(400);
             echo "ID inválido";
             return;
@@ -65,7 +34,7 @@ public function verObra($id) {
             return;
         }
         
-        $obra = Obra::crearInstancia($id);
+        $obra = Obra::crearInstancia($id_obra);
         
         if (!$obra) {
             http_response_code(404);
