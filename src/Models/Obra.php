@@ -6,7 +6,7 @@ class Obra {
     private $titulo;
     private $sinopsis;
     private $paginas;
-    private $fecha_publicacion;
+    private $anio_publicacion;
     private $fecha_registro;
     private $fecha_borrado;
     private $ruta_pdf;
@@ -14,12 +14,12 @@ class Obra {
     private $genero;
     
 
-    public function __construct($id, $titulo, $sinopsis, $paginas, $fecha_publicacion, $fecha_registro, $fecha_borrado, $ruta_pdf, $ruta_html, $genero) {
+    public function __construct($id, $titulo, $sinopsis, $paginas, $anio_publicacion, $fecha_registro, $fecha_borrado, $ruta_pdf, $ruta_html, $genero) {
         $this->id = $id;
         $this->titulo = $titulo;
         $this->sinopsis = $sinopsis;
         $this->paginas = $paginas;
-        $this->fecha_publicacion = $fecha_publicacion;
+        $this->anio_publicacion = $anio_publicacion;
         $this->fecha_registro = $fecha_registro;
         $this->fecha_borrado = $fecha_borrado;
         $this->ruta_pdf = $ruta_pdf;
@@ -27,10 +27,10 @@ class Obra {
         $this->genero = $genero;
     }
 
-    public static function guardar($titulo, $sinopsis, $paginas, $fecha_publicacion, $genero, $ruta_pdf=null, $ruta_html=null) {
+    public static function guardar($titulo, $sinopsis, $paginas, $anio_publicacion, $genero, $ruta_pdf=null, $ruta_html=null) {
         $db=Database::conectar();
-        $stmt=$db->prepare("INSERT INTO obras(titulo,sinopsis,paginas,fecha_publicacion,genero,ruta_pdf,ruta_html) VALUES (?,?,?,?,?,?,?)");
-        $stmt->execute([$titulo,$sinopsis,$paginas,$fecha_publicacion,$genero,$ruta_pdf,$ruta_html]);
+        $stmt=$db->prepare("INSERT INTO obras(titulo,sinopsis,paginas,anio_publicacion,genero,ruta_pdf,ruta_html) VALUES (?,?,?,?,?,?,?)");
+        $stmt->execute([$titulo,$sinopsis,$paginas,$anio_publicacion,$genero,$ruta_pdf,$ruta_html]);
         return $db->lastInsertId();
     }
 
@@ -278,8 +278,8 @@ class Obra {
         $this->paginas = $paginas;
         $this->actualizar();
     }
-    public function setfechaPublicacion($fechaPublicacion){
-        $this->fecha_publicacion = $fechaPublicacion;
+    public function setAnioPublicacion($anioPublicacion){
+        $this->anio_publicacion = $anioPublicacion;
         $this->actualizar();
     }
     public function setFechaRegistro($fechaRegistro){
@@ -316,8 +316,8 @@ class Obra {
     public function getPaginas(){
         return $this->paginas;
     }
-    public function getFechaPublicacion(){
-        return $this->fecha_publicacion;
+    public function getAnioPublicacion(){
+        return $this->anio_publicacion;
     }
     public function getFechaRegistro(){
         return $this->fecha_registro;

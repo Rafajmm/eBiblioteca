@@ -111,6 +111,17 @@ class Autor {
         return null;
     }
 
+    public static function contarObras($id) {
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT COUNT(*) as total FROM obras join obra_autores on obras.id=obra_autores.id_obra WHERE obra_autores.id_autor=?");
+        $stmt->execute([$id]);
+        $datos=$stmt->fetch(PDO::FETCH_ASSOC);
+        if($datos){
+            return $datos['total'];
+        }
+        return 0;
+    }
+
     public function actualizar() {
         $db=Database::conectar();
         $stmt=$db->prepare("UPDATE autores SET nombre=?, pais=?, fecha_nacimiento=?, biografia=?, ruta_foto=? WHERE id=?");

@@ -20,7 +20,7 @@
         
         <?php ?>
         
-        <?php if(!isset($_SESSION['id_usuario'])): ?>
+        <?php if(isset($_SESSION['id_usuario'])): ?>
           <div class="d-flex flex-column flex-lg-row gap-2">
             <a href="/usuario/<?=$_SESSION['id_usuario']?>" class="btn btn-outline-primary btn-sm">
               <i class="bi bi-person"></i><?=htmlspecialchars($_SESSION['nombre_usuario'])?>

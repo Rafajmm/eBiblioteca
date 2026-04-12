@@ -9,9 +9,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
 
-    <link href="public/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="public/assets/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet" />
-    <link href="public/assets/css/ebiblioteca.css" rel="stylesheet" />
+    <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="assets/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="assets/css/ebiblioteca.css" rel="stylesheet" />
 
     <?php if (isset($css_extra)): ?>
         <?php foreach($css_extra as $css):?>
@@ -29,8 +29,8 @@
     </main>
 
 
-    <script src="public/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="public/assets/js/ebiblioteca.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/ebiblioteca.js"></script>
 
     <?php if (isset($js_extra)): ?>
         <?php foreach($js_extra as $js):?>

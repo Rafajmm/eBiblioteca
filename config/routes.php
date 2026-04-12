@@ -5,7 +5,11 @@ $router = new Router();
 // RUTAS PÚBLICAS (No requieren autenticación)
 // Página de inicio
 $router->get('/', function() {
+    $titulo="Inicio";
+    ob_start();
     require __DIR__ . '/../src/Views/index.php';
+    $contenido = ob_get_clean();
+    require __DIR__ . '/../src/Views/layout.php';
 });
 
 // Catálogo completo de obras

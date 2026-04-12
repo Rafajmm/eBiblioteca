@@ -12,8 +12,8 @@ class BibliotecaController {
         $genero=$_GET['genero'] ?? null;
         $autor=$_GET['autor'] ?? null;
         $epoca=$_GET['epoca'] ?? null;
-        $pagina=(int)$_GET['pagina'] ?? 1;
-        $porPagina=(int)$_GET['porPagina'] ?? 15;
+        $pagina=(int)($_GET['pagina'] ?? 1);
+        $porPagina=(int)($_GET['porPagina'] ?? 15);
 
         $obras=$busqueda ? Obra::buscarTodo($busqueda) : Obra::cargarTodas();
 
@@ -35,7 +35,7 @@ class BibliotecaController {
 
         if($epoca) {
             $obras=array_filter($obras, function($obra) use ($epoca) {
-                $anio=(int)substr($obra['anio_publicacion'], 0, 4);
+                $anio=$obra['anio_publicacion'];
                 return ceil($anio / 100) === $epoca;
             });
         }
@@ -104,8 +104,8 @@ class BibliotecaController {
         $pais=$_GET['pais'] ?? null;
         $epoca=$_GET['epoca'] ?? null;
         $letra=$_GET['letra'] ?? null;
-        $pagina=(int)$_GET['pagina'] ?? 1;
-        $porPagina=(int)$_GET['porPagina'] ?? 15;
+        $pagina=(int)($_GET['pagina'] ?? 1);
+        $porPagina=(int)($_GET['porPagina'] ?? 15);
 
         $autores=$nombre ? Autor::busquedaAvanzada($nombre) : Autor::cargarTodos();
 
@@ -131,14 +131,11 @@ class BibliotecaController {
         $totalPaginas=ceil($total / $porPagina);
         $autores=array_slice($autores, ($pagina - 1) * $porPagina, $porPagina);
 
-        header('Content-Type: application/json');
-        echo json_encode([
-            'autores' => $autores,
-            'total' => $total,
-            'totalPaginas' => $totalPaginas,
-            'pagina' => $pagina,
-            'porPagina' => $porPagina
-        ]);
+        ob_start();
+        include __DIR__ . '/../Views/VistaAutores.php';
+        $contenido=ob_get_clean();
+
+        require_once __DIR__ . '/../Views/layout.php';
 
     }
 
