@@ -4,8 +4,46 @@ require_once __DIR__ . '/../Models/Autor.php';
 require_once __DIR__ . '/../Models/Comentario.php';
 require_once __DIR__ . '/../Models/Puntuacion.php';
 require_once __DIR__ . '/../Models/Etiqueta.php';
+require_once __DIR__ . '/../Models/Usuario.php';
+require_once __DIR__ . '/ComentarioController.php';
 
 class ObraController {
+    public function verObra($id) {
+        if(!$id) {
+            http_response_code(400);
+            echo json_encode(['error' => 'ID de obra requerido']);
+            return;
+        }
+        
+        $obra=Obra::crearInstancia($id);
+        
+        if(!$obra) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Obra no encontrada']);
+            return;
+        }
+
+        $portada=$obra->getPortada();
+        $autores=$obra->obtenerAutores();
+        $etiquetas=$obra->obtenerEtiquetas();
+        $comentarios=$obra->obtenerComentarios();
+        $totalPuntuaciones=$obra->obtenerPuntuaciones();
+        $puntuacionMedia=$obra->obtenerPuntuacionMedia();
+        $puntuacionUsuario=null;
+
+        $title=$obra->getTitulo();
+        
+        if(isset($_SESSION['id_usuario'])) {
+            $puntuacionUsuario=Puntuacion::buscarPorUsuarioYObra($_SESSION['id_usuario'], $obra->getId());
+        }
+        
+        ob_start();
+        include __DIR__ . '/../Views/VistaObra.php';
+        $contenido=ob_get_clean();
+        
+        require_once __DIR__ . '/../Views/layout.php';
+    }
+
     public function agregarComentario($id_obra, $id_usuario) {
         $contenido=$_POST['contenido'];
         $idComentario=Comentario::guardar($contenido, $id_usuario, $id_obra);

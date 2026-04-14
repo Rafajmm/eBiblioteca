@@ -14,16 +14,17 @@
           <li class="nav-item"><a class="nav-link text-primary" href="/colecciones">Colecciones</a></li>
 
           <?php if(isset($_SESSION['es_admin']) && $_SESSION['es_admin']): ?>
-            <li class="nav-item"><a class="nav-link text-primary" href="/admin">Admin</a></li>
+            <li class="nav-item"><a class="nav-link text-warning" href="/admin">Admin</a></li>
           <?php endif; ?>
         </ul>
-        
-        <?php ?>
         
         <?php if(isset($_SESSION['id_usuario'])): ?>
           <div class="d-flex flex-column flex-lg-row gap-2">
             <a href="/usuario/<?=$_SESSION['id_usuario']?>" class="btn btn-outline-primary btn-sm">
               <i class="bi bi-person"></i><?=htmlspecialchars($_SESSION['nombre_usuario'])?>
+            </a>
+            <a href="/logout" class="btn btn-outline-danger btn-sm">
+              <i class="bi bi-box-arrow-right"></i>Salir
             </a>
           </div>
 

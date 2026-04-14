@@ -14,7 +14,7 @@ class Usuario{
     private $ruta_foto;
     private $fecha_registro;
 
-    public function __construct($id, $nombre, $nombre_usuario, $correo, $pass, $activo, $es_admin, $moderado, $bio=null, $ruta_foto=null, $fecha_registro) {
+    public function __construct($id, $nombre, $nombre_usuario, $correo, $pass, $activo, $es_admin, $moderado, $fecha_registro, $bio=null, $ruta_foto=null) {
         $this->id = $id;
         $this->nombre = $nombre;
         $this->nombre_usuario = $nombre_usuario;
@@ -23,9 +23,9 @@ class Usuario{
         $this->activo = $activo;
         $this->es_admin = $es_admin;
         $this->moderado = $moderado;
+        $this->fecha_registro = $fecha_registro;
         $this->bio = $bio;
         $this->ruta_foto = $ruta_foto;
-        $this->fecha_registro = $fecha_registro;
     }
 
     public function setNombre($nombre) { $this->nombre = $nombre;  $this->actualizar(); }
@@ -81,7 +81,15 @@ class Usuario{
         $datos=self::buscarPorUsuario($nombre_usuario);
         if(!$datos) return null;
 
-        $usu=new Usuario($datos['id'],$datos['nombre'],$datos['nombre_usuario'],$datos['correo'],$datos['pass'],$datos['activo'],$datos['es_admin'],$datos['moderado'],$datos['bio'],$datos['ruta_foto'],$datos['fecha_registro']);
+        $usu=new Usuario($datos['id'],$datos['nombre'],$datos['nombre_usuario'],$datos['correo'],$datos['pass'],$datos['activo'],$datos['es_admin'],$datos['moderado'],$datos['fecha_registro'],$datos['bio'],$datos['ruta_foto']);
+        return $usu;
+    }
+
+    public static function crearInstanciaId($id){
+        $datos=self::buscarPorId($id);
+        if(!$datos) return null;
+
+        $usu=new Usuario($datos['id'],$datos['nombre'],$datos['nombre_usuario'],$datos['correo'],$datos['pass'],$datos['activo'],$datos['es_admin'],$datos['moderado'],$datos['fecha_registro'],$datos['bio'],$datos['ruta_foto']);
         return $usu;
     }
 
@@ -98,6 +106,7 @@ class Usuario{
             activo=?,
             es_admin=?,
             moderado=?,
+            fecha_registro=?,
             bio=?,
             ruta_foto=? WHERE
             id=?    
@@ -111,6 +120,7 @@ class Usuario{
             $this->activo,
             $this->es_admin,
             $this->moderado,
+            $this->fecha_registro,
             $this->bio,
             $this->ruta_foto,
             $this->id
@@ -148,18 +158,38 @@ class Usuario{
         return $stmt->execute([$this->id,$id_seguido]);
     }
 
+    public function esSeguido($id_seguidor){
+        $bd=Database::conectar();
+        $stmt=$bd->prepare("SELECT * FROM seguidores WHERE id_seguidor=? AND id_seguido=?");
+        $stmt->execute([$this->id,$id_seguidor]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
+    }
+
     public function obtenerSeguidos(){
         $bd=Database::conectar();
         $stmt=$bd->prepare("SELECT * FROM seguidores WHERE id_seguidor=?");
         $stmt->execute([$this->id]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $seguidos=[];
+        foreach($datos as $dato){
+            $seguidos[]=self::crearInstanciaId($dato['id_seguido']);
+        }
+        return $seguidos;
     }
 
     public function obtenerSeguidores(){
         $bd=Database::conectar();
         $stmt=$bd->prepare("SELECT * FROM seguidores WHERE id_seguido=?");
         $stmt->execute([$this->id]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $seguidores=[];
+        foreach($datos as $dato){
+            $seguidores[]=self::crearInstanciaId($dato['id_seguidor']);
+        }
+        return $seguidores;
     }
 
     public function eliminarSeguidor($id_seguidor){
@@ -270,9 +300,70 @@ class Usuario{
             JOIN usuarios u2 ON s.id_seguido = u2.id
             WHERE s.id_seguidor IN (SELECT id_seguido FROM seguidores WHERE id_seguidor = ?)
             AND u.activo=1 AND u2.activo=1
+
+            ORDER BY fecha DESC
         ");
 
         $stmt->execute([$this->id,$this->id,$this->id,$this->id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerActividad(){
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT
+                u.nombre_usuario AS actor,
+                'lista' AS tipo,
+                l.nombre AS objetivo,
+                l.fecha_creacion AS fecha,
+                l.id AS id_objetivo
+            FROM listas l
+            JOIN usuarios u ON l.id_usuario = u.id 
+            WHERE l.id_usuario=?
+
+            UNION ALL
+
+            SELECT 
+                u.nombre_usuario AS actor,
+                'comentario' AS tipo,
+                o.titulo AS objetivo,
+                c.fecha_comentario AS fecha,
+                o.id AS id_objetivo
+            FROM comentarios c
+            JOIN usuarios u ON c.id_usuario = u.id
+            JOIN obras o ON c.id_obra=o.id 
+            WHERE c.id_usuario=?
+
+            UNION ALL
+
+            SELECT 
+                u.nombre_usuario AS actor,
+                'puntuacion' AS tipo,
+                o.titulo AS objetivo,
+                p.fecha_puntuacion AS fecha,
+                o.id AS id_objetivo
+            FROM puntuaciones p
+            JOIN usuarios u ON p.id_usuario = u.id 
+            JOIN obras o ON p.id_obra = o.id
+            WHERE p.id_usuario=?
+
+            UNION ALL
+
+            SELECT 
+                u.nombre_usuario AS actor,
+                'seguidor' AS tipo,
+                u2.nombre_usuario AS objetivo,
+                s.fecha_seguimiento AS fecha,
+                s.id_seguido AS id_objetivo
+            FROM seguidores s
+            JOIN usuarios u ON s.id_seguidor = u.id
+            JOIN usuarios u2 ON s.id_seguido = u2.id
+            WHERE s.id_seguidor=?
+
+            ORDER BY fecha DESC
+        ");
+        
+        $params = array_fill(0, substr_count($stmt->queryString, '?'), $this->id);
+        $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

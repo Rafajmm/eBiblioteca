@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>eBiblioteca<?= isset($titulo) ? ' · '. htmlspecialchars($titulo) : ''?></title>
+    <title>eBiblioteca<?= isset($title) ? ' · '. htmlspecialchars($title) : ''?></title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
 
-    <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="assets/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet" />
-    <link href="assets/css/ebiblioteca.css" rel="stylesheet" />
+    <link href="/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/assets/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="/assets/css/ebiblioteca.css" rel="stylesheet" />
 
     <?php if (isset($css_extra)): ?>
         <?php foreach($css_extra as $css):?>
@@ -28,9 +28,11 @@
         <?= $contenido ?>
     </main>
 
+    <?php require_once __DIR__ . '/components/modalesLoginRegistro.php'; ?>
 
-    <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/ebiblioteca.js"></script>
+
+    <script src="/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/ebiblioteca.js"></script>
 
     <?php if (isset($js_extra)): ?>
         <?php foreach($js_extra as $js):?>

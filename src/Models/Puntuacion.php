@@ -76,7 +76,15 @@ class Puntuacion {
         $stmt = $db->prepare("SELECT * FROM puntuaciones WHERE id_usuario = ? AND id_obra = ?");
         $stmt->execute([$id_usuario, $id_obra]);
         $puntuacion = $stmt->fetch();
-        return new Puntuacion($puntuacion['valor'], $puntuacion['id_usuario'], $puntuacion['id_obra'], $puntuacion['fecha_puntuacion']);
+        return $puntuacion['valor'];
+    }
+
+    public static function contarPorObra($id_obra) {
+        $db = Database::conectar();
+        $stmt = $db->prepare("SELECT COUNT(*) as total FROM puntuaciones WHERE id_obra = ?");
+        $stmt->execute([$id_obra]);
+        $count = $stmt->fetch();
+        return $count['total'];
     }
 }
 

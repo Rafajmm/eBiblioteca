@@ -10,11 +10,12 @@ class Obra {
     private $fecha_registro;
     private $fecha_borrado;
     private $ruta_pdf;
-    private $ruta_html;
+    private $ruta_epub;
     private $genero;
+    private $portada;
     
 
-    public function __construct($id, $titulo, $sinopsis, $paginas, $anio_publicacion, $fecha_registro, $fecha_borrado, $ruta_pdf, $ruta_html, $genero) {
+    public function __construct($id, $titulo, $sinopsis, $paginas, $anio_publicacion, $fecha_registro, $fecha_borrado, $ruta_pdf, $ruta_epub, $genero, $portada) {
         $this->id = $id;
         $this->titulo = $titulo;
         $this->sinopsis = $sinopsis;
@@ -23,14 +24,26 @@ class Obra {
         $this->fecha_registro = $fecha_registro;
         $this->fecha_borrado = $fecha_borrado;
         $this->ruta_pdf = $ruta_pdf;
-        $this->ruta_html = $ruta_html;
+        $this->ruta_epub = $ruta_epub;
         $this->genero = $genero;
+        $this->portada = $portada;
     }
 
-    public static function guardar($titulo, $sinopsis, $paginas, $anio_publicacion, $genero, $ruta_pdf=null, $ruta_html=null) {
+    public static function guardar($titulo, $sinopsis, $paginas, $anio_publicacion, $genero, $ruta_pdf=null, $ruta_epub=null,$portada=null) {
+        if($ruta_pdf === null) {
+            $ruta_pdf=implode('_',explode(' ',$titulo));
+        }
+        if($ruta_epub === null) {
+            $ruta_epub=implode('_',explode(' ',$titulo));
+        }
+        if($portada === null) {
+            $portada= self::obtenerPortada($titulo) ?? null;
+            
+        }
+
         $db=Database::conectar();
-        $stmt=$db->prepare("INSERT INTO obras(titulo,sinopsis,paginas,anio_publicacion,genero,ruta_pdf,ruta_html) VALUES (?,?,?,?,?,?,?)");
-        $stmt->execute([$titulo,$sinopsis,$paginas,$anio_publicacion,$genero,$ruta_pdf,$ruta_html]);
+        $stmt=$db->prepare("INSERT INTO obras(titulo,sinopsis,paginas,anio_publicacion,genero,ruta_pdf,ruta_epub,portada) VALUES (?,?,?,?,?,?,?,?)");
+        $stmt->execute([$titulo,$sinopsis,$paginas,$anio_publicacion,$genero,$ruta_pdf,$ruta_epub,$portada]);
         return $db->lastInsertId();
     }
 
@@ -140,7 +153,7 @@ class Obra {
         $datos=self::buscarPorId($id);
         if(!$datos) return null;
 
-        $obra=new Obra($datos['id'],$datos['titulo'],$datos['sinopsis'],$datos['paginas'],$datos['anio_publicacion'],$datos['fecha_registro'],$datos['fecha_borrado'],$datos['ruta_pdf'],$datos['ruta_html'],$datos['genero']);
+        $obra=new Obra($datos['id'],$datos['titulo'],$datos['sinopsis'],$datos['paginas'],$datos['anio_publicacion'],$datos['fecha_registro'],$datos['fecha_borrado'],$datos['ruta_pdf'],$datos['ruta_epub'],$datos['genero'],$datos['portada']);
         return $obra;
     }
 
@@ -176,8 +189,8 @@ class Obra {
 
     public function actualizar(){
         $db=Database::conectar();
-        $stmt=$db->prepare("UPDATE obras SET titulo=?, sinopsis=?, paginas=?, anio_publicacion=?, fecha_registro=?, fecha_borrado=?, ruta_pdf=?, ruta_html=?, genero=? WHERE id=?");
-        $stmt->execute([$this->titulo, $this->sinopsis, $this->paginas, $this->anio_publicacion, $this->fecha_registro, $this->fecha_borrado, $this->ruta_pdf, $this->ruta_html, $this->genero, $this->id]);
+        $stmt=$db->prepare("UPDATE obras SET titulo=?, sinopsis=?, paginas=?, anio_publicacion=?, fecha_registro=?, fecha_borrado=?, ruta_pdf=?, ruta_epub=?, genero=? WHERE id=?");
+        $stmt->execute([$this->titulo, $this->sinopsis, $this->paginas, $this->anio_publicacion, $this->fecha_registro, $this->fecha_borrado, $this->ruta_pdf, $this->ruta_epub, $this->genero, $this->id]);
         return $stmt->rowCount() > 0;
     }
 
@@ -237,7 +250,7 @@ class Obra {
 
     public function obtenerComentarios(){
         $db=Database::conectar();
-        $stmt=$db->prepare("SELECT * FROM comentarios WHERE id_obra=?");
+        $stmt=$db->prepare("SELECT *, usuarios.nombre_usuario as usuario FROM comentarios JOIN usuarios ON comentarios.id_usuario = usuarios.id WHERE comentarios.id_obra=?");
         $stmt->execute([$this->id]);
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
         return $datos;
@@ -252,10 +265,10 @@ class Obra {
 
     public function obtenerPuntuaciones(){
         $db=Database::conectar();
-        $stmt=$db->prepare("SELECT * FROM puntuaciones WHERE id_obra=?");
+        $stmt=$db->prepare("SELECT count(*) as total FROM puntuaciones WHERE id_obra=?");
         $stmt->execute([$this->id]);
-        $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $datos;
+        $datos=$stmt->fetch(PDO::FETCH_ASSOC);
+        return $datos['total'];
     }
 
     public function obtenerPuntuacionMedia(){
@@ -264,6 +277,25 @@ class Obra {
         $stmt->execute([$this->id]);
         $datos=$stmt->fetch(PDO::FETCH_ASSOC);
         return $datos['puntuacion_media'];
+    }
+
+    public static function obtenerPortada($titulo) {
+        $consulta = urlencode($titulo);
+        $url = "https://openlibrary.org/search.json?title=" . $consulta;
+
+        $response = @file_get_contents($url);
+        
+        if ($response === FALSE) {
+            return null;
+        }
+
+        $data = json_decode($response, true);
+
+        if (isset($data['docs'][0]['cover_edition_key'])) {
+            return $data['docs'][0]['cover_edition_key'];
+        }
+
+        return null;
     }
 
     public function setTitulo($titulo){
@@ -294,8 +326,8 @@ class Obra {
         $this->ruta_pdf = $rutaPdf;
         $this->actualizar();
     }
-    public function setRutaHTML($rutaHTML){
-        $this->ruta_html = $rutaHTML;
+    public function setRutaEpub($rutaEpub){
+        $this->ruta_epub = $rutaEpub;
         $this->actualizar();
     }
     public function setGenero($genero){
@@ -328,11 +360,14 @@ class Obra {
     public function getRutaPdf(){
         return $this->ruta_pdf;
     }
-    public function getRutaHTML(){
-        return $this->ruta_html;
+    public function getRutaEpub(){
+        return $this->ruta_epub;
     }
     public function getGenero(){
         return $this->genero;
+    }
+    public function getPortada(){
+        return $this->portada;
     }
 }
 

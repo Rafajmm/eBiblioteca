@@ -53,7 +53,14 @@
         <a class="text-decoration-none" href="/obra/<?= $obra['id'] ?>">
             <div class="card tarjetaLibro border-0 shadow-sm h-100">
                 <div class="portadaLibroWrapper">
-                    <img src="https://covers.openlibrary.org/b/olid/OL4496766M-L.jpg" alt="<?= $obra['titulo'] ?>">
+                    <?php 
+                        $obj=Obra::crearInstancia($obra['id']);
+                        if($obj && $obj->getPortada()){
+                            echo '<img src="https://covers.openlibrary.org/b/olid/' . $obj->getPortada() . '-L.jpg" alt="' . $obra['titulo'] . '">';
+                        }else{
+                            echo '<img src="/assets/img/default/imgportada.jpg" alt="' . $obra['titulo'] . '">';
+                        }
+                    ?>
                 </div>
                 <div class="card-body p-3">
                     <div class="mb-2 d-flex flex-wrap gap-1">

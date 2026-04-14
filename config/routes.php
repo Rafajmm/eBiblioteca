@@ -21,8 +21,8 @@ $router->get('/catalogo', function() {
 
 // Detalle de una obra (info, comentarios, puntuaciones)
 $router->get('/obra/{id}', function($id) {
-    require_once __DIR__ . '/../src/Controllers/BibliotecaController.php';
-    $controller = new BibliotecaController();
+    require_once __DIR__ . '/../src/Controllers/ObraController.php';
+    $controller = new ObraController();
     $controller->verObra($id);
 });
 
@@ -37,7 +37,7 @@ $router->get('/obra/{id}/leer', function($id) {
 $router->get('/obra/{id}/descargar/{formato}', function($id, $formato) {
     require_once __DIR__ . '/../src/Controllers/ObraController.php';
     $controller = new ObraController();
-    $controller->descargarObra($id, $formato);
+    $controller->descargar($id, $formato);
 });
 
 // Listado de autores
@@ -117,6 +117,13 @@ $router->post('/usuario/{id}/dejar-seguir', function($id) {
     require_once __DIR__ . '/../src/Controllers/UsuarioController.php';
     $controller = new UsuarioController();
     $controller->dejarSeguir($id);
+});
+
+//Ver una lista
+$router->get('/lista/{id}', function($id) {
+    require_once __DIR__ . '/../src/Controllers/ListaController.php';
+    $controller = new ListaController();
+    $controller->verLista($id);
 });
 
 // Crear lista de lectura

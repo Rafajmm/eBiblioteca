@@ -45,6 +45,8 @@ class BibliotecaController {
         $total=count($obras);
         $totalPaginas=ceil($total / $porPagina);
         $obras=array_slice($obras, ($pagina - 1) * $porPagina, $porPagina);
+
+        $title="Catálogo";
         
         $resultados=[
             'obras' => $obras,
@@ -59,44 +61,6 @@ class BibliotecaController {
         $contenido=ob_get_clean();
         
         require_once __DIR__ . '/../Views/layout.php';
-    }
-
-    public function verObra($id) {
-        if(!$id) {
-            http_response_code(400);
-            echo json_encode(['error' => 'ID de obra requerido']);
-            return;
-        }
-        
-        $obra=Obra::crearInstancia($id);
-        
-        if(!$obra) {
-            http_response_code(404);
-            echo json_encode(['error' => 'Obra no encontrada']);
-            return;
-        }
-
-        $autores=$obra->obtenerAutores();
-        $etiquetas=$obra->obtenerEtiquetas();
-        $comentarios=$obra->obtenerComentarios();
-        $totalPuntuaciones=count($obra->obtenerPuntuaciones());
-        $puntuacionMedia=$obra->obtenerPuntuacionMedia();
-        $puntuacionUsuario=null;
-        
-        if(isset($_SESSION['id_usuario'])) {
-            $puntuacionUsuario=Puntuacion::buscarPorUsuarioYObra($_SESSION['id_usuario'], $obra->id);
-        }
-        
-        header('Content-Type: application/json');
-        echo json_encode([
-            'obra' => $obra,
-            'autores' => $autores,
-            'etiquetas' => $etiquetas,
-            'comentarios' => $comentarios,
-            'totalPuntuaciones' => $totalPuntuaciones,
-            'puntuacionMedia' => $puntuacionMedia,
-            'puntuacionUsuario' => $puntuacionUsuario
-        ]);
     }
 
     public function autores(){
@@ -131,6 +95,8 @@ class BibliotecaController {
         $totalPaginas=ceil($total / $porPagina);
         $autores=array_slice($autores, ($pagina - 1) * $porPagina, $porPagina);
 
+        $title="Autores";
+
         ob_start();
         include __DIR__ . '/../Views/VistaAutores.php';
         $contenido=ob_get_clean();
@@ -148,12 +114,14 @@ class BibliotecaController {
         $total=count($colecciones);
         
 
-        header('Content-Type: application/json');
-        echo json_encode([
-            'colecciones' => $colecciones,
-            'obrasPorColeccion' => $obrasPorColeccion,
-            'total' => $total
-        ]);
+        $title="Colecciones";
+        
+        ob_start();
+        include __DIR__ . '/../Views/VistaColecciones.php';
+        $contenido=ob_get_clean();
+
+        require_once __DIR__ . '/../Views/layout.php';
+
     }
 
     

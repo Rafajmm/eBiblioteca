@@ -52,7 +52,8 @@ CREATE TABLE obras(
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_borrado TIMESTAMP DEFAULT NULL,
     ruta_pdf VARCHAR(200),
-    ruta_html VARCHAR(200),
+    ruta_epub VARCHAR(200),
+    portada VARCHAR(200),
     genero ENUM("Narrativa","Ensayo","Poesía","Teatro","Infantil") NOT NULL
 );
 
