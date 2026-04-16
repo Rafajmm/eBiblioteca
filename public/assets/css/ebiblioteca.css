@@ -204,3 +204,11 @@ body{
     width: 150px;
     height: 150px;
 }
+
+.tarjetaListaPerfil {
+    max-height: 460px !important;
+    overflow:hidden;
+    /* .imagenPortadaLista {
+        height: 350px;
+    } */
+} 

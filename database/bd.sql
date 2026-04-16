@@ -31,7 +31,9 @@ CREATE TABLE listas(
     descripcion TEXT,
     id_usuario INT NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_usuario_lista FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
+    id_original INT DEFAULT NULL,
+    CONSTRAINT fk_usuario_lista FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE,
+    CONSTRAINT fk_lista_original FOREIGN KEY (id_original) REFERENCES listas(id) ON DELETE SET NULL
 );
 
 CREATE TABLE megusta_lista(

@@ -118,7 +118,7 @@ class Lista {
 
     public static function obtenerColecciones() {
         $bd = Database::conectar();
-        $stmt = $bd->prepare("SELECT * FROM listas WHERE id_usuario = 0");
+        $stmt = $bd->prepare("SELECT * FROM listas WHERE id_usuario = 10");
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -150,7 +150,7 @@ class Lista {
 
     public function obtenerObrasConDetalles() {
         $bd = Database::conectar();
-        $stmt = $bd->prepare("SELECT o.* FROM lista_obras lo JOIN obras o ON lo.id_obra = o.id WHERE lo.id_lista = ?");
+        $stmt = $bd->prepare("SELECT o.*,a.nombre as autor FROM lista_obras lo JOIN obras o ON lo.id_obra = o.id JOIN obra_autores oa ON lo.id_obra=oa.id_obra JOIN autores a ON oa.id_autor=a.id WHERE lo.id_lista = ?");
         $stmt->execute([$this->id]);
         return $stmt->fetchAll();
     }

@@ -108,15 +108,24 @@
     </div>
     
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-        <?php if($seguidos): ?>
+        <?php if(!empty($seguidos)): ?>
             <?php foreach($seguidos as $seguido): ?>
+                <?php
+                    $soyYo=($id_sesion!==null && $id_sesion==$seguido->getId());
+
+                    $loSigo=false;
+                    if($id_sesion && !$soyYo){
+                        if($esPerfilUsuario){
+                            $loSigo=true;
+                        }
+                        elseif(isset($actor)){
+                            $loSigo=$actor->esSeguido($seguido->getId());
+                        }
+                    }
+                ?>
                 <div class="col">                    
                     <div class="d-flex align-items-center justify-content-between gap-3 p-3 bg-white border rounded-4 shadow-sm">
-                        <?php
-                            $imagenSeguido=$seguido->getRutaFoto();
-                            if($imagenSeguido){ $imagenSeguido="/".$imagenSeguido; }
-                            else{$imagenSeguido="/assets/img/default/imgperfil.png";}
-                        ?>
+                        <?php $imagenSeguido = $seguido->getRutaFoto() ? "/" . $seguido->getRutaFoto() : "/assets/img/default/imgperfil.png"; ?>
                         <a class="text-decoration-none text-dark w-100" href="/usuario/<?= $seguido->getId() ?>">
                             <div class="d-flex align-items-center gap-3">
                                 <img src="<?= $imagenSeguido ?>" class="rounded-circle" width="50">
@@ -126,14 +135,26 @@
                                 </div>
                             </div>
                         </a>
-                        <button class="btn btn-sm btn-outline-danger border-0"><i class="bi bi-person-x-fill"></i></button>
+                        <?php if($soyYo) : ?>
+                            <span class="badge badge-secondary rounded-pill px-3">Tú</span>
+                        <?php elseif(!$id_sesion) :?>
+                            <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;">Seguir</button>
+                        <?php elseif($esPerfilUsuario) : ?>
+                            <button class="btn btn-sm btn-outline-danger border-0"><i class="bi bi-person-x-fill"></i></button>
+                        <?php else: ?>
+                            <?php if($loSigo): ?>
+                                <button class="btn btn-sm btn-outline-primary rounded-pill px-3" style="font-size: 0.75rem;">Siguiendo</button>
+                            <?php else: ?>
+                                <button class="btn btn-sm btn-primary rounded-pill px-3" style="font-size: 0.75rem;">Seguir</button>
+                            <?php endif; ?>
+                        <?php endif; ?>
                     </div>
                     
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
             <div class="col">
-                <p>Aún no has seguido a ningún usuario</p>
+                <p>Aún no hay seguido ningún usuario</p>
             </div>
         <?php endif; ?>
     </div>
@@ -149,84 +170,62 @@
     </div>
     
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-        <?php if($seguidores): ?>
-        <?php foreach($seguidores as $seguidor): ?>
-            <div class="col">                    
-                <div class="d-flex align-items-center justify-content-between gap-3 p-3 bg-white border rounded-4 shadow-sm">
-                    <?php
-                        $imagenSeguido=$seguidor->getRutaFoto();
-                        if($imagenSeguido){ $imagenSeguido="/".$imagenSeguido; }
-                        else{$imagenSeguido="/assets/img/default/imgperfil.png";}
-                    ?>
-                    <a class="text-decoration-none text-dark w-100" href="/usuario/<?= $seguidor->getId() ?>">
-                        <div class="d-flex align-items-center gap-3">
-                            <img src="<?= $imagenSeguido ?>" class="rounded-circle" width="50">
-                            <div class="flex-grow-1 overflow-hidden">
-                                <h6 class="mb-0 text-truncate"><?= htmlspecialchars($seguidor->getNombre()) ?></h6>
-                                <small class="text-muted">@<?= htmlspecialchars($seguidor->getNombreUsuario()) ?></small>
+        <?php if(!empty($seguidores)): ?>
+            <?php foreach($seguidores as $seguidor): ?>
+                <?php
+                    $soyYo=($id_sesion!==null && $id_sesion==$seguidor->getId());
+
+                    $loSigo=false;
+                    if($id_sesion && !$soyYo){
+                        if($esPerfilUsuario){
+                            $loSigo=$usuario->esSeguido($seguidor->getId());
+                        }
+                        elseif(isset($actor)){
+                            $loSigo=$actor->esSeguido($seguidor->getId());
+                        }
+                    }
+                ?>
+                <div class="col">                    
+                    <div class="d-flex align-items-center justify-content-between gap-3 p-3 bg-white border rounded-4 shadow-sm">
+                        <?php
+                            $imagenSeguidor = $seguidor->getRutaFoto() ? "/" . $seguidor->getRutaFoto() : "/assets/img/default/imgperfil.png";
+                        ?>
+                        <a class="text-decoration-none text-dark w-100" href="/usuario/<?= $seguidor->getId() ?>">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="<?= $imagenSeguido ?>" class="rounded-circle" width="50">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <h6 class="mb-0 text-truncate"><?= htmlspecialchars($seguidor->getNombre()) ?></h6>
+                                    <small class="text-muted">@<?= htmlspecialchars($seguidor->getNombreUsuario()) ?></small>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                    <?php if($usuario->esSeguido($seguidor->getId())): ?>
-                        <div class="dropdown">
-                            <button class="btn btn-light btn-sm rounded-circle" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item text-danger small" href="#">Eliminar seguidor</a></li>
-                                <li><a class="dropdown-item text-danger small" href="#">Dejar de seguir</a></li>
-                            </ul>
-                        </div>
-                    
-                    <?php else: ?>
-                        <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;">Seguir</button>
-                    <?php endif; ?>
+                        </a>
+                        <?php if($soyYo): ?>
+                            <span class="badge bg-secondary rounded-pill px-3">Tú</span>
+                        <?php elseif(!$id_sesion): ?>
+                            <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;">Seguir</button>
+                        <?php elseif($esPerfilUsuario): ?>
+                            <?php if($loSigo): ?>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;">Siguiendo</button>
+                            <?php else: ?>
+                                <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;">Seguir</button>
+                            <?php endif; ?>
+                            <button class="btn btn-sm btn-outline-danger border-0"><i class="bi bi-person-x-fill"></i></button>
+                        
+                        <?php else: ?>
+                            <?php if($loSigo): ?>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;">Siguiendo</button>
+                            <?php else: ?>
+                                <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;">Seguir</button>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>                    
                 </div>
-                    
-            </div>
-        <?php endforeach; ?>
+            <?php endforeach; ?>
         <?php else: ?>
             <div class="col">
-                <p>Aún no tienes seguidores</p>
+                <p>Aún no hay seguidores</p>
             </div>
         <?php endif; ?>
-
-        <div class="col">
-            <div class="d-flex align-items-center gap-3 p-3 bg-white border rounded-4 shadow-sm">
-                <img src="https://ui-avatars.com/api/?name=Roberto+Gomez&background=random" class="rounded-circle" width="50">
-                <div class="flex-grow-1 overflow-hidden">
-                    <h6 class="mb-0 text-truncate">Roberto Gómez</h6>
-                    <small class="text-success" style="font-size: 0.7rem;"><i class="bi bi-arrow-left-right me-1"></i> Os seguís</small>
-                </div>
-                <div class="dropdown">
-                    <button class="btn btn-light btn-sm rounded-circle" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item text-danger small" href="#">Bloquear</a></li>
-                        <li><a class="dropdown-item small" href="#">Ver perfil</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="d-flex align-items-center gap-3 p-3 bg-white border rounded-4 shadow-sm">
-                <img src="https://ui-avatars.com/api/?name=Lucia+Martos&background=random" class="rounded-circle" width="50">
-                <div class="flex-grow-1 overflow-hidden">
-                    <h6 class="mb-0 text-truncate">Lucía Martos</h6>
-                    <small class="text-muted">Te sigue desde enero</small>
-                </div>
-                
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="d-flex align-items-center gap-3 p-3 bg-white border rounded-4 shadow-sm">
-                <img src="https://ui-avatars.com/api/?name=Admin+Reader&background=random" class="rounded-circle" width="50">
-                <div class="flex-grow-1 overflow-hidden">
-                    <h6 class="mb-0 text-truncate">Admin Reader</h6>
-                    <small class="text-muted">@admin_ebiblio</small>
-                </div>
-                <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;">Seguir</button>
-            </div>
-        </div>
     </div>
 </section>
 
@@ -238,19 +237,45 @@
         </button>
     </div>
     <div class="row g-4">
-        <div class="col-12 col-md-4">
-            <a href="VistaLista.php" class="text-decoration-none">
-                <div class="card tarjetaLibro border-0 shadow-sm h-100 rounded-4 overflow-hidden">
-                    <div class="p-5 bg-primary text-white text-center">
-                        <i class="bi bi-heart-fill fs-1"></i>
+        <?php if(!empty($listas)):?>
+            <?php foreach($listas as $lista): ?>
+            <div class="col-12 col-md-4  col-xl-3">
+                <a href="/lista/<?= $lista['id'] ?>" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden tarjetaListaPerfil">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-0"><?= $lista['nombre'] ?></h6>
+                            <small class="text-muted"><?= count(Lista::obtenerObrasPorId($lista['id'])) ?> títulos</small>
+                            <div class="carousel slide mt-3" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    <?php 
+                                    $obrasLista = Lista::obtenerObrasPorId($lista['id']);
+                                    $contador = 0;
+                                    foreach($obrasLista as $obraLista):
+                                        $obra = Obra::crearInstancia($obraLista['id_obra']);
+                                        if(!$obra) continue;
+                                        
+                                        $portada = $obra->getPortada() 
+                                            ? "https://covers.openlibrary.org/b/olid/" . $obra->getPortada() . "-M.jpg"
+                                            : "/assets/img/default/imgportada.jpg";
+                                    ?>
+                                    <div class="carousel-item <?= $contador === 0 ? 'active' : '' ?>">
+                                        <img src="<?= $portada ?>" 
+                                            class="d-block w-100 rounded imagenPortadaLista" 
+                                            alt="<?= htmlspecialchars($obra->getTitulo()) ?>">
+                                    </div>
+                                    <?php $contador++; endforeach; ?>
+                                </div>                                                           
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <h6 class="fw-bold mb-0">Favoritos</h6>
-                        <small class="text-muted">2 títulos</small>
-                    </div>
-                </div>
-            </a>
-        </div>
+                </a>
+            </div>
+        <?php endforeach; ?>
+        <?php else: ?>
+            <div class="col">
+                <p>Aún no hay listas</p>
+            </div>
+        <?php endif; ?>
     </div>
 </section>
 

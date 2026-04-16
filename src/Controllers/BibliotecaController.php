@@ -107,10 +107,23 @@ class BibliotecaController {
 
     public function colecciones(){
         $colecciones=Lista::obtenerColecciones();
-        $obrasPorColeccion=[];
-        foreach($colecciones as $coleccion){
-            $obrasPorColeccion[$coleccion['id']]=Lista::obtenerObrasPorId($coleccion['id']);
+        
+        $datosColecciones=[];
+        if($colecciones){
+            foreach($colecciones as $coleccion){
+                $lista=Lista::crearInstancia($coleccion['id']);
+                $obras=$lista ? $lista->obtenerObrasConDetalles() : [];
+                
+                $datosColecciones[$coleccion['id']]=[
+                    'id'=>$coleccion['id'],
+                    'nombre'=>$coleccion['nombre'],
+                    'descipcion'=>$coleccion['descripcion'],
+                    'total'=>count($obras),
+                    'obras'=>array_slice($obras, 0, 3)
+                ];
+            }
         }
+
         $total=count($colecciones);
         
 

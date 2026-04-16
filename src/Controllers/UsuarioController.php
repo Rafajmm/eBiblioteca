@@ -1,15 +1,15 @@
 <?php
 require_once __DIR__ . '/../Models/Usuario.php';
 require_once __DIR__ . '/../Models/Lista.php';
+require_once __DIR__ . '/../Models/Obra.php';
 
 
 class UsuarioController {
     public function verPerfil($id_usuario) {
         $id_sesion=$_SESSION['id_usuario'] ?? null;
         $esPerfilUsuario=($id_sesion!==null && $id_sesion==$id_usuario);
-
-        $datos=Usuario::buscarPorId($id_usuario);
-        $usuario=Usuario::crearInstancia($datos['nombre_usuario']);
+        
+        $usuario=Usuario::crearInstanciaId($id_usuario);
 
         if(!$usuario) {
             http_response_code(404);
@@ -27,7 +27,7 @@ class UsuarioController {
         $seguidores=$usuario->obtenerSeguidores();
         $seguidos=$usuario->obtenerSeguidos();
         
-        $listas=Lista::buscarPorUsuario($id_usuario);
+        $listas=$usuario->cargarListas();
         $title=htmlspecialchars($usuario->getNombreUsuario());
 
         
@@ -36,7 +36,7 @@ class UsuarioController {
         if($id_sesion && !$esPerfilUsuario){
             $datosActor=Usuario::buscarPorId($id_sesion);
             $actor=Usuario::crearInstancia($datosActor['nombre_usuario']);
-            $esSeguido=$actor->seguidores()->contains($id_usuario);
+            $esSeguido=$actor->esSeguido($id_usuario);
         }
 
 
