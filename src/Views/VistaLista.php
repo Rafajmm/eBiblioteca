@@ -15,18 +15,30 @@
                 <span class="small">Creada por <strong><?= $idCreador==10 ? 'Equipo eBiblioteca' : $instanciaCreador->getNombre() ?></strong></span>
             </div>
             <div class="d-flex align-items-center gap-3">
-                <?php if($meGusta): ?>
-                    <button class="btn btn-primary btn-sm rounded-pill px-3">
-                        <i class="bi bi-check-lg me-1"></i> Seguido
-                    </button>
+                <?php if($esPropietario): ?>
+                    <a href="/lista/<?= $lista->getId() ?>/editar" class="btn btn-primary btn-sm rounded-pill px-3">
+                        <i class="bi bi-pencil me-1"></i> Editar
+                    </a>
                 <?php else: ?>
-                    <button class="btn btn-primary btn-sm rounded-pill px-3">
-                        <i class="bi bi-plus-lg me-1"></i> Seguir
-                    </button>
+                    <?php if($meGusta): ?>
+                        <button class="btn btn-primary btn-sm rounded-pill px-3">
+                            <i class="bi bi-check-lg me-1"></i> Seguido
+                        </button>
+                    <?php else: ?>
+                        <button class="btn btn-primary btn-sm rounded-pill px-3">
+                            <i class="bi bi-plus-lg me-1"></i> Seguir
+                        </button>
+                    <?php endif; ?>
+                    <?php if(!$estaCopiada): ?>
+                        <button class="btn btn-primary btn-sm rounded-pill px-3">
+                            <i class="bi bi-bookmark"></i> Guardar
+                        </button>
+                    <?php else: ?>
+                        <button class="btn btn-primary btn-sm rounded-pill px-3">
+                            <i class="bi bi-bookmark-fill"></i> Guardada
+                        </button>
+                    <?php endif; ?>
                 <?php endif; ?>
-                <button class="btn btn-primary btn-sm rounded-pill px-3">
-                    <i class="bi bi-bookmark"></i> Guardar
-                </button>
                 <button class="btn btn-outline-secondary btn-sm rounded-circle" aria-label="Compartir">
                     <i class="bi bi-share"></i>
                 </button>
@@ -73,6 +85,11 @@
                                 <div class="col-auto">
                                     <a href="/obra/<?= $obra['id'] ?>" class="btn btn-sm btn-outline-primary rounded-pill">Leer</a>
                                 </div>
+                                <?php if($esPropietario): ?>
+                                <div class="col-auto">
+                                    <a href="/lista/<?= $lista->getId() ?>/eliminar/<?= $obra['id'] ?>" class="btn btn-sm btn-outline-danger rounded-pill">Eliminar</a>
+                                </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

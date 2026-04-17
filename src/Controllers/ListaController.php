@@ -24,6 +24,17 @@ class ListaController {
             $meGusta=in_array($_SESSION['id_usuario'], array_column($likes, 'id_usuario'));
         }
 
+        $esPropietario=false;
+        $estaCopiada=false;
+        if(isset($_SESSION['id_usuario'])){
+            if($_SESSION['id_usuario'] == $idCreador){
+                $esPropietario=true;
+            }
+            else{
+                $estaCopiada=$lista->comprobarCopia($_SESSION['id_usuario']);
+            }
+        }
+
         $title=$lista->getNombre();
 
         ob_start();

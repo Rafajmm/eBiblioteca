@@ -44,7 +44,7 @@ class Comentario {
 
     public static function obtenerPorObra($id_obra) {
         $db=Database::conectar();
-        $stmt=$db->prepare("SELECT * FROM comentarios WHERE id_obra=?");
+        $stmt=$db->prepare("SELECT c.*, u.nombre_usuario as usuario FROM comentarios c JOIN usuarios u ON c.id_usuario = u.id WHERE c.id_obra=?");
         $stmt->execute([$id_obra]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -66,6 +66,13 @@ class Comentario {
     public static function obtenerReportados() {
         $db=Database::conectar();
         $stmt=$db->prepare("SELECT * FROM comentarios join reporte_comentarios on comentarios.id=reporte_comentarios.id_comentario WHERE comentarios.revisado=0");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function obtenerComentariosSinModerar(){
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT c.*, u.nombre_usuario AS usuario, u.id AS id_usuario FROM comentarios c JOIN usuarios u ON c.id_usuario = u.id WHERE u.moderado=0");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -96,25 +103,15 @@ class Comentario {
         $db=Database::conectar();
         $stmt=$db->prepare("UPDATE comentarios SET fecha_borrado=CURRENT_TIMESTAMP, revisado=1 WHERE id=?");
         $datos=$stmt->execute([$this->id]);
-        self::setFechaBorrado($datos['fecha_borrado']);
-        self::setRevisado(1);
+        $this->fecha_borrado = date('Y-m-d H:i:s');
+        $this->revisado = 1;
     }
 
     public function recuperar() {
-        self::setFechaBorrado(null);
+        $this->fecha_borrado = null;
         $db=Database::conectar();
         $stmt=$db->prepare("UPDATE comentarios SET fecha_borrado=NULL WHERE id=?");
         $stmt->execute([$this->id]);
-    }
-
-    public function revisar() {
-        self::setRevisado(1);
-        $db=Database::conectar();
-        $stmt=$db->prepare("UPDATE comentarios SET revisado=1 WHERE id=?");
-        $stmt->execute([$this->id]);
-
-        $stmt2=$db->prepare("UPDATE reporte_comentarios SET revisado=1 WHERE id_comentario=?");
-        $stmt2->execute([$this->id]);
     }
 
     public function reportar($id_usuario) {

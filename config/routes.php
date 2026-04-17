@@ -194,7 +194,7 @@ $router->post('/puntuacion/crear', function() {
 $router->get('/admin', function() {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->dashboard();
+    $controller->verPanel();
 });
 
 // Gestión de obras

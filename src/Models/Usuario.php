@@ -66,6 +66,17 @@ class Usuario{
         return null;
     }
 
+    public static function buscarPorCorreo($correo){
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT * FROM usuarios WHERE correo=?");
+        $stmt->execute([$correo]);
+        $datos=$stmt->fetch(PDO::FETCH_ASSOC);
+        if($datos){
+            return $datos;
+        }
+        return null;
+    }
+
     public static function buscarPorId($id){
         $db=Database::conectar();
         $stmt=$db->prepare("SELECT * FROM usuarios WHERE id=?");
@@ -91,6 +102,17 @@ class Usuario{
 
         $usu=new Usuario($datos['id'],$datos['nombre'],$datos['nombre_usuario'],$datos['correo'],$datos['pass'],$datos['activo'],$datos['es_admin'],$datos['moderado'],$datos['fecha_registro'],$datos['bio'],$datos['ruta_foto']);
         return $usu;
+    }
+
+    public static function cargarTodos(){
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT * FROM usuarios");
+        $stmt->execute();
+        $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
+        if($datos){
+            return $datos;
+        }
+        return null;
     }
 
     public function actualizar(){

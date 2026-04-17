@@ -93,9 +93,13 @@ class Obra {
 
     public static function cargarTodas() {
         $db=Database::conectar();
-        $stmt=$db->prepare("SELECT obras.*, autores.nombre as autor FROM obras 
-        LEFT JOIN obra_autores on obras.id=obra_autores.id_obra 
-        LEFT JOIN autores on obra_autores.id_autor=autores.id");
+        $stmt=$db->prepare("SELECT obras.*, GROUP_CONCAT(autores.nombre SEPARATOR ', ') as autor 
+                            FROM obras 
+                            LEFT JOIN obra_autores 
+                                on obras.id=obra_autores.id_obra 
+                            LEFT JOIN autores 
+                                on obra_autores.id_autor=autores.id 
+                            GROUP BY obras.id");
         
         $stmt->execute();
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -159,11 +163,16 @@ class Obra {
 
     public static function buscarTodo($parametro) {
         $db=Database::conectar();
-        $consulta="SELECT DISTINCT obras.*, autores.nombre as autor FROM obras 
-        LEFT JOIN obra_autores on obras.id=obra_autores.id_obra 
-        LEFT JOIN autores on obra_autores.id_autor=autores.id 
-        LEFT JOIN obra_etiquetas on obras.id=obra_etiquetas.id_obra 
-        LEFT JOIN etiquetas on obra_etiquetas.id_etiqueta=etiquetas.id 
+        $consulta="SELECT DISTINCT obras.*, GROUP_CONCAT(autores.nombre SEPARATOR ', ') as autor 
+        FROM obras 
+        LEFT JOIN obra_autores 
+            on obras.id=obra_autores.id_obra 
+        LEFT JOIN autores 
+            on obra_autores.id_autor=autores.id 
+        LEFT JOIN obra_etiquetas 
+            on obras.id=obra_etiquetas.id_obra 
+        LEFT JOIN etiquetas 
+            on obra_etiquetas.id_etiqueta=etiquetas.id 
         WHERE titulo LIKE ? 
         OR sinopsis LIKE ? 
         OR genero LIKE ? 
@@ -176,7 +185,7 @@ class Obra {
             $consulta.=" OR anio_publicacion=?";
             $parametros[]=(int)$parametro;
         }
-        
+        $consulta.=" GROUP BY obras.id";
         $stmt=$db->prepare($consulta);
         $stmt->execute($parametros);
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);

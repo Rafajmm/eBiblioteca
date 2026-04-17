@@ -7,13 +7,15 @@ class Lista {
     private $descripcion;
     private $id_usuario;
     private $fecha_creacion;
+    private $id_original;
 
-    public function __construct($id = null, $nombre = null, $descripcion = null, $id_usuario = null, $fecha_creacion = null) {
+    public function __construct($id = null, $nombre = null, $descripcion = null, $id_usuario = null, $fecha_creacion = null, $id_original = null) {
         $this->id = $id;
         $this->nombre = $nombre;
         $this->descripcion = $descripcion;
         $this->id_usuario = $id_usuario;
         $this->fecha_creacion = $fecha_creacion;
+        $this->id_original = $id_original;
     }
 
     public function getId() {
@@ -34,6 +36,10 @@ class Lista {
 
     public function getFechaCreacion() {
         return $this->fecha_creacion;
+    }
+
+    public function getIdOriginal() {
+        return $this->id_original;
     }
 
     public function setId($id) {
@@ -61,16 +67,21 @@ class Lista {
         $this->actualizar();
     }
     
+    public function setIdOriginal($id_original) {
+        $this->id_original = $id_original;
+        $this->actualizar();
+    }
+    
     public function actualizar() {
         $bd = Database::conectar();
-        $stmt = $bd->prepare("UPDATE listas SET nombre = ?, descripcion = ?, id_usuario = ?, fecha_creacion = ? WHERE id = ?");
-        $stmt->execute([$this->nombre, $this->descripcion, $this->id_usuario, $this->fecha_creacion, $this->id]);
+        $stmt = $bd->prepare("UPDATE listas SET nombre = ?, descripcion = ?, id_usuario = ?, fecha_creacion = ?, id_original = ? WHERE id = ?");
+        $stmt->execute([$this->nombre, $this->descripcion, $this->id_usuario, $this->fecha_creacion, $this->id_original, $this->id]);
     }
 
-    public static function guardar($nombre, $descripcion, $id_usuario) {
+    public static function guardar($nombre,$id_usuario, $descripcion=null,  $id_original = null) {
         $bd = Database::conectar();
-        $stmt = $bd->prepare("INSERT INTO listas(nombre, descripcion, id_usuario) VALUES (?, ?, ?)");
-        $stmt->execute([$nombre, $descripcion, $id_usuario]);
+        $stmt = $bd->prepare("INSERT INTO listas(nombre, descripcion, id_usuario, id_original) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$nombre, $descripcion, $id_usuario, $id_original]);
         return $bd->lastInsertId();
     }
 
@@ -78,7 +89,7 @@ class Lista {
         $datos=self::buscarPorId($id);
         if(!$datos) return null;
 
-        $lista=new Lista($datos['id'], $datos['nombre'], $datos['descripcion'], $datos['id_usuario'], $datos['fecha_creacion']);
+        $lista=new Lista($datos['id'], $datos['nombre'], $datos['descripcion'], $datos['id_usuario'], $datos['fecha_creacion'], $datos['id_original']);
         return $lista;
     }
     
@@ -175,13 +186,20 @@ class Lista {
     }
 
     public function copiarLista($id_usuario) {        
-        $id = Lista::guardar($this->nombre, $id_usuario);
+        $id = Lista::guardar($this->nombre, $id_usuario,$this->descripcion,$this->id);
         $nuevaLista=Lista::crearInstancia($id);
-        $obras = self::obtenerObras();
+        $obras = $this->obtenerObras();
         foreach ($obras as $obra) {
             $nuevaLista->addObra($obra['id_obra']);
         }
         return $nuevaLista;
+    }
+
+    public function comprobarCopia($id_usuario) {
+        $bd = Database::conectar();
+        $stmt = $bd->prepare("SELECT * FROM listas WHERE id_usuario = ? AND id_original=?");
+        $stmt->execute([$id_usuario, $this->id]);
+        return ($stmt->fetch()!==false);
     }
 }
 ?>

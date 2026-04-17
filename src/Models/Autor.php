@@ -22,10 +22,14 @@ class Autor {
         $this->ruta_foto = $ruta_foto;
     }
 
-    public static function guardar($nombre, $pais, $fecha_nacimiento, $biografia) {
+    public static function guardar($nombre, $pais, $fecha_nacimiento, $biografia,$ruta_foto=null) {
+        if($ruta_foto === null) {
+            $ruta_foto= self::obtenerFoto($nombre);
+        }
+
         $db=Database::conectar();
-        $stmt=$db->prepare("INSERT INTO autores(nombre,pais,fecha_nacimiento,biografia) VALUES (?,?,?,?)");
-        $stmt->execute([$nombre,$pais,$fecha_nacimiento,$biografia]);
+        $stmt=$db->prepare("INSERT INTO autores(nombre,pais,fecha_nacimiento,biografia,ruta_foto) VALUES (?,?,?,?,?)");
+        $stmt->execute([$nombre,$pais,$fecha_nacimiento,$biografia,$ruta_foto]);
         return $db->lastInsertId();
     }
 
@@ -122,6 +126,32 @@ class Autor {
         return 0;
     }
 
+    public static function obtenerFoto($nombre) {
+        $consulta = urlencode($nombre);
+        $url = "https://openlibrary.org/search/authors.json?q=" . $consulta;
+
+        $response = @file_get_contents($url);
+        if ($response === FALSE) return null;
+
+        $data = json_decode($response, true);
+
+        if (isset($data['docs'][0]['key'])) {
+            $olid = $data['docs'][0]['key'];
+            
+            $urlBase = "https://covers.openlibrary.org/a/olid/" . $olid . "-M.jpg";
+            
+            $urlPrueba = $urlBase . "?default=false";
+
+            $headers = @get_headers($urlPrueba);
+
+            if ($headers && strpos($headers[0], '200') !== false) {
+                return $urlBase;
+            }
+        }
+
+        return null;
+    }
+
     public function actualizar() {
         $db=Database::conectar();
         $stmt=$db->prepare("UPDATE autores SET nombre=?, pais=?, fecha_nacimiento=?, biografia=?, ruta_foto=? WHERE id=?");
@@ -172,7 +202,7 @@ class Autor {
         $this->actualizar();
     }
 
-    public function setruta_foto($ruta_foto) {
+    public function setRutaFoto($ruta_foto) {
         $this->ruta_foto = $ruta_foto;
         $this->actualizar();
     }
@@ -206,7 +236,7 @@ class Autor {
         return $this->biografia;
     }
     
-    public function getruta_foto() {
+    public function getRutaFoto() {
         return $this->ruta_foto;
     }
 }

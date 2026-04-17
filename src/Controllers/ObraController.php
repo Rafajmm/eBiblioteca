@@ -26,7 +26,7 @@ class ObraController {
         $portada=$obra->getPortada();
         $autores=$obra->obtenerAutores();
         $etiquetas=$obra->obtenerEtiquetas();
-        $comentarios=$obra->obtenerComentarios();
+        $comentarios=(new ComentarioController())->obtenerComentariosPorObra($obra->getId());
         $totalPuntuaciones=$obra->obtenerPuntuaciones();
         $puntuacionMedia=$obra->obtenerPuntuacionMedia();
         $puntuacionUsuario=null;

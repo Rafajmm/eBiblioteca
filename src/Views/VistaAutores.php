@@ -48,14 +48,14 @@
         <div class="card h-100 border-0 shadow-sm">
             <div class="card-body d-flex align-items-center p-3">
                 <div class="flex-shrink-0 me-3">
-                    <img src="https://ui-avatars.com/api/?name=<?= str_split($autor['nombre'])[0] . str_split($autor['nombre'])[1] ?>&background=6f42c1&color=fff" class="rounded-circle border shadow-sm" style="width: 60px; height: 60px;">
+                    <img src="https://ui-avatars.com/api/?name=<?= urldecode($autor['nombre'])?>&background=6f42c1&color=fff" class="rounded-circle border shadow-sm" style="width: 60px; height: 60px;">
                 </div>
                 <div class="flex-grow-1 overflow-hidden">
                     <h6 class="mb-0 fw-bold"><?= $autor['nombre'] ?></h6>
                     <p class="small text-muted mb-1"><i class="bi bi-geo-alt me-1"></i><?= $autor['pais'] ?></p>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="badge bg-secondary-subtle text-secondary fw-normal"><?= Autor::contarObras($autor['id']) ?> Obra(s)</span>
-                        <a href="#" class="btn btn-sm btn-link p-0 text-decoration-none text-primary">Perfil <i class="bi bi-arrow-right"></i></a>
+                        <a href="/autor/<?= $autor['id'] ?>" class="btn btn-sm btn-link p-0 text-decoration-none text-primary">Perfil <i class="bi bi-arrow-right"></i></a>
                     </div>
                 </div>
             </div>

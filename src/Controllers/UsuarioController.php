@@ -68,5 +68,122 @@ class UsuarioController {
 
         $usuario->actualizar();
     }
+
+    public function eliminar($id_usuario) {
+        $datos=Usuario::buscarPorId($id_usuario);
+        $usuario=Usuario::crearInstancia($datos['nombre_usuario']);
+
+        if(!$usuario) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Usuario no encontrado']);
+            return;
+        }
+
+        $usuario->eliminar();
+    }
+
+    public function editarPerfil(){
+        if(!isset($_SESSION['id_usuario'])){
+            http_response_code(401);
+            echo json_encode(['error' => 'No autenticado']);
+            return;
+        }
+        
+        $datos=Usuario::buscarPorId($_SESSION['id_usuario']);
+        $usuario=Usuario::crearInstancia($datos['nombre_usuario']);
+        if(!$usuario){
+            http_response_code(404);
+            echo json_encode(['error'=>'Usuario no encontrado']);
+            return;
+        }
+
+        $nombre=trim($_POST['nombre'] ?? '');
+        $nombreUsuario=trim($_POST['nombre_usuario'] ?? '');
+        $correo=trim($_POST['correo'] ?? '');
+        $bio=trim($_POST['bio'] ?? '');
+        $rutaFoto=trim($_POST['ruta_foto'] ?? '');
+        $pass=trim($_POST['pass'] ?? '');
+        $passConfirmacion=trim($_POST['pass_confirmacion'] ?? '');
+        
+        if(!empty($nombre)) $usuario->setNombre($nombre);
+
+        if(!empty($nombreUsuario)){
+            $existe=Usuario::buscarPorUsuario($nombreUsuario);
+            if($existe){
+                http_response_code(400);
+                echo json_encode(['error'=>'Nombre de usuario ya existe']);
+                return;
+            }
+            $usuario->setNombreUsuario($nombreUsuario);
+            $_SESSION['nombre_usuario'] = $nombreUsuario;
+        }
+
+        if(!empty($correo)){
+            $existe=Usuario::buscarPorCorreo($correo);
+            if($existe){
+                http_response_code(400);
+                echo json_encode(['error'=>'Correo ya existe']);
+                return;
+            }
+            $usuario->setCorreo($correo);            
+        }
+
+        if(!empty($bio)) $usuario->setBio($bio);
+        if(!empty($rutaFoto)) $usuario->setRutaFoto($rutaFoto);
+        if(!empty($pass) && !empty($passConfirmacion) && $pass === $passConfirmacion) $usuario->setPass(password_hash($pass, PASSWORD_BCRYPT));
+
+        $usuario->actualizar();
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
+    }
+
+    public function seguir($id){
+        if(!isset($_SESSION['id_usuario'])){
+            http_response_code(401);
+            echo json_encode(['error' => 'No autenticado']);
+            return;
+        }
+
+        if($_SESSION['id_usuario']== $id){
+            http_response_code(400);
+            echo json_encode(['error' => 'No puedes seguirte a ti mismo']);
+            return;
+        }
+        
+        $datos=Usuario::buscarPorId($_SESSION['id_usuario']);
+        $usuario=Usuario::crearInstancia($datos['nombre_usuario']);
+        if(!$usuario){
+            http_response_code(404);
+            echo json_encode(['error'=>'Usuario no encontrado']);
+            return;
+        }
+        
+        $resultado=$usuario->seguir($id);
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>$resultado]);
+    }
+
+    public function dejarSeguir($id){
+        if(!isset($_SESSION['id_usuario'])){
+            http_response_code(401);
+            echo json_encode(['error' => 'No autenticado']);
+            return;
+        }
+        
+        $datos=Usuario::buscarPorId($_SESSION['id_usuario']);
+        $usuario=Usuario::crearInstancia($datos['nombre_usuario']);
+        if(!$usuario){
+            http_response_code(404);
+            echo json_encode(['error'=>'Usuario no encontrado']);
+            return;
+        }
+        
+        $resultado=$usuario->dejarSeguir($id);
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>$resultado]);
+    }
 }
 ?>
