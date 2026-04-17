@@ -62,7 +62,7 @@ class UsuarioController {
         $datosActualizados['nombre'] ? $usuario->setNombre($datosActualizados['nombre']) : null;
         $datosActualizados['nombre_usuario'] ? $usuario->setNombreUsuario($datosActualizados['nombre_usuario']) : null;
         $datosActualizados['correo'] ? $usuario->setCorreo($datosActualizados['correo']) : null;
-        $datosActualizados['pass'] ? $usuario->setPass($datosActualizados['pass']) : null;
+        $datosActualizados['pass'] ? $usuario->setPass(password_hash($datosActualizados['pass'], PASSWORD_BCRYPT)) : null;
         $datosActualizados['bio'] ? $usuario->setBio($datosActualizados['bio']) : null;
         $datosActualizados['ruta_foto'] ? $usuario->setRutaFoto($datosActualizados['ruta_foto']) : null;
 
@@ -184,6 +184,26 @@ class UsuarioController {
         
         header('Content-Type: application/json');
         echo json_encode(['ok'=>$resultado]);
+    }
+
+    public function buscarPorCorreo($correo){
+        $usuario=Usuario::buscarPorCorreo($correo);
+        if(!$usuario){            
+            return null;
+        }        
+        return $usuario;
+    }
+
+    public function buscarPorUsuario($usuario){
+        $usuario=Usuario::buscarPorUsuario($usuario);
+        if(!$usuario){            
+            return null;
+        }        
+        return $usuario;
+    }
+
+    public function guardarUsuario($nombre,$nombre_usuario,$correo,$pass){
+        return Usuario::guardar($nombre,$nombre_usuario,$correo,$pass);
     }
 }
 ?>

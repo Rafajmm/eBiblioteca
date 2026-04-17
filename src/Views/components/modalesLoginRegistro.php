@@ -12,11 +12,12 @@
         <div class="modal-body">
             <div class="mb-3">
             <label for="emailLogin" class="form-label">Email</label>
-            <input id="emailLogin" name="email" type="email" class="form-control" placeholder="tu@email.com" required />
+            <input id="emailLogin" name="correo" type="email" class="form-control" placeholder="tu@email.com" required />
             </div>
             <div class="mb-3">
             <label for="passLogin" class="form-label">Contraseña</label>
-            <input id="passLogin" name="password" type="password" class="form-control" placeholder="••••••••" required />
+            <input id="passLogin" name="pass" type="password" class="form-control" placeholder="••••••••" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}" 
+       title="Mínimo 8 caracteres, incluyendo mayúscula, minúscula, número y símbolo"/>
             </div>
             <div class="form-check">
             <input class="form-check-input" type="checkbox" name="remember" value="1" id="recordarme" />
@@ -43,7 +44,7 @@
         <form action="/registro" method="POST">
         <div class="modal-body">
             <div class="mb-3">
-            <label for="nombreC" class="form-label">Nombre completo</label>
+            <label for="nombreC" class="form-label">Nombre</label>
             <input id="nombreC" name="nombre" type="text" class="form-control" placeholder="Tu nombre" required />
             </div>
             <div class="mb-3">
@@ -52,11 +53,14 @@
             </div>
             <div class="mb-3">
             <label for="emailReg" class="form-label">Email</label>
-            <input id="emailReg" name="email" type="email" class="form-control" placeholder="tu@email.com" required />
+            <input id="emailReg" name="correo" type="email" class="form-control" placeholder="tu@email.com" required />
             </div>
             <div class="mb-3">
             <label for="passReg" class="form-label">Contraseña</label>
-            <input id="passReg" name="password" type="password" class="form-control" placeholder="Mínimo 8 caracteres" required />
+            <input id="passReg" name="pass" type="password" class="form-control" placeholder="Mínimo 8 caracteres" required required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}" 
+       title="Mínimo 8 caracteres, incluyendo mayúscula, minúscula, número y símbolo"/>
+            <label for="passRegConfirmacion" class="form-label">Confirmar contraseña</label>
+            <input id="passRegConfirmacion" name="pass_confirmacion" type="password" class="form-control" placeholder="Mínimo 8 caracteres" required />
             <small class="form-text text-muted">Debe contener mayúscula, minúscula, número y símbolo</small>
             </div>
             <div class="form-check">
