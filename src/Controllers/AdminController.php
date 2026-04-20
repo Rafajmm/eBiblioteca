@@ -1,17 +1,18 @@
 <?php
-require_once __DIR__ . '/../Models/Comentario.php';
-require_once __DIR__ . '/../Models/Obra.php';
-require_once __DIR__ . '/../Models/Usuario.php';
-require_once __DIR__ . '/../Models/Autor.php';
-require_once __DIR__ . '/../Controllers/ComentarioController.php';
+require_once __DIR__ . '/UsuarioController.php';
+require_once __DIR__ . '/AutorController.php';
+require_once __DIR__ . '/ComentarioController.php';
+require_once __DIR__ . '/ObraController.php';
+require_once __DIR__ . '/EtiquetaController.php';
 
 class AdminController {
     public function verPanel() {
         $comentariosReportados=(new ComentarioController())->obtenerComentariosReportados();
         $comentariosUsuariosSinModerar=(new ComentarioController())->obtenerComentariosSinModerar();
-        $usuarios=Usuario::cargarTodos();
-        $obras=Obra::cargarTodas();
-        $autores=Autor::cargarTodos();
+        $usuarios=(new UsuarioController())->cargarTodos();
+        $obras=(new ObraController())->cargarTodas();
+        $autores=(new AutorController())->cargarTodos();
+        $etiquetas=(new EtiquetaController())->obtenerTodas();
         $title="Panel de Administración";
         
         ob_start();
@@ -19,5 +20,20 @@ class AdminController {
         $contenido = ob_get_clean();
         
         require_once __DIR__ . '/../Views/layout.php';
+    }
+
+    public function crearObra(){
+        $controlador=new ObraController();
+        $controlador->crearObra();
+    }
+
+    public function editarObra(){
+        $controlador=new ObraController();
+        $controlador->editarObra();
+    }
+
+    public function eliminarObra(){
+        $controlador=new ObraController();
+        $controlador->eliminarObra();
     }
 }

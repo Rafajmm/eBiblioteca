@@ -205,5 +205,9 @@ class UsuarioController {
     public function guardarUsuario($nombre,$nombre_usuario,$correo,$pass){
         return Usuario::guardar($nombre,$nombre_usuario,$correo,$pass);
     }
+
+    public function cargarTodos(){
+        return Usuario::cargarTodos();
+    }
 }
 ?>

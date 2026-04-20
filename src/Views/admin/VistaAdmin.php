@@ -180,44 +180,75 @@
   </div>
 </main>
 
-<div class="modal fade" id="modalObraNueva" tabindex="-1" aria-labelledby="newWorkTitle" aria-hidden="true">
+<div class="modal fade" id="modalObraNueva" tabindex="-1" aria-labelledby="obraNuevaLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title fs-5" id="newWorkTitle">Añadir nueva obra</h2>
+        <h2 class="modal-title fs-5" id="obraNuevaLabel">Añadir nueva obra</h2>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <form id="formNewWork">
+        <form id="formObraNueva" action="/obras/crear" method="POST" enctype="multipart/form-data">
           <div class="row g-3">
+            
             <div class="col-md-8">
               <label class="form-label fw-semibold">Título de la obra</label>
-              <input type="text" name="titulo" class="form-control" placeholder="Ej: Cien años de soledad" required />
+              <input type="text" name="titulo" class="form-control" placeholder="Ej: Don Quijote" required />
             </div>
+
             <div class="col-md-4">
               <label class="form-label fw-semibold">Año de publicación</label>
               <input type="number" name="anio" class="form-control" value="2026" />
             </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Páginas</label>
+              <input type="number" name="pagina" class="form-control" placeholder="350" />
+            </div>
+
+            <div class="col-md-8">
+              <label class="form-label fw-semibold">Género principal</label>
+              <select name="genero" class="form-select" required>
+                <option value="" selected disabled>Selecciona...</option>
+                <option value="Narrativa">Narrativa</option>
+                <option value="Ensayo">Ensayo</option>
+                <option value="Poesía">Poesía</option>
+                <option value="Teatro">Teatro</option>
+                <option value="Infantil">Infantil</option>
+              </select>
+            </div>
+
             <div class="col-md-6">
               <label class="form-label fw-semibold">Autor(es)</label>
-              <select name="autores[]" class="form-select" multiple size="3" required>
-                <option value="1">Isabel Torres</option>
-                <option value="2">Marcos Gil</option>
-                <option value="3">Elena Rivas</option>
+              <select name="autores[]" class="form-select" multiple size="6" required>
+                <?php foreach($autores as $autor):?>
+                  <option value="<?=$autor['id']?>"><?=$autor['nombre']?></option>
+                <?php endforeach;?>
               </select>
-              <div class="form-text">Mantén Ctrl (o Cmd) para seleccionar varios.</div>
             </div>
+
             <div class="col-md-6">
-              <label class="form-label fw-semibold">Género(s)</label>
-              <select name="generos[]" class="form-select" multiple size="3" required>
-                <option value="1">Ficción</option>
-                <option value="2">Ensayo</option>
-                <option value="3">Historia</option>
+              <label class="form-label fw-semibold">Etiquetas</label>
+              <select name="etiquetas[]" class="form-select" multiple size="6">
+                <?php foreach($etiquetas as $etiqueta):?>
+                  <option value="<?=$etiqueta->getId()?>"><?=$etiqueta->getNombre()?></option>
+                <?php endforeach;?>
               </select>
             </div>
+
             <div class="col-12">
-              <label class="form-label fw-semibold">URL de la Portada (Imagen)</label>
-              <input type="text" name="imagen_url" class="form-control" placeholder="assets/img/portadas/ejemplo.jpg" />
+              <label class="form-label fw-semibold">Sinopsis</label>
+              <textarea name="sinopsis" class="form-control" rows="6"></textarea>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Archivo PDF</label>
+              <input type="file" name="archivo_pdf" class="form-control" accept=".pdf" />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Archivo ePub</label>
+              <input type="file" name="archivo_epub" class="form-control" accept=".epub" />
             </div>
           </div>
         </form>
@@ -238,32 +269,66 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form id="formEditWork">
-          <input type="hidden" name="obra_id" value="1"> <div class="row g-3">
+        <form id="formEditWork" action="/obras/editar" method="POST" enctype="multipart/form-data">
+          <input type="hidden" name="id_obra" id="edit_id_obra" value=""> 
+          
+          <div class="row g-3">
             <div class="col-md-9">
               <label class="form-label fw-semibold">Título</label>
-              <input type="text" name="titulo" class="form-control" value="Nada" required />
+              <input type="text" name="titulo" id="edit_titulo" class="form-control" required />
             </div>
             <div class="col-md-3">
               <label class="form-label fw-semibold">Año</label>
-              <input type="number" name="anio" class="form-control" value="2026" />
+              <input type="number" name="anio" id="edit_anio" class="form-control" />
             </div>
-            <div class="col-12">
-              <label class="form-label fw-semibold">Modificar recurso (ruta)</label>
-              <input type="text" name="pdfUrl" class="form-control" value="recursosPDF/LaCiudadSilenciosa.jpg" />
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Páginas</label>
+              <input type="number" name="pagina" id="edit_pagina" class="form-control" />
             </div>
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Actualizar Autores</label>
-              <select name="autores[]" class="form-select" multiple size="3">
-                <option value="1" selected>Isabel Torres</option>
-                <option value="2">Marcos Gil</option>
+
+            <div class="col-md-8">
+              <label class="form-label fw-semibold">Género principal</label>
+              <select name="genero" id="edit_genero" class="form-select">
+                <option value="Narrativa">Narrativa</option>
+                <option value="Ensayo">Ensayo</option>
+                <option value="Poesía">Poesía</option>
+                <option value="Teatro">Teatro</option>
+                <option value="Infantil">Infantil</option>
               </select>
             </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold">Sinopsis</label>
+              <textarea name="sinopsis" id="edit_sinopsis" class="form-control" rows="4"></textarea>
+            </div>
+
             <div class="col-md-6">
-              <label class="form-label fw-semibold">Actualizar Géneros</label>
-              <select name="generos[]" class="form-select" multiple size="3">
-                <option value="1" selected>Ficción</option>
-                <option value="2">Ensayo</option>
+              <label class="form-label fw-semibold">Actualizar PDF (Opcional)</label>
+              <input type="file" name="archivo_pdf" class="form-control" accept=".pdf" />
+              <small class="text-muted">Solo si desea sustituir el actual</small>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Actualizar ePub (Opcional)</label>
+              <input type="file" name="archivo_epub" class="form-control" accept=".epub" />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Autores</label>
+              <select name="autores_actualizar[]" id="edit_autores" class="form-select" multiple size="4">
+                <?php foreach($autores as $autor): ?>
+                  <option value="<?= $autor['id'] ?>"><?= $autor['nombre'] ?></option>
+                <?php endforeach; ?>
+              </select>
+              <div class="form-text small text-primary">Se sustituirán los autores actuales por los seleccionados.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Etiquetas</label>
+              <select name="etiquetas_actualizar[]" id="edit_etiquetas" class="form-select" multiple size="4">
+                <?php foreach($etiquetas as $etiqueta): ?>
+                  <option value="<?= $etiqueta->getId() ?>"><?= $etiqueta->getNombre() ?></option>
+                <?php endforeach; ?>
               </select>
             </div>
           </div>

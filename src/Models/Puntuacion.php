@@ -76,7 +76,10 @@ class Puntuacion {
         $stmt = $db->prepare("SELECT * FROM puntuaciones WHERE id_usuario = ? AND id_obra = ?");
         $stmt->execute([$id_usuario, $id_obra]);
         $puntuacion = $stmt->fetch();
-        return $puntuacion['valor'];
+        if($puntuacion) {
+            return $puntuacion['valor'];
+        }
+        return null;
     }
 
     public static function contarPorObra($id_obra) {

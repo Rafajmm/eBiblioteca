@@ -11,13 +11,12 @@
         <form action="/login" method="POST">
         <div class="modal-body">
             <div class="mb-3">
-            <label for="emailLogin" class="form-label">Email</label>
-            <input id="emailLogin" name="correo" type="email" class="form-control" placeholder="tu@email.com" required />
+            <label for="identificadorLogin" class="form-label">Usuario</label>
+            <input id="identificadorLogin" name="identificador" type="text" class="form-control" placeholder="tu correo o nombre de usuario" required />
             </div>
             <div class="mb-3">
             <label for="passLogin" class="form-label">Contraseña</label>
-            <input id="passLogin" name="pass" type="password" class="form-control" placeholder="••••••••" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}" 
-       title="Mínimo 8 caracteres, incluyendo mayúscula, minúscula, número y símbolo"/>
+            <input id="passLogin" name="pass" type="password" class="form-control" placeholder="••••••••"/>
             </div>
             <div class="form-check">
             <input class="form-check-input" type="checkbox" name="remember" value="1" id="recordarme" />

@@ -29,7 +29,7 @@ class AuthController {
         }
         elseif(!empty($nombreUsuario)){
             $controlador=new UsuarioController();
-            $datos=$controlador->buscarPorUsername($nombreUsuario);
+            $datos=$controlador->buscarPorUsuario($nombreUsuario);
         }
         
         if(!$datos || !password_verify($pass, $datos['pass'])){

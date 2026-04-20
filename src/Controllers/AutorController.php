@@ -30,4 +30,12 @@ class AutorController {
 
         require_once __DIR__ . '/../Views/layout.php';
     }
+
+    public function cargarTodos(){
+        return Autor::cargarTodos();
+    }
+
+    public function crearAutor(){
+        
+    }
 }

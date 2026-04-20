@@ -106,7 +106,7 @@ class Usuario{
 
     public static function cargarTodos(){
         $db=Database::conectar();
-        $stmt=$db->prepare("SELECT * FROM usuarios");
+        $stmt=$db->prepare("SELECT id, nombre, nombre_usuario, correo, activo, es_admin, moderado, fecha_registro FROM usuarios ORDER BY fecha_registro DESC");
         $stmt->execute();
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
         if($datos){

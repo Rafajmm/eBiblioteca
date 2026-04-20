@@ -14,7 +14,7 @@
           <li class="nav-item"><a class="nav-link text-primary" href="/colecciones">Colecciones</a></li>
 
           <?php if(isset($_SESSION['es_admin']) && $_SESSION['es_admin']): ?>
-            <li class="nav-item"><a class="nav-link text-warning" href="/admin">Admin</a></li>
+            <li class="nav-item"><a class="nav-link text-primary" href="/admin">Admin</a></li>
           <?php endif; ?>
         </ul>
         

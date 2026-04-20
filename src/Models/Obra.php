@@ -31,10 +31,10 @@ class Obra {
 
     public static function guardar($titulo, $sinopsis, $paginas, $anio_publicacion, $genero, $ruta_pdf=null, $ruta_epub=null,$portada=null) {
         if($ruta_pdf === null) {
-            $ruta_pdf=implode('_',explode(' ',$titulo));
+            $ruta_pdf='/obras/recursosPDF/'.implode('_',explode(' ',$titulo)).'.pdf';
         }
         if($ruta_epub === null) {
-            $ruta_epub=implode('_',explode(' ',$titulo));
+            $ruta_epub='/obras/recursosEpub/'.implode('_',explode(' ',$titulo)).'.epub';
         }
         if($portada === null) {
             $portada= self::obtenerPortada($titulo) ?? null;

@@ -23,6 +23,38 @@
 
   <body>
     <?php require_once __DIR__ . '/components/header.php'; ?>
+    <?php if(isset($_SESSION['error_login'])):?>
+        <div class="container mt-3">
+            <div class="alert alert-danger alert-dissmissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <?= htmlspecialchars($_SESSION['error_login']) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+        <?php unset($_SESSION['error_login']); ?>
+    <?php endif; ?>
+
+    <?php if(isset($_SESSION['error_registro'])): ?>
+        <div class="container mt-3">
+            <div class="alert alert-danger alert-dismissable fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <?= htmlspecialchars($_SESSION['error_registro']) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+        <?php unset($_SESSION['error_registro'])?>
+    <?php endif;?>
+    
+    <?php if(isset($_SESSION['exito'])): ?>
+        <div class="container mt-3">
+            <div class="alert alert-success alert-dismissable fade show" role="alert">
+                <i class="bi bi-check-circle me-2"></i>
+                <?= htmlspecialchars($_SESSION['exito']) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+        <?php unset($_SESSION['exito'])?>
+    <?php endif;?>
     
     <main class="container-fluid py-4 px-md-5">
         <?= $contenido ?>

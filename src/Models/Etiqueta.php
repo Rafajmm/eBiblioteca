@@ -50,5 +50,12 @@ class Etiqueta {
             return new Etiqueta($etiqueta['id'], $etiqueta['nombre']);
         }, $etiquetas);
     }
+
+    public static function comprobarExistencia($nombre) {
+        $bd = Database::conectar();
+        $stmt = $bd->prepare("SELECT * FROM etiquetas WHERE nombre = ?");
+        $stmt->execute([$nombre]);
+        return $stmt->fetch();
+    }
 }
 ?>
