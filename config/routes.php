@@ -6,11 +6,9 @@ $router = new Router();
 // RUTAS PÚBLICAS (No requieren autenticación)
 // Página de inicio
 $router->get('/', function() {
-    $titulo="Inicio";
-    ob_start();
-    require __DIR__ . '/../src/Views/index.php';
-    $contenido = ob_get_clean();
-    require __DIR__ . '/../src/Views/layout.php';
+    require_once __DIR__ . '/../src/Controllers/BibliotecaController.php';
+    $controller = new BibliotecaController();
+    $controller->index();
 });
 
 // Catálogo completo de obras

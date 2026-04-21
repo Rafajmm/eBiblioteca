@@ -19,9 +19,9 @@
         <div class="card-body p-4 d-flex align-items-center justify-content-between">
           <div>
             <h3 class="h5 mb-1 opacity-75">Nuestra biblioteca</h3>
-            <p class="display-6 fw-bold mb-0">+1,200 libros disponibles</p>
+            <p class="display-6 fw-bold mb-0"><?php echo $totalObras; ?> libros disponibles</p>
           </div>
-          <i class="bi bi-book fs-1 opacity-50"></i>
+          <i class="bi bi-book fs-1 text-primary opacity-25"></i>
         </div>
       </div>
     </div>
@@ -31,9 +31,21 @@
         <div class="card-body p-4 d-flex align-items-center justify-content-between">
           <div class="text-dark">
             <h3 class="h5 mb-1 text-muted">Grandes pensadores</h3>
-            <p class="display-6 fw-bold mb-0">450 autores</p>
+            <p class="display-6 fw-bold mb-0"><?php echo $totalAutores; ?> autores</p>
           </div>
           <i class="bi bi-person-workspace fs-1 text-primary opacity-25"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="card border-0 shadow-sm overflow-hidden bg-white">
+        <div class="card-body p-4 d-flex align-items-center justify-content-between">
+          <div class="text-dark">
+            <h3 class="h5 mb-1 text-muted">Colecciones</h3>
+            <p class="display-6 fw-bold mb-0"><?php echo $totalColecciones; ?> colecciones</p>
+          </div>
+          <i class="bi bi-bookmark fs-1 text-primary opacity-25"></i>
         </div>
       </div>
     </div>
@@ -41,32 +53,54 @@
     <div id="novedades" class="col-12">
       <div class="card border-primary shadow-sm bg-white" style="border-left: 5px solid !important;">
         <div class="card-body p-4">
-          <div class="d-flex align-items-center mb-3">            
-            <h3 class="h4 mb-0 fw-bold">Novedades de la semana</h3>
-          </div>
-          <div class="row row-cols-1 row-cols-md-3 g-3">
-            <div class="col">
-              <div class="p-3 border rounded-3 bg-light">
-                <span class="badge bg-narrativa mb-2">Narrativa</span>
-                <p class="fw-bold mb-0">El Quijote de la Mancha</p>
-                <small class="text-muted">Miguel de Cervantes</small>
-              </div>
+          <h3 class="h4 mb-4 fw-bold">Novedades</h3>
+          
+          <?php if(!empty($novedades)): ?>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+              <?php foreach($novedades as $obra): ?>
+                <div class="col">
+                  <a href="/obra/<?= $obra->getId(); ?>" class="text-decoration-none text-dark">
+                  <div class="p-3 border rounded-3 bg-light h-100 shadow-sm-hover">
+                    <div class="d-flex flex-wrap gap-1 mb-2">
+                      <span class="badge bg-<?= strtolower($obra->getGenero()) ?>"><?= $obra->getGenero(); ?></span>
+                      
+                      <?php
+                        $etiquetas = $obra->obtenerEtiquetas();
+                        if(!empty($etiquetas)):
+                          $mostradas = array_slice($etiquetas, 0, 2);
+                          foreach($mostradas as $et): ?>
+                            <span class="badge bg-secondary-subtle text-secondary small" style="font-size: 0.7rem;">
+                              <?= htmlspecialchars($et['nombre']) ?>
+                            </span>
+                          <?php endforeach;
+                          if(count($etiquetas) > 2): ?>
+                            <span class="text-muted small" style="font-size: 0.7rem; align-self: center;">
+                              +<?= (count($etiquetas) - 2) ?>
+                            </span>
+                          <?php endif;
+                        endif; ?>
+                    </div>
+
+                    <p class="fw-bold mb-1"><?= $obra->getTitulo(); ?></p>
+                    
+                    <?php                            
+                      $autoresObra = $obra->obtenerAutores();
+                      if(!empty($autoresObra)){
+                          $nombresArr = array_column($autoresObra, 'nombre');
+                          $txtAutores = implode(', ', $nombresArr); 
+                      } else {
+                          $txtAutores = 'Autor desconocido';
+                      }
+                    ?>
+                    <small class="text-muted d-block"><?= $txtAutores; ?></small>
+                  </div>
+                  </a>
+                </div>
+              <?php endforeach; ?>
             </div>
-            <div class="col">
-              <div class="p-3 border rounded-3 bg-light">
-                <span class="badge bg-ensayo mb-2">Filosofía</span>
-                <p class="fw-bold mb-0">Meditaciones</p>
-                <small class="text-muted">Marco Aurelio</small>
-              </div>
-            </div>
-            <div class="col">
-              <div class="p-3 border rounded-3 bg-light">
-                <span class="badge bg-teatro mb-2">Teatro</span>
-                <p class="fw-bold mb-0">Hamlet</p>
-                <small class="text-muted">William Shakespeare</small>
-              </div>
-            </div>
-          </div>
+          <?php else: ?>
+            <p class="text-muted text-center py-4">No hay novedades disponibles en este momento.</p>
+          <?php endif; ?>
         </div>
       </div>
     </div>

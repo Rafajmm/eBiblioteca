@@ -35,10 +35,32 @@
                     <tr>
                       <td class="fw-semibold"><?= $obra['titulo'] ?></td>
                       <td><?= $obra['autor'] ?></td>
-                      <td><span class="badge bg-<?= strtolower($obra['genero']) ?> rounded-pill text-bg-light border"><?= $obra['genero'] ?></span></td>
+                      <td><span class="badge bg-<?= strtolower($obra['genero']) ?> rounded-pill border"><?= $obra['genero'] ?></span></td>
                       <td><?= $obra['anio_publicacion'] ?></td>
                       <td class="text-end">
-                        <button class="btn btn-sm btn-light border" data-bs-toggle="modal" data-bs-target="#modalEditarObra" data-idObra="<?= $obra['id'] ?>"><i class="bi bi-pencil"></i></button>
+                        <?php
+                          $instancia=Obra::crearInstancia($obra['id']);
+                          $autoresObra=$instancia ? $instancia->obtenerAutores() : [];
+                          $etiquetasObra=$instancia ? $instancia->obtenerEtiquetas() : [];
+
+                          $idsAutores=!empty($autoresObra) ? array_map(fn($a)=>(int)$a['id'],$autoresObra) : [];
+                          $idEtiquetas=!empty($etiquetasObra) ? array_map(fn($e)=>(int)$e['id'],$etiquetasObra) : [];
+                        ?> 
+                        <button type="button" 
+                          class="btn btn-sm btn-light border" 
+                          data-bs-toggle="modal" 
+                          data-bs-target="#modalEditarObra" 
+                          data-id-obra="<?= (int)$obra['id'] ?>"
+                          data-titulo="<?= $obra['titulo'] ?>"
+                          data-anio="<?= $obra['anio_publicacion'] ?>"
+                          data-paginas="<?= $obra['paginas'] ?>"
+                          data-genero="<?= $obra['genero'] ?>"
+                          data-sinopsis="<?= $obra['sinopsis'] ?>"
+                          data-autores="<?= json_encode($idsAutores) ?>"
+                          data-etiquetas="<?= json_encode($idEtiquetas) ?>"
+                          >
+                          <i class="bi bi-pencil"></i>
+                        </button>
                         <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
                       </td>
                     </tr>                
@@ -82,8 +104,19 @@
                       <td><?= Autor::contarObras($autor['id']) ?></td>
                       <td><?= $autor['fecha_registro'] ?></td>
                       <td class="text-end">
-                        <button class="btn btn-sm btn-light border" data-bs-toggle="modal" data-bs-target="#modalEditarAutor" data-idAutor="<?= $autor['id']; ?>">Editar</button>
-                        <button class="btn btn-sm btn-outline-danger">Eliminar</button>
+                        <button type="button" 
+                          class="btn btn-sm btn-light border" 
+                          data-bs-toggle="modal" 
+                          data-bs-target="#modalEditarAutor" 
+                          data-id-autor="<?= $autor['id'] ?>"
+                          data-nombre="<?= $autor['nombre'] ?>"
+                          data-pais="<?= $autor['pais'] ?>"
+                          data-fecha-nacimiento="<?= $autor['fecha_nacimiento'] ?>"
+                          data-biografia="<?= $autor['biografia'] ?>"
+                          >
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
                       </td>
                     </tr>
                   <?php endforeach;?>
@@ -123,7 +156,21 @@
                           <td><?= $usuario['es_admin'] ? 'Administrador' : 'Usuario' ?></td>                          
                           <td><span class="badge text-bg-success-subtle text-<?= $usuario['activo'] ? 'success' : 'danger' ?> border border-<?= $usuario['activo'] ? 'success' : 'danger' ?>-subtle"><?= $usuario['activo'] ? 'Activo' : 'Inactivo' ?></span></td>
                           <td class="text-end">
-                            <button class="btn btn-link text-secondary p-0 me-2"><i class="bi bi-pencil"></i></button>
+                            <button
+                              type="button"
+                              class="btn btn-link text-secondary p-0 me-2"
+                              data-bs-toggle="modal"
+                              data-bs-target="#modalEditarUsuario"
+                              data-id-usuario="<?= (int)$usuario['id'] ?>"
+                              data-nombre="<?= htmlspecialchars($usuario['nombre'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                              data-nombre-usuario="<?= htmlspecialchars($usuario['nombre_usuario'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                              data-correo="<?= htmlspecialchars($usuario['correo'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                              data-bio="<?= htmlspecialchars($usuario['bio'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                              data-ruta-foto="<?= htmlspecialchars($usuario['ruta_foto'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                              title="Editar usuario"
+                            >
+                              <i class="bi bi-pencil"></i>
+                            </button>
                             <button class="btn btn-link text-<?= $usuario['activo'] ? 'warning' : 'primary' ?> p-0"><i class="bi bi-<?= $usuario['activo'] ? 'slash-circle' : 'arrow-counterclockwise' ?>"></i></button>
                           </td>
                         </tr>
@@ -255,7 +302,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" form="formNewWork" class="btn btn-primary">Guardar Obra</button>
+        <button type="submit" form="formObraNueva" class="btn btn-primary">Guardar Obra</button>
       </div>
     </div>
   </div>
@@ -269,27 +316,27 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form id="formEditWork" action="/obras/editar" method="POST" enctype="multipart/form-data">
-          <input type="hidden" name="id_obra" id="edit_id_obra" value=""> 
+        <form id="formEdObra" action="/admin/obra/{id}/editar" method="POST" enctype="multipart/form-data">
+          <input type="hidden" name="idObra" id="edIdObra" value=""> 
           
           <div class="row g-3">
             <div class="col-md-9">
               <label class="form-label fw-semibold">Título</label>
-              <input type="text" name="titulo" id="edit_titulo" class="form-control" required />
+              <input type="text" name="titulo" id="edTitulo" class="form-control" placeholder=""/>
             </div>
             <div class="col-md-3">
               <label class="form-label fw-semibold">Año</label>
-              <input type="number" name="anio" id="edit_anio" class="form-control" />
+              <input type="number" name="anio" id="edAnio" class="form-control" />
             </div>
 
             <div class="col-md-4">
               <label class="form-label fw-semibold">Páginas</label>
-              <input type="number" name="pagina" id="edit_pagina" class="form-control" />
+              <input type="number" name="pagina" id="edPagina" class="form-control" />
             </div>
 
             <div class="col-md-8">
               <label class="form-label fw-semibold">Género principal</label>
-              <select name="genero" id="edit_genero" class="form-select">
+              <select name="genero" id="edGenero" class="form-select">
                 <option value="Narrativa">Narrativa</option>
                 <option value="Ensayo">Ensayo</option>
                 <option value="Poesía">Poesía</option>
@@ -300,7 +347,7 @@
 
             <div class="col-12">
               <label class="form-label fw-semibold">Sinopsis</label>
-              <textarea name="sinopsis" id="edit_sinopsis" class="form-control" rows="4"></textarea>
+              <textarea name="sinopsis" id="edSinopsis" class="form-control" rows="6"></textarea>
             </div>
 
             <div class="col-md-6">
@@ -315,7 +362,7 @@
 
             <div class="col-md-6">
               <label class="form-label fw-semibold">Autores</label>
-              <select name="autores_actualizar[]" id="edit_autores" class="form-select" multiple size="4">
+              <select name="autores_actualizar[]" id="edAutores" class="form-select" multiple size="6">
                 <?php foreach($autores as $autor): ?>
                   <option value="<?= $autor['id'] ?>"><?= $autor['nombre'] ?></option>
                 <?php endforeach; ?>
@@ -325,7 +372,7 @@
 
             <div class="col-md-6">
               <label class="form-label fw-semibold">Etiquetas</label>
-              <select name="etiquetas_actualizar[]" id="edit_etiquetas" class="form-select" multiple size="4">
+              <select name="etiquetas_actualizar[]" id="edEtiquetas" class="form-select" multiple size="6">
                 <?php foreach($etiquetas as $etiqueta): ?>
                   <option value="<?= $etiqueta->getId() ?>"><?= $etiqueta->getNombre() ?></option>
                 <?php endforeach; ?>
@@ -336,7 +383,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Descartar</button>
-        <button type="submit" form="formEditWork" class="btn btn-primary">Guardar Cambios</button>
+        <button type="submit" form="formEdObra" class="btn btn-primary">Guardar Cambios</button>
       </div>
     </div>
   </div>
@@ -350,7 +397,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form id="formNewAuthor">
+        <form id="formObraNueva">
           <div class="mb-3">
             <label class="form-label fw-semibold">Nombre Completo</label>
             <input type="text" name="nombre" class="form-control" placeholder="Nombre del autor" required />
@@ -367,7 +414,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" form="formNewAuthor" class="btn btn-primary">Crear Autor</button>
+        <button type="submit" form="formObraNueva" class="btn btn-primary">Crear Autor</button>
       </div>
     </div>
   </div>
@@ -376,48 +423,91 @@
 <div class="modal fade" id="modalEditarAutor" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow">
-      <div class="modal-header bg-primary text-white">
-        <h2 class="modal-title fs-5">Modificar Perfil de Autor</h2>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      <div class="modal-header bg-light">
+        <h2 class="modal-title fs-5">Editar autor</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form id="formEditAuthor">
-          <input type="hidden" name="autor_id" value="1">
+        <form id="formEdAutor" action="/autores/editar" method="POST">
+          <input type="hidden" name="autor_id" id="edIdAutor">
+
           <div class="mb-3">
             <label class="form-label fw-semibold">Nombre</label>
-            <input type="text" name="nombre" class="form-control" value="Isabel Torres" required />
+            <input type="text" name="nombre" id="edNombreAutor" class="form-control" required>
           </div>
+
           <div class="mb-3">
-            <label class="form-label fw-semibold">Imagen/Foto actual (URL)</label>
-            <input type="text" name="foto_url" class="form-control" value="assets/img/isabel.jpg" />
+            <label class="form-label fw-semibold">País</label>
+            <input type="text" name="pais" id="edPais" class="form-control">
           </div>
+
           <div class="mb-3">
-            <label class="form-label fw-semibold">Biografía actualizada</label>
-            <textarea name="biografia" class="form-control" rows="4">Escritora madrileña especializada en novela negra y ficción contemporánea.</textarea>
+            <label class="form-label fw-semibold">Fecha de nacimiento</label>
+            <input type="date" name="fecha_nacimiento" id="edFechaNacimiento" class="form-control">
+          </div>          
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Biografía</label>
+            <textarea name="biografia" id="edBiografia" class="form-control" rows="4"></textarea>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cerrar</button>
-        <button type="submit" form="formEditAuthor" class="btn btn-primary">Guardar Cambios</button>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" form="formEdAutor" class="btn btn-primary">Guardar cambios</button>
       </div>
     </div>
   </div>
-</div>  
+</div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const botones = document.querySelectorAll('#admin-nav button');
-    const secciones = document.querySelectorAll('.admin-section');
+<div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-light">
+        <h2 class="modal-title fs-5">Editar usuario</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formEditUser" action="/usuarios/editar" method="POST">
+          <input type="hidden" name="id_usuario" id="edit_usuario_id">
 
-    botones.forEach(btn => {
-      btn.addEventListener('click', function() {
-        botones.forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        secciones.forEach(s => s.classList.add('d-none'));
-        const targetId = this.getAttribute('data-target');
-        document.getElementById(targetId).classList.remove('d-none');
-      });
-    });
-  });
-</script>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Nombre</label>
+            <input type="text" name="nombre" id="edit_usuario_nombre" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Nombre de usuario</label>
+            <input type="text" name="nombre_usuario" id="edit_usuario_nombre_usuario" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Correo</label>
+            <input type="email" name="correo" id="edit_usuario_correo" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Bio</label>
+            <textarea name="bio" id="edit_usuario_bio" class="form-control" rows="3"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Ruta foto</label>
+            <input type="text" name="ruta_foto" id="edit_usuario_ruta_foto" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Nueva contraseña</label>
+            <input type="password" name="pass" id="edit_usuario_pass" class="form-control">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" form="formEditUser" class="btn btn-primary">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/assets/js/admin.js"></script>

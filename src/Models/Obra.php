@@ -109,6 +109,22 @@ class Obra {
         return null;
     }
 
+    public static function obtenerNovedades($limite = 6) {
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT * FROM obras ORDER BY fecha_registro DESC LIMIT ?");
+        $stmt->bindValue(1, (int)$limite, PDO::PARAM_INT);
+        $stmt->execute();
+        $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
+        $obras=[];
+        foreach($datos as $obra) {
+            $obras[] = Obra::crearInstancia($obra['id']);
+        }
+        if($obras){
+            return $obras;
+        }
+        return null;
+    }
+
     public static function obtenerId($titulo, $anio) {
         $db=Database::conectar();
         $stmt=$db->prepare("SELECT id FROM obras WHERE titulo=? AND anio_publicacion=?");

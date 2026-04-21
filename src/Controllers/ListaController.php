@@ -4,6 +4,41 @@ require_once __DIR__ . '/../Models/Obra.php';
 require_once __DIR__ . '/../Models/Usuario.php';
 
 class ListaController {
+    public function colecciones(){
+        $colecciones=Lista::obtenerColecciones();
+        
+        $datosColecciones=[];
+        if($colecciones){
+            foreach($colecciones as $coleccion){
+                $lista=Lista::crearInstancia($coleccion['id']);
+                $obras=$lista ? $lista->obtenerObrasConDetalles() : [];
+                
+                $datosColecciones[$coleccion['id']]=[
+                    'id'=>$coleccion['id'],
+                    'nombre'=>$coleccion['nombre'],
+                    'descipcion'=>$coleccion['descripcion'],
+                    'total'=>count($obras),
+                    'obras'=>array_slice($obras, 0, 3)
+                ];
+            }
+        }
+
+        $total=count($colecciones);
+        
+
+        $title="Colecciones";
+        
+        ob_start();
+        include __DIR__ . '/../Views/VistaColecciones.php';
+        $contenido=ob_get_clean();
+
+        require_once __DIR__ . '/../Views/layout.php';
+    }
+
+    public function totalColecciones(){
+        return count(Lista::obtenerColecciones());
+    }
+
     public function verLista($id) {
         $lista = Lista::crearInstancia($id);
         if (!$lista) {

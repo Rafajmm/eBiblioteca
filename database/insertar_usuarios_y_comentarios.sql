@@ -4,6 +4,7 @@ USE eBiblioteca;
 -- INSERTAR 3 USUARIOS DE PRUEBA
 -- Contraseñas hasheadas con password_hash('password123', PASSWORD_DEFAULT)
 -- La contraseña plain text es: password123
+-- La contraseña del administrador y otros usuarios creados desde la app es: passPrueba1!
 -- ============================================
 
 INSERT INTO usuarios (nombre, nombre_usuario, correo, pass, bio, es_admin, activo) VALUES
@@ -28,7 +29,7 @@ SELECT
     id,
     1,
     1
-FROM usuarios WHERE nombre_usuario = 'ana_lector';
+FROM usuarios WHERE nombre_usuario = 'ana_lectora';
 
 INSERT INTO comentarios (contenido, id_usuario, id_obra, revisado) 
 SELECT 
@@ -36,7 +37,7 @@ SELECT
     id,
     1,
     1
-FROM usuarios WHERE nombre_usuario = 'ana_lector';
+FROM usuarios WHERE nombre_usuario = 'ana_lectora';
 
 -- Comentarios de Carlos Martínez (usuario recién creado)
 INSERT INTO comentarios (contenido, id_usuario, id_obra, revisado) 
@@ -87,7 +88,7 @@ FROM usuarios WHERE nombre_usuario = 'maria_elena_reads';
 SELECT 'USUARIOS CREADOS' AS resultado;
 SELECT id, nombre, nombre_usuario, correo, es_admin, activo, fecha_registro 
 FROM usuarios 
-WHERE nombre_usuario IN ('ana_lector', 'carlos_bookworm', 'maria_elena_reads');
+WHERE nombre_usuario IN ('ana_lectora', 'carlos_bookworm', 'maria_elena_reads');
 
 SELECT 'COMENTARIOS EN DON QUIJOTE' AS resultado;
 SELECT 
