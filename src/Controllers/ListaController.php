@@ -78,4 +78,121 @@ class ListaController {
         
         require_once __DIR__ . '/../Views/layout.php';
     }
+
+    public function crear(){
+        $nombre=trim($_POST['nombre'] ?? '');
+        $descripcion=trim($_POST['descripcion'] ?? '');
+        
+        if(empty($nombre)){
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'El nombre es requerido']);
+            return;
+        }
+        
+        $lista=Lista::guardar($nombre, $descripcion, $_SESSION['id_usuario']);
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true, 'id'=>$lista->getId()]);
+    }
+
+    public function agregarObra($id){
+        $idObra=(int)($_POST['idObra'] ?? 0);
+        
+        $lista=Lista::crearInstancia($id);
+        if(!$lista){
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Lista no encontrada']);
+            return;
+        }
+        
+        if($lista->getIdUsuario() != $_SESSION['id_usuario']){
+            http_response_code(403);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'No puedes modificar esta lista']);
+            return;
+        }
+
+        $lista->addObra($idObra);
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
+    }
+
+    public function eliminarObra($id){
+        $idObra=(int)($_POST['idObra'] ?? 0);
+        
+        $lista=Lista::crearInstancia($id);
+        if(!$lista){
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Lista no encontrada']);
+            return;
+        }
+        
+        if($lista->getIdUsuario() != $_SESSION['id_usuario']){
+            http_response_code(403);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'No puedes modificar esta lista']);
+            return;
+        }
+
+        $lista->removeObra($idObra);
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
+    }
+
+    public function meGusta($id){
+        $lista=Lista::crearInstancia($id);
+        if(!$lista){
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Lista no encontrada']);
+            return;
+        }
+
+        $lista->meGusta();
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
+    }
+
+    public function copiar($id){
+        $lista=Lista::crearInstancia($id);
+        if(!$lista){
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Lista no encontrada']);
+            return;
+        }
+
+        $nuevaLista=$lista->copiarLista($_SESSION['id_usuario']);
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true, 'id'=>$nuevaLista->getId()]);
+    }
+
+    Public function eliminar($id){
+        $lista=Lista::crearInstancia($id);
+        if(!$lista){
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Lista no encontrada']);
+            return;
+        }
+
+        if($lista->getIdUsuario() != $_SESSION['id_usuario']){
+            http_response_code(403);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'No puedes eliminar esta lista']);
+            return;
+        }
+
+        $lista->eliminar();
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
+    }
 }

@@ -43,6 +43,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const autores=button.getAttribute('data-autores');
             const etiquetas=button.getAttribute('data-etiquetas');
 
+            const formEdObra=document.getElementById('formEdObra');
+            formEdObra.action='/admin/obra/'+id+'/editar';
+
             document.getElementById('edIdObra').value=id;
 
             const campoTitulo=document.getElementById('edTitulo');
@@ -61,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             seleccionarMultiple(document.getElementById('edAutores'),autores);
             seleccionarMultiple(document.getElementById('edEtiquetas'),etiquetas);            
-        });
+        });        
     }
 
     const modalEditarAutor=document.getElementById('modalEditarAutor');

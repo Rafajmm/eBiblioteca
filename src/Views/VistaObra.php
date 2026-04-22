@@ -18,17 +18,21 @@
 
                     <div class="flex-grow-1">
                         <h1 class="display-6 mb-1 fw-bold"><?= $obra->getTitulo() ?></h1>
-                        <?php foreach($autores as $autor): ?>
-                            <p class="fs-4 text-secondary mb-3">por <a href="/autor/<?= $autor['id'] ?>" class="text-primary text-decoration-none"><?= $autor['nombre'] ?></a></p>
-                        <?php endforeach; ?>
+                        
+                        <?php if(!empty($autores)): ?>
+                            <?php foreach($autores as $autor): ?>
+                                <p class="fs-4 text-secondary mb-3">por <a href="/autor/<?= $autor['id'] ?>" class="text-primary text-decoration-none"><?= $autor['nombre'] ?></a></p>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p class="fs-4 text-secondary mb-3">por Autor desconocido</p>
+                        <?php endif; ?>
                         
                         <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-4 flex-wrap">
                             <span class="badge bg-<?= strtolower($obra->getGenero()) ?> text-dark border px-3 py-2"><?= $obra->getGenero() ?></span>
-                            <?php for($i=0;$i<2;$i++): ?>
-                                <span class="badge bg-light text-dark border px-3 py-2"><?= $etiquetas[$i]['nombre'] ?></span>
-                            <?php endfor; ?>
-                            <?php if(count($etiquetas)>2) : ?>
-                                <span class="badge bg-light text-dark border px-3 py-2">+<?= count($etiquetas)-2 ?></span>
+                            <?php if(!empty($etiquetas)): ?>
+                                <?php foreach($etiquetas as $etiqueta): ?>
+                                    <span class="badge bg-light text-dark border px-3 py-2"><?= $etiqueta['nombre'] ?></span>
+                                <?php endforeach; ?>
                             <?php endif; ?>
                             <div class="text-warning ms-2 fs-5">
                                 <?php
@@ -118,14 +122,17 @@
 <div class="offcanvas-body bg-light">
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body p-3">
-            <textarea class="form-control border-0 bg-light mb-2" rows="3" placeholder="Comparte tu reflexión sobre el libro..."></textarea>
-            <div class="d-flex justify-content-end">
-                <button class="btn btn-primary btn-sm px-3">Publicar</button>
-            </div>
+            <form action="" id="formComentario">
+                <input type="hidden" name="idObra" value="<?= $obra->getId() ?>">
+                <textarea class="form-control border-0 bg-light mb-2" name="contenido" rows="3" placeholder="Comparte tu reflexión sobre el libro..."></textarea>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary btn-sm px-3">Publicar</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <div class="d-flex flex-column gap-3">
+    <div class="d-flex flex-column gap-3" id="listaComentarios">
         <?php if($comentarios) : ?>
         <?php foreach ($comentarios as $comentario): ?>
             <div class="bg-white p-3 rounded shadow-sm border">

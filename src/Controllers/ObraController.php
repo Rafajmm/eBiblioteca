@@ -148,12 +148,12 @@ class ObraController {
             }
         }
         
-        header('Content-Type: app/json');
+        header('Content-Type: application/json');
         echo json_encode(['ok'=>true, 'id'=>$id]);
     }
 
     public function editarObra(){
-        $id=(int)($_POST['id_obra'] ?? 0);
+        $id=(int)($_POST['idObra']);
         if(!$id){
             http_response_code(400);
             header('Content-Type: application/json');
@@ -172,7 +172,7 @@ class ObraController {
         if(!empty($_POST['titulo'])) $obra->setTitulo($_POST['titulo']);
         if(!empty($_POST['sinopsis'])) $obra->setSinopsis($_POST['sinopsis']);
         if(!empty($_POST['pagina'])) $obra->setPagina($_POST['pagina']);
-        if(!empty($_POST['anio'])) $obra->setAnio($_POST['anio']);
+        if(!empty($_POST['anio'])) $obra->setAnioPublicacion($_POST['anio']);
         if(!empty($_POST['genero'])) $obra->setGenero($_POST['genero']);
 
         if(!empty($_POST['autores_actualizar']) && is_array($_POST['autores_actualizar'])) {
@@ -187,12 +187,12 @@ class ObraController {
             }
         }
         
-        header('Content-Type: app/json');
+        header('Content-Type: application/json');
         echo json_encode(['ok'=>true]);
     }
 
     public function eliminarObra(){
-        $id=(int)($_POST['id_obra'] ?? 0);
+        $id=(int)($_POST['idObra']);
         if(!$id){
             http_response_code(400);
             header('Content-Type: application/json');
@@ -209,7 +209,7 @@ class ObraController {
         }
         
         $obra->eliminar();
-        header('Content-Type: app/json');
+        header('Content-Type: application/json');
         echo json_encode(['ok'=>true]);
     }
 

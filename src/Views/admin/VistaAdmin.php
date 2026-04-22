@@ -235,7 +235,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <form id="formObraNueva" action="/obras/crear" method="POST" enctype="multipart/form-data">
+        <form id="formObraNueva" action="/admin/obra/crear" method="POST" enctype="multipart/form-data">
           <div class="row g-3">
             
             <div class="col-md-8">
@@ -316,7 +316,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form id="formEdObra" action="/admin/obra/{id}/editar" method="POST" enctype="multipart/form-data">
+        <form id="formEdObra" action="" method="POST" enctype="multipart/form-data">
           <input type="hidden" name="idObra" id="edIdObra" value=""> 
           
           <div class="row g-3">
@@ -336,7 +336,7 @@
 
             <div class="col-md-8">
               <label class="form-label fw-semibold">Género principal</label>
-              <select name="genero" id="edGenero" class="form-select">
+              <select name="edGenero" id="edGenero" class="form-select">
                 <option value="Narrativa">Narrativa</option>
                 <option value="Ensayo">Ensayo</option>
                 <option value="Poesía">Poesía</option>
@@ -400,11 +400,15 @@
         <form id="formObraNueva">
           <div class="mb-3">
             <label class="form-label fw-semibold">Nombre Completo</label>
-            <input type="text" name="nombre" class="form-control" placeholder="Nombre del autor" required />
+            <input type="text" name="idNombreAutor" class="form-control" placeholder="Nombre del autor" required />
           </div>
           <div class="mb-3">
-            <label class="form-label fw-semibold">URL Foto de Perfil</label>
-            <input type="text" name="foto_url" class="form-control" placeholder="assets/img/autores/perfil.jpg" />
+            <label class="form-label fw-semibold">País</label>
+            <input type="text" name="pais" class="form-control" placeholder="País de origen" />
+          </div>
+          <div class="mb-3">
+            <label for="fecha_nacimiento">Fecha de nacimiento</label>
+            <input type="date" name="fechaNacimiento" class="form-control" />
           </div>
           <div class="mb-3">
             <label class="form-label fw-semibold">Biografía</label>
@@ -429,26 +433,26 @@
       </div>
       <div class="modal-body">
         <form id="formEdAutor" action="/autores/editar" method="POST">
-          <input type="hidden" name="autor_id" id="edIdAutor">
+          <input type="hidden" name="edIdAutor" id="edIdAutor">
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Nombre</label>
-            <input type="text" name="nombre" id="edNombreAutor" class="form-control" required>
+            <input type="text" name="edNombreAutor" id="edNombreAutor" class="form-control" required>
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-semibold">País</label>
-            <input type="text" name="pais" id="edPais" class="form-control">
+            <input type="text" name="edPais" id="edPais" class="form-control">
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Fecha de nacimiento</label>
-            <input type="date" name="fecha_nacimiento" id="edFechaNacimiento" class="form-control">
+            <input type="date" name="edFechaNacimiento" id="edFechaNacimiento" class="form-control">
           </div>          
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Biografía</label>
-            <textarea name="biografia" id="edBiografia" class="form-control" rows="4"></textarea>
+            <textarea name="edBiografia" id="edBiografia" class="form-control" rows="4"></textarea>
           </div>
         </form>
       </div>
@@ -469,36 +473,36 @@
       </div>
       <div class="modal-body">
         <form id="formEditUser" action="/usuarios/editar" method="POST">
-          <input type="hidden" name="id_usuario" id="edit_usuario_id">
+          <input type="hidden" name="edIdUsuario" id="edIdUsuario">
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Nombre</label>
-            <input type="text" name="nombre" id="edit_usuario_nombre" class="form-control">
+            <input type="text" name="edNombre" id="edNombre" class="form-control">
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Nombre de usuario</label>
-            <input type="text" name="nombre_usuario" id="edit_usuario_nombre_usuario" class="form-control">
+            <input type="text" name="edNombreUsuario" id="edNombreUsuario" class="form-control">
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Correo</label>
-            <input type="email" name="correo" id="edit_usuario_correo" class="form-control">
+            <input type="email" name="edCorreo" id="edCorreo" class="form-control">
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Bio</label>
-            <textarea name="bio" id="edit_usuario_bio" class="form-control" rows="3"></textarea>
+            <textarea name="edBio" id="edBio" class="form-control" rows="3"></textarea>
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Ruta foto</label>
-            <input type="text" name="ruta_foto" id="edit_usuario_ruta_foto" class="form-control">
+            <input type="text" name="edRutaFoto" id="edRutaFoto" class="form-control">
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Nueva contraseña</label>
-            <input type="password" name="pass" id="edit_usuario_pass" class="form-control">
+            <input type="password" name="edPass" id="edPass" class="form-control">
           </div>
         </form>
       </div>

@@ -174,11 +174,25 @@ $router->post('/comentario/crear', function() {
     $controller->crear();
 },[['Middleware','autenticado']]);
 
-// Reportar comentario inapropiado
+// Reportar comentario
 $router->post('/comentario/{id}/reportar', function($id) {
     require_once __DIR__ . '/../src/Controllers/ComentarioController.php';
     $controller = new ComentarioController();
     $controller->reportar($id);
+},[['Middleware','autenticado']]);
+
+// Dar me gusta a un comentario
+$router->post('/comentario/{id}/megusta', function($id) {
+    require_once __DIR__ . '/../src/Controllers/ComentarioController.php';
+    $controller = new ComentarioController();
+    $controller->meGusta($id);
+},[['Middleware','autenticado']]);
+
+// Quitar me gusta de un comentario
+$router->post('/comentario/{id}/quitar-megusta', function($id) {
+    require_once __DIR__ . '/../src/Controllers/ComentarioController.php';
+    $controller = new ComentarioController();
+    $controller->quitarMeGusta($id);
 },[['Middleware','autenticado']]);
 
 // Puntuar obra (1-5)
@@ -196,13 +210,6 @@ $router->get('/admin', function() {
     $controller->verPanel();
 },[['Middleware','admin']]);
 
-// Gestión de obras
-$router->get('/admin/obras', function() {
-    require_once __DIR__ . '/../src/Controllers/AdminController.php';
-    $controller = new AdminController();
-    $controller->gestionarObras();
-},[['Middleware','admin']]);
-
 // Crear obra
 $router->post('/admin/obra/crear', function() {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
@@ -211,24 +218,17 @@ $router->post('/admin/obra/crear', function() {
 },[['Middleware','admin']]);
 
 // Editar obra existente
-$router->post('/admin/obra/{id}/editar', function($id) {
+$router->post('/admin/obra/editar', function() {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->editarObra($id);
+    $controller->editarObra();
 },[['Middleware','admin']]);
 
 // Eliminar obra (soft delete)
-$router->post('/admin/obra/{id}/eliminar', function($id) {
+$router->post('/admin/obra/eliminar', function() {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->eliminarObra($id);
-},[['Middleware','admin']]);
-
-// Gestión de autores
-$router->get('/admin/autores', function() {
-    require_once __DIR__ . '/../src/Controllers/AdminController.php';
-    $controller = new AdminController();
-    $controller->gestionarAutores();
+    $controller->eliminarObra();
 },[['Middleware','admin']]);
 
 // Crear autor
@@ -238,39 +238,53 @@ $router->post('/admin/autor/crear', function() {
     $controller->crearAutor();
 },[['Middleware','admin']]);
 
-// Gestión de usuarios
-$router->get('/admin/usuarios', function() {
+// Editar autor existente
+$router->post('/admin/autor/editar', function() {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->gestionarUsuarios();
+    $controller->editarAutor();
+},[['Middleware','admin']]);
+
+// Eliminar autor (soft delete)
+$router->post('/admin/autor/eliminar', function() {
+    require_once __DIR__ . '/../src/Controllers/AdminController.php';
+    $controller = new AdminController();
+    $controller->eliminarAutor();
 },[['Middleware','admin']]);
 
 // Banear usuario
-$router->post('/admin/usuario/{id}/banear', function($id) {
+$router->post('/admin/usuario/banear', function() {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->banearUsuario($id);
+    $controller->banearUsuario();
 },[['Middleware','admin']]);
 
-// Otorgar permisos de administrador
-$router->post('/admin/usuario/{id}/hacer-admin', function($id) {
+// Activar usuario
+$router->post('/admin/usuario/activar', function() {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->hacerAdmin($id);
+    $controller->activarUsuario();
 },[['Middleware','admin']]);
 
-// Comentarios reportados pendientes de revisión
-$router->get('/admin/reportes', function() {
+// Editar usuario
+$router->post('/admin/usuario/editar', function() {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->verReportes();
+    $controller->editarUsuario();
 },[['Middleware','admin']]);
 
-// Revisar y resolver un reporte
-$router->post('/admin/reporte/{id}/revisar', function($id) {
+// Revisar comentario
+$router->post('/admin/comentario/revisar', function() {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->revisarReporte($id);
+    $controller->revisarComentario();
+},[['Middleware','admin']]);
+
+// Eliminar comentario
+$router->post('/admin/comentario/eliminar', function() {
+    require_once __DIR__ . '/../src/Controllers/AdminController.php';
+    $controller = new AdminController();
+    $controller->eliminarComentario();
 },[['Middleware','admin']]);
 
 // Despachar la petición actual

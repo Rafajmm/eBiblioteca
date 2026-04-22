@@ -13,7 +13,24 @@
                         alt="Avatar" class="rounded-circle border shadow-sm imgPerfil">
             </div>
             <div class="col-12 col-md">
+            <div class="d-flex justify-content-between align-items-center">    
                 <h2 class="fw-bold mb-1" style="font-family: 'Merriweather', serif;"><?= $usuario->getNombre() ?></h2>
+                <?php if(!$esPerfilUsuario && isset($_SESSION['id_usuario'])): ?>
+                    <?php if($esSeguido): ?>
+                        <button class="btn btn-outline-secondary btn-sm rounded-pill px-3"
+                                data-action="dejar-seguir"
+                                data-id-usuario="<?= $usuario->getId() ?>">
+                            Siguiendo
+                        </button>
+                    <?php else: ?>
+                        <button class="btn btn-primary btn-sm rounded-pill px-3"
+                                data-action="seguir"
+                                data-id-usuario="<?= $usuario->getId() ?>">
+                            Seguir
+                        </button>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
                 <p class="text-muted mb-1">@<?= $usuario->getNombreUsuario() ?> · Miembro desde <?= date('Y', strtotime($usuario->getFechaRegistro())) ?></p>
                 <p class="text-muted mb-3"><?= $usuario->getBio() ?></p>
                 
@@ -30,7 +47,7 @@
                         <span class="d-block h5 mb-0 fw-bold"><?= count($listas) ?></span>
                         <small class="text-muted text-uppercase" style="font-size: 0.7rem;">Listas</small>
                     </div>
-                </div>
+                </div>                
             </div>                    
         </div>
     </div>

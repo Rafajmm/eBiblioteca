@@ -168,5 +168,8 @@ class Comentario {
         return $result['count'] > 0;
     }
 
+    public function revisar(){
+        $this->setRevisado(1);
+    }
 }
 ?>

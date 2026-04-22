@@ -77,7 +77,7 @@ class Puntuacion {
         $stmt->execute([$id_usuario, $id_obra]);
         $puntuacion = $stmt->fetch();
         if($puntuacion) {
-            return $puntuacion['valor'];
+            return new Puntuacion($puntuacion['valor'], $puntuacion['id_usuario'], $puntuacion['id_obra'],$puntuacion['fecha_puntuacion']);
         }
         return null;
     }

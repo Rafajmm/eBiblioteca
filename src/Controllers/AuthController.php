@@ -45,7 +45,7 @@ class AuthController {
         }
         
         $_SESSION['id_usuario']=$datos['id'];
-        $_SESSION['nombre_usuario']=$datos['nombre'];
+        $_SESSION['nombre_usuario']=$datos['nombre_usuario'];
         $_SESSION['es_admin']=(bool)$datos['es_admin'];
 
         session_regenerate_id(true);

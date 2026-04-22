@@ -77,6 +77,54 @@ class AutorController {
     }
 
     public function crearAutor(){
+        $nombre=$_POST['idNombreAutor'];
+        $pais=$_POST['pais'];
+        $fecha_nacimiento=$_POST['fechaNacimiento'];
+        $biografia=$_POST['biografia'];
         
+        $id=Autor::guardar($nombre, $pais, $fecha_nacimiento, $biografia);
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true, 'id' => $id]);
+    }
+
+    public function editarAutor(){
+        $id=(int)$_POST['edIdAutor'];
+        $autor=Autor::crearInstancia($id);
+        if(!$autor){
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Autor no encontrado']);
+            return;
+        }
+        
+        $nombre=$_POST['edNombreAutor'];
+        $pais=$_POST['edPais'];
+        $fecha_nacimiento=$_POST['edFechaNacimiento'];
+        $biografia=$_POST['edBiografia'];
+        
+        if(!empty($nombre)) $autor->setNombre($nombre);
+        if(!empty($pais)) $autor->setPais($pais);
+        if(!empty($fecha_nacimiento)) $autor->setFechaNacimiento($fecha_nacimiento);
+        if(!empty($biografia)) $autor->setBiografia($biografia);
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
+    }
+
+    public function eliminarAutor(){
+        $id=(int)$_POST['idAutor'];
+        $autor=Autor::crearInstancia($id);
+        if(!$autor){
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Autor no encontrado']);
+            return;
+        }
+        
+        $autor->eliminar();
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
     }
 }

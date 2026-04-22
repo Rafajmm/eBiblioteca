@@ -36,4 +36,44 @@ class AdminController {
         $controlador=new ObraController();
         $controlador->eliminarObra();
     }
+
+    public function crearAutor(){
+        $controlador=new AutorController();
+        $controlador->crearAutor();
+    }
+
+    public function editarAutor(){
+        $controlador=new AutorController();
+        $controlador->editarAutor();
+    }
+
+    public function eliminarAutor(){
+        $controlador=new AutorController();
+        $controlador->eliminarAutor();
+    }
+
+    public function banearUsuario(){
+        $controlador=new UsuarioController();
+        $controlador->banearUsuario();
+    }
+
+    public function activarUsuario(){
+        $controlador=new UsuarioController();
+        $controlador->activarUsuario();
+    }
+
+    public function editarUsuario(){
+        $controlador=new UsuarioController();
+        $controlador->editarUsuario();
+    }
+
+    public function revisarComentario(){
+        $controlador=new ComentarioController();
+        $controlador->revisarComentario();
+    }
+
+    public function eliminarComentario(){
+        $controlador=new ComentarioController();
+        $controlador->eliminarComentario();
+    }
 }

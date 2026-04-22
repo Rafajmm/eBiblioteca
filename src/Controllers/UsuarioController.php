@@ -209,5 +209,62 @@ class UsuarioController {
     public function cargarTodos(){
         return Usuario::cargarTodos();
     }
+
+    public function banearUsuario(){
+        $id=(int)$_POST['idUsuario'];
+        $usuario=Usuario::crearInstancia($id);
+        if(!$usuario){
+            http_response_code(404);
+            echo json_encode(['error'=>'Usuario no encontrado']);
+            return;
+        }
+        
+        $usuario->banear();
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
+    }
+
+    public function activarUsuario(){
+        $id=(int)$_POST['idUsuario'];
+        $usuario=Usuario::crearInstancia($id);
+        if(!$usuario){
+            http_response_code(404);
+            echo json_encode(['error'=>'Usuario no encontrado']);
+            return;
+        }
+        
+        $usuario->activar();
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
+    }
+
+    public function editarUsuario(){
+        $id=(int)$_POST['idUsuario'];
+        $usuario=Usuario::crearInstancia($id);
+        if(!$usuario){
+            http_response_code(404);
+            echo json_encode(['error'=>'Usuario no encontrado']);
+            return;
+        }
+        
+        $nombre=$_POST['edNombre'];
+        $nombre_usuario=$_POST['edNombreUsuario'];
+        $correo=$_POST['edCorreo'];
+        $bio=$_POST['edBio'];
+        $ruta_foto=$_POST['edRutaFoto'];
+        $pass=$_POST['edPass'];
+        
+        if(!empty($nombre)) $usuario->setNombre($nombre);
+        if(!empty($nombre_usuario)) $usuario->setNombreUsuario($nombre_usuario);
+        if(!empty($correo)) $usuario->setCorreo($correo);
+        if(!empty($bio)) $usuario->setBio($bio);
+        if(!empty($ruta_foto)) $usuario->setRutaFoto($ruta_foto);
+        if(!empty($pass)) $usuario->setPass($pass);
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
+    }
 }
 ?>
