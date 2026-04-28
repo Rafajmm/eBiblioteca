@@ -61,7 +61,17 @@
                           >
                           <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                        <?php if(!$obra['fecha_borrado']): ?>
+                        <button class="btn btn-sm btn-outline-danger"
+                          data-action="eliminar-obra"
+                          data-id-obra="<?= (int)$obra['id'] ?>"
+                        ><i class="bi bi-trash"></i></button>
+                        <?php else: ?>
+                          <button class="btn btn-sm btn-outline-success"
+                          data-action="activar-obra"
+                          data-id-obra="<?= (int)$obra['id'] ?>"
+                          ><i class="bi bi-check"></i></button>
+                        <?php endif; ?>
                       </td>
                     </tr>                
                   <?php endforeach; ?>
@@ -171,7 +181,11 @@
                             >
                               <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn btn-link text-<?= $usuario['activo'] ? 'warning' : 'primary' ?> p-0"><i class="bi bi-<?= $usuario['activo'] ? 'slash-circle' : 'arrow-counterclockwise' ?>"></i></button>
+                            <button class="btn btn-link text-<?= $usuario['activo'] ? 'warning' : 'primary' ?> p-0"
+                              data-action="cambiar-estado-usuario"
+                              data-usuario-id="<?= (int)$usuario['id'] ?>"
+                              data-activo="<?= $usuario['activo'] ? '1' : '0' ?>"
+                            ><i class="bi bi-<?= $usuario['activo'] ? 'slash-circle' : 'arrow-counterclockwise' ?>"></i></button>
                           </td>
                         </tr>
                       <?php endforeach;?>
@@ -245,12 +259,12 @@
 
             <div class="col-md-4">
               <label class="form-label fw-semibold">Año de publicación</label>
-              <input type="number" name="anio" class="form-control" value="2026" />
+              <input type="number" name="anio" class="form-control" value="2026" required/>
             </div>
 
             <div class="col-md-4">
               <label class="form-label fw-semibold">Páginas</label>
-              <input type="number" name="pagina" class="form-control" placeholder="350" />
+              <input type="number" name="pagina" class="form-control" placeholder="350" required/>
             </div>
 
             <div class="col-md-8">
@@ -267,7 +281,7 @@
 
             <div class="col-md-6">
               <label class="form-label fw-semibold">Autor(es)</label>
-              <select name="autores[]" class="form-select" multiple size="6" required>
+              <select name="autores[]" class="form-select" multiple size="6">
                 <?php foreach($autores as $autor):?>
                   <option value="<?=$autor['id']?>"><?=$autor['nombre']?></option>
                 <?php endforeach;?>
@@ -514,4 +528,4 @@
   </div>
 </div>
 
-<script src="/assets/js/admin.js"></script>
+<script type="module" src="/assets/js/admin.js"></script>

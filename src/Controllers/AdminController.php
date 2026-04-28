@@ -37,6 +37,11 @@ class AdminController {
         $controlador->eliminarObra();
     }
 
+    public function activarObra($id){
+        $controlador=new ObraController();
+        $controlador->activarObra($id);
+    }
+
     public function crearAutor(){
         $controlador=new AutorController();
         $controlador->crearAutor();

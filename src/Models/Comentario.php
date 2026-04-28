@@ -44,7 +44,7 @@ class Comentario {
 
     public static function obtenerPorObra($id_obra) {
         $db=Database::conectar();
-        $stmt=$db->prepare("SELECT c.*, u.nombre_usuario as usuario FROM comentarios c JOIN usuarios u ON c.id_usuario = u.id WHERE c.id_obra=?");
+        $stmt=$db->prepare("SELECT c.*, u.nombre_usuario as usuario FROM comentarios c JOIN usuarios u ON c.id_usuario = u.id WHERE c.id_obra=? ORDER BY c.fecha_comentario DESC");
         $stmt->execute([$id_obra]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

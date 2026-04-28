@@ -249,7 +249,8 @@
 <section id="listas" class="seccion-usuario d-none">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="h4 fw-bold mb-0 fuenteSerif">Tus Listas de Lectura</h3>
-        <button class="btn btn-dark rounded-pill px-4">
+        <button class="btn btn-dark rounded-pill px-4"
+        data-action="crear-lista">
             <i class="bi bi-plus-lg me-2"></i>Nueva Lista
         </button>
     </div>
@@ -363,35 +364,4 @@
     </section>
 <?php endif; ?>
 
-<script>        
-document.addEventListener('DOMContentLoaded', function() {       
-    const botones= document.querySelectorAll('.botonPildoraUsuario');    
-    const secciones= document.querySelectorAll('.seccion-usuario');
-    const btnSeguidores= document.getElementById('btnSeguidores');
-    const btnSeguidos= document.getElementById('btnSeguidos')
-
-    function cambiarSeccion(targetId){
-        botones.forEach(b => b.classList.remove('active'));
-        const botonActual=document.querySelector(`.botonPildoraUsuario[data-target="${targetId}"]`);
-        if(botonActual) botonActual.classList.add('active');
-
-        secciones.forEach(s => s.classList.add('d-none'));
-        document.getElementById(targetId).classList.remove('d-none');
-    }
-
-    botones.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const targetId = this.getAttribute('data-target');
-            cambiarSeccion(targetId);
-        });
-    });
-
-    btnSeguidores.addEventListener('click', function(){
-        cambiarSeccion('seguidores');
-    });
-
-    btnSeguidos.addEventListener('click', function(){
-        cambiarSeccion('seguidos');
-    });
-});
-</script>
+<script type="module" src="/assets/js/vusuario.js"></script>

@@ -21,7 +21,7 @@ class PuntuacionController {
             return;
         }
         
-        $obra=Obra::creaInstancia($idObra);
+        $obra=Obra::crearInstancia($idObra);
         if(!$obra){
             http_response_code(404);
             header('Content-Type: application/json');

@@ -200,6 +200,7 @@ body{
     transition: all 0.2s ease-in-out;
 }
 
+/* Estilos para foto de perfil */
 .imgPerfil {
     width: 150px;
     height: 150px;
@@ -212,3 +213,22 @@ body{
         height: 350px;
     } */
 } 
+
+/* Estilos para comentarios */
+.pComentario {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    word-break: break-all;
+    overflow-wrap: break-word;
+}
+
+/* Estilos para puntuaciones */
+.estrellas i {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    display: inline-block;
+}
+
+.estrellas i:hover {
+    transform: scale(1.2);
+}

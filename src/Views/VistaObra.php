@@ -34,11 +34,10 @@
                                     <span class="badge bg-light text-dark border px-3 py-2"><?= $etiqueta['nombre'] ?></span>
                                 <?php endforeach; ?>
                             <?php endif; ?>
-                            <div class="text-warning ms-2 fs-5">
+                            <div class="text-warning ms-2 fs-5 estrellas" data-id-obra="<?= $obra->getId() ?>">
                                 <?php
                                     $puntuacion = 0;
-                                    if (isset($_SESSION['user_id'])) {
-                                        $puntuacionUsuario = Puntuacion::buscarPorUsuarioYObra($_SESSION['user_id'], $obra->getId());
+                                    if (isset($_SESSION['id_usuario'])) {
                                         $puntuacion = $puntuacionUsuario ?: ($puntuacionMedia ?: 0);
                                     } else {
                                         $puntuacion = $puntuacionMedia ?: 0;
@@ -46,15 +45,15 @@
 
                                     for ($i = 1; $i <= 5; $i++) {
                                         if ($puntuacion >= $i) {
-                                            echo '<i class="bi bi-star-fill text-warning"></i>';
+                                            echo '<i class="bi bi-star-fill text-warning" data-action="puntuar" data-valor="' . $i . '"></i>';
                                         } elseif ($puntuacion > ($i - 1) && $puntuacion < $i) {
-                                            echo '<i class="bi bi-star-half text-warning"></i>';
+                                            echo '<i class="bi bi-star-half text-warning" data-action="puntuar" data-valor="' . $i . '"></i>';
                                         } else {
-                                            echo '<i class="bi bi-star text-muted"></i>';
+                                            echo '<i class="bi bi-star text-muted" data-action="puntuar" data-valor="' . $i . '"></i>';
                                         }
                                     }
 
-                                    echo '<span class="text-secondary small ms-1">' . number_format($puntuacion, 1) . ' (' . $totalPuntuaciones . ')</span>';
+                                    echo '<span class="text-secondary small ms-1 " id="puntuacionMedia">' . number_format($puntuacionMedia ?: 0, 1) . ' (' . $totalPuntuaciones . ')</span>';
                                 ?>
                             </div>
                         </div>
@@ -82,7 +81,13 @@
                                 <i class="bi bi-chat-left-text me-2"></i>Comentarios
                             </button>
 
-                            <button class="btn btn-light border btn-lg">
+                            <button class="btn btn-light border btn-lg"
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalAgregarObra"
+                            data-id-obra="<?= $obra->getId() ?>"
+                            data-id-usuario="<?= $_SESSION['id_usuario'] ?? '' ?>"
+                            id="abrirModalAgregarObra">
                                 <i class="bi bi-bookmark me-2"></i>Añadir a lista
                             </button>
                         </div>
@@ -139,7 +144,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-1">                    
                     <span class="fw-bold small">@<?= htmlspecialchars($comentario['usuario']) ?></span>
                 </div>
-                <p class="small text-secondary mb-2"><?= nl2br(htmlspecialchars($comentario['contenido'])) ?></p>
+                <p class="small text-secondary mb-2 w-100 pComentario"><?= nl2br(htmlspecialchars($comentario['contenido'])) ?></p>
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="text-muted fecha" data-fecha="<?= $comentario['fecha_comentario'] ?>" style="font-size: 0.75rem;"></span>
                     <button class="btn btn-link p-0 text-decoration-none">
@@ -214,92 +219,54 @@
 </div>
 </div>
 
+<div class="modal fade" id="modalAgregarObra" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title fw-bold">Añadir a lista</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0 bg-light" id="buscadorListas" placeholder="Buscar lista..." autocomplete="off">
+                    </div>
+                </div>
+                <div id="contListas" class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
+                    <div class="text-center py-4 text-muted">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                        Cargando tus listas...
+                    </div>
+                </div>
+
+                <div id="sinListas" class="text-center py-4 d-none">
+                    <i class="bi bi-inbox fs-1 text-muted mb-2"></i>
+                    <p class="text-muted mb-3">No tienes listas creadas</p>
+                    <a href="/usuario/<?= $_SESSION['id_usuario'] ?? '' ?>" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-lg me-1"></i>Crear lista
+                    </a>
+                </div>
+
+                <div id="sinCoincidencias" class="text-center py-3 d-none">
+                    <small class="text-muted">No se encontraron coincidencias</small>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 bg-light">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <div class="input-group ms-auto" style="max-width: 280px;">
+                    <input type="text" class="form-control form-control-sm" id="inputNuevaLista" placeholder="Nueva lista...">
+                    <button type="button" class="btn btn-primary btn-sm" id="btnCrearLista">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="/assets/js/jszip.min.js"></script>
 <script src="/assets/js/epub.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const lectorPDF = document.getElementById('lectorPDF');
-    const lectorEPUB= document.getElementById('lectorEPUB');
-    
-    if (lectorPDF) {
-        lectorPDF.addEventListener('show.bs.modal', function (event) {            
-            const button = event.relatedTarget;
-            
-            const pdfUrl = button.getAttribute('data-pdf-url');
-            const bookTitle = button.getAttribute('data-book-title');
-            
-            const modalTitle = lectorPDF.querySelector('#readerTitle');
-            const iframe = lectorPDF.querySelector('#pdfIframe');
-            
-            if (modalTitle) modalTitle.textContent = bookTitle;
-            
-            if (iframe) {
-                const viewerUrl = '/assets/pdfjs/web/viewer.html';
-                iframe.src = `${viewerUrl}?file=${encodeURIComponent(pdfUrl)}`;
-            }
-        });
-
-        lectorPDF.addEventListener('hidden.bs.modal', function () {
-            const iframe = lectorPDF.querySelector('#pdfIframe');
-            if (iframe) iframe.src = "";
-        });
-    }
-
-    if(lectorEPUB){
-        let libro=null;
-        let visor=null;
-
-        lectorEPUB.addEventListener('show.bs.modal',function(event){
-            const button=event.relatedTarget;
-            const epubUrl=button.getAttribute('data-epub-url');
-            const titulo=button.getAttribute('data-book-title');
-
-            document.getElementById('tituloLibro').textContent=titulo;
-
-            if(libro) {
-                libro.destroy();
-                document.getElementById("viewer").innerHTML = "";
-            }
-            
-            libro=ePub(epubUrl);
-
-            visor=libro.renderTo("viewer",{
-                width:"100%",
-                height:"100%",
-                flow:"scrolled",
-                manager:"default"
-            });
-
-            visor.display().then(function() {
-                console.log("Renderizado completo");
-                setTimeout(()=>{visor.resize();},500);
-            });
-        });
-
-        lectorEPUB.addEventListener('shown.bs.modal', function() {
-            if (visor) {
-                visor.resize();
-            }
-        });
-
-        document.getElementById("next").addEventListener("click",function(e){
-            if(visor) visor.next();
-            e.preventDefault();
-        });
-
-        document.getElementById("prev").addEventListener("click",function(e){
-            if(visor) visor.prev();
-            e.preventDefault();
-        });
-
-        lectorEPUB.addEventListener('hidden.bs.modal',function(){
-            if(libro){
-                libro.destroy();
-                libro=null;
-            }
-
-            document.getElementById("viewer").innerHTML="";
-        });
-    }
-});
-</script>
+<script type="module" src="/assets/js/vobra.js"></script>

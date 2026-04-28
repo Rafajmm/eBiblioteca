@@ -1,3 +1,5 @@
+import { peticion, mostrarNotificacion } from './utilidades.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     const botones = document.querySelectorAll('#admin-nav button');
     const secciones = document.querySelectorAll('.admin-section');
@@ -35,11 +37,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if(!button) return;
 
             const id=button.getAttribute('data-id-obra') || '';
-            const titulo=button.getAttribute('data-titulo' || '');
-            const anio=button.getAttribute('data-anio' || '');
-            const pagina=button.getAttribute('data-paginas' || '');
-            const genero=button.getAttribute('data-genero' || '');
-            const sinopsis=button.getAttribute('data-sinopsis' || '');
+            const titulo=button.getAttribute('data-titulo') || '';
+            const anio=button.getAttribute('data-anio') || '';
+            const pagina=button.getAttribute('data-paginas') || '';
+            const genero=button.getAttribute('data-genero') || '';
+            const sinopsis=button.getAttribute('data-sinopsis') || '';
             const autores=button.getAttribute('data-autores');
             const etiquetas=button.getAttribute('data-etiquetas');
 
@@ -126,4 +128,123 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-  });
+});
+
+// CRUD Obra
+document.addEventListener('DOMContentLoaded', function() {
+    // Enviar formulario de nueva obra
+    const fObraNueva = document.getElementById('formObraNueva');
+    if (fObraNueva) {
+        fObraNueva.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const datos = Object.fromEntries(formData.entries());
+            
+            try {
+                const resp = await peticion('/admin/obra/crear', { body: datos });
+                
+                const modal = bootstrap.Modal.getInstance(
+                    document.getElementById('modalObraNueva')
+                );
+                if (modal) modal.hide();
+                
+                mostrarNotificacion('Obra creada correctamente', 'success');
+                
+                setTimeout(() => location.reload(), 1000);
+                
+            } catch (error) {
+                mostrarNotificacion(error.message, 'danger');
+            }
+        });
+    }
+
+    //Editar obra existente
+    const fEdObra=document.getElementById('formEdObra');
+    if(fEdObra){
+        fEdObra.addEventListener('submit',async function(e){
+            e.preventDefault();
+
+            const formData=new FormData(this);
+            const datos=Object.fromEntries(formData.entries());
+
+            datos.autores_actualizar=formData.getAll('autores_actualizar[]');
+            datos.etiquetas_actualizar=formData.getAll('etiquetas_actualizar[]');
+
+            try{
+                await peticion(`/admin/obra/${datos.idObra}/editar`,{body:datos});
+
+                const modal=bootstrap.Modal.getInstance(
+                    document.getElementById('modalEditarObra')
+                );
+                if (modal) modal.hide();
+                
+                mostrarNotificacion('Obra editada correctamente', 'success');
+                
+                setTimeout(() => location.reload(), 1000);
+            } catch (error) {
+                mostrarNotificacion(error.message, 'danger');
+            }
+        });
+    }
+
+    // Eliminar obra
+    document.body.addEventListener('click', async function(e) {
+        const btn = e.target.closest('[data-action="eliminar-obra"]');
+        if (!btn) return;
+        
+        e.preventDefault();
+        
+        if (!confirm('¿Estás seguro de que quieres eliminar esta obra?')) return;
+        
+        const idObra = btn.dataset.idObra;
+        
+        try {
+            await peticion(`/admin/obra/${idObra}/eliminar`, {
+                body: { idObra: idObra }
+            });
+            
+            // Eliminar la fila de la tabla
+            const fila = btn.closest('tr');
+            if (fila) {
+                fila.style.transition = 'opacity 0.3s';
+                fila.style.opacity = '0';
+                setTimeout(() => fila.remove(), 300);
+            }
+            
+            mostrarNotificacion('Obra eliminada', 'success');
+        } catch (error) {
+            mostrarNotificacion(error.message, 'danger');
+        }
+    });
+
+    //Activar obra
+    document.body.addEventListener('click', async function(e) {
+        const btn = e.target.closest('[data-action="activar-obra"]');
+        if (!btn) return;
+        
+        e.preventDefault();
+        
+        if (!confirm('¿Estás seguro de que quieres activar esta obra?')) return;
+        
+        const idObra = btn.dataset.idObra;
+        
+        try {
+            await peticion(`/admin/obra/${idObra}/activar`, {
+                body: { idObra: idObra }
+            });
+            
+            // Eliminar la fila de la tabla
+            const fila = btn.closest('tr');
+            if (fila) {
+                fila.style.transition = 'opacity 0.3s';
+                fila.style.opacity = '0';
+                setTimeout(() => fila.remove(), 300);
+            }
+            
+            mostrarNotificacion('Obra activada', 'success');
+        } catch (error) {
+            mostrarNotificacion(error.message, 'danger');
+        }
+    });
+});

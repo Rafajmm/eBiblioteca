@@ -90,10 +90,10 @@ class ListaController {
             return;
         }
         
-        $lista=Lista::guardar($nombre, $descripcion, $_SESSION['id_usuario']);
+        $id=Lista::guardar($nombre, $_SESSION['id_usuario'], $descripcion);
         
         header('Content-Type: application/json');
-        echo json_encode(['ok'=>true, 'id'=>$lista->getId()]);
+        echo json_encode(['ok'=>true, 'id'=>$id]);
     }
 
     public function agregarObra($id){
@@ -138,7 +138,7 @@ class ListaController {
             return;
         }
 
-        $lista->removeObra($idObra);
+        $lista->eliminarObra($idObra);
         
         header('Content-Type: application/json');
         echo json_encode(['ok'=>true]);
@@ -174,7 +174,7 @@ class ListaController {
         echo json_encode(['ok'=>true, 'id'=>$nuevaLista->getId()]);
     }
 
-    Public function eliminar($id){
+    public function eliminar($id){
         $lista=Lista::crearInstancia($id);
         if(!$lista){
             http_response_code(404);
@@ -191,6 +191,61 @@ class ListaController {
         }
 
         $lista->eliminar();
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
+    }
+
+    public function obtenerListasUsuario($id){
+        if(!isset($_SESSION['id_usuario'])){
+            http_response_code(401);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'No has iniciado sesión']);
+            return;
+        }
+
+        if((int)$id!==$_SESSION['id_usuario']){
+            http_response_code(403);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'No puedes ver las listas de otro usuario']);
+            return;
+        }
+        
+        $listas = Lista::buscarPorUsuario($id);
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true, 'listas'=>$listas]);
+    }
+
+    public function editarLista($id){
+        $id=(int)$id;
+        $nombre=trim($_POST['nombre'] ?? '');
+        $descripcion=trim($_POST['descripcion'] ?? '');
+        
+        if(empty($nombre)){
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'El nombre no puede estar vacío']);
+            return;
+        }
+        
+        $lista=Lista::crearInstancia($id);
+        if(!$lista){
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Lista no encontrada']);
+            return;
+        }
+        
+        if($lista->getIdUsuario() != $_SESSION['id_usuario']){
+            http_response_code(403);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'No puedes editar esta lista']);
+            return;
+        }
+        
+        $lista->setNombre($nombre);
+        $lista->setDescripcion($descripcion);
         
         header('Content-Type: application/json');
         echo json_encode(['ok'=>true]);

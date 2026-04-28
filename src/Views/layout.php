@@ -64,7 +64,7 @@
 
 
     <script src="/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/assets/js/ebiblioteca.js"></script>
+    <script type="module" src="/assets/js/ebiblioteca.js"></script>
 
     <?php if (isset($js_extra)): ?>
         <?php foreach($js_extra as $js):?>

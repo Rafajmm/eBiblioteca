@@ -98,7 +98,7 @@ $router->get('/usuario/{id}', function($id) {
 });
 
 // Editar perfil propio
-$router->post('/usuario/editar', function() {
+$router->post('/usuario/{id}/editar', function() {
     require_once __DIR__ . '/../src/Controllers/UsuarioController.php';
     $controller = new UsuarioController();
     $controller->editarPerfil();
@@ -118,12 +118,12 @@ $router->post('/usuario/{id}/dejar-seguir', function($id) {
     $controller->dejarSeguir($id);
 },[['Middleware','autenticado']]);
 
-//Ver una lista (no requiere autenticación)
-$router->get('/lista/{id}', function($id) {
+// Obtener listas de un usuario
+$router->get('/usuario/{id}/listas',function($id){
     require_once __DIR__ . '/../src/Controllers/ListaController.php';
     $controller = new ListaController();
-    $controller->verLista($id);
-});
+    $controller->obtenerListasUsuario($id);
+},[['Middleware','autenticado']]);
 
 // Crear lista de lectura
 $router->post('/lista/crear', function() {
@@ -165,6 +165,13 @@ $router->post('/lista/{id}/eliminar', function($id) {
     require_once __DIR__ . '/../src/Controllers/ListaController.php';
     $controller = new ListaController();
     $controller->eliminar($id);
+},[['Middleware','autenticado']]);
+
+// Editar lista
+$router->post('/lista/{id}/editar', function($id) {
+    require_once __DIR__ . '/../src/Controllers/ListaController.php';
+    $controller = new ListaController();
+    $controller->editarLista($id);
 },[['Middleware','autenticado']]);
 
 // Comentar en una obra
@@ -218,17 +225,24 @@ $router->post('/admin/obra/crear', function() {
 },[['Middleware','admin']]);
 
 // Editar obra existente
-$router->post('/admin/obra/editar', function() {
+$router->post('/admin/obra/{id}/editar', function() {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
     $controller->editarObra();
 },[['Middleware','admin']]);
 
 // Eliminar obra (soft delete)
-$router->post('/admin/obra/eliminar', function() {
+$router->post('/admin/obra/{id}/eliminar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->eliminarObra();
+    $controller->eliminarObra($id);
+},[['Middleware','admin']]);
+
+//Activar obra
+$router->post('/admin/obra/{id}/activar', function($id) {
+    require_once __DIR__ . '/../src/Controllers/AdminController.php';
+    $controller = new AdminController();
+    $controller->activarObra($id);
 },[['Middleware','admin']]);
 
 // Crear autor
@@ -239,52 +253,52 @@ $router->post('/admin/autor/crear', function() {
 },[['Middleware','admin']]);
 
 // Editar autor existente
-$router->post('/admin/autor/editar', function() {
+$router->post('/admin/autor/{id}/editar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->editarAutor();
+    $controller->editarAutor($id);
 },[['Middleware','admin']]);
 
 // Eliminar autor (soft delete)
-$router->post('/admin/autor/eliminar', function() {
+$router->post('/admin/autor/{id}/eliminar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->eliminarAutor();
+    $controller->eliminarAutor($id);
 },[['Middleware','admin']]);
 
 // Banear usuario
-$router->post('/admin/usuario/banear', function() {
+$router->post('/admin/usuario/{id}/banear', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->banearUsuario();
+    $controller->banearUsuario($id);
 },[['Middleware','admin']]);
 
 // Activar usuario
-$router->post('/admin/usuario/activar', function() {
+$router->post('/admin/usuario/{id}/activar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->activarUsuario();
+    $controller->activarUsuario($id);
 },[['Middleware','admin']]);
 
 // Editar usuario
-$router->post('/admin/usuario/editar', function() {
+$router->post('/admin/usuario/{id}/editar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->editarUsuario();
+    $controller->editarUsuario($id);
 },[['Middleware','admin']]);
 
 // Revisar comentario
-$router->post('/admin/comentario/revisar', function() {
+$router->post('/admin/comentario/{id}/revisar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->revisarComentario();
+    $controller->revisarComentario($id);
 },[['Middleware','admin']]);
 
 // Eliminar comentario
-$router->post('/admin/comentario/eliminar', function() {
+$router->post('/admin/comentario/{id}/eliminar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->eliminarComentario();
+    $controller->eliminarComentario($id);
 },[['Middleware','admin']]);
 
 // Despachar la petición actual

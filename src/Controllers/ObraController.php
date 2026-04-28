@@ -90,7 +90,8 @@ class ObraController {
         $title=$obra->getTitulo();
         
         if(isset($_SESSION['id_usuario'])) {
-            $puntuacionUsuario=Puntuacion::buscarPorUsuarioYObra($_SESSION['id_usuario'], $obra->getId());
+            $instancia=Puntuacion::buscarPorUsuarioYObra($_SESSION['id_usuario'], $obra->getId());
+            $puntuacionUsuario=$instancia ? $instancia->getValor() : 0;
         }
         
         ob_start();
@@ -209,6 +210,26 @@ class ObraController {
         }
         
         $obra->eliminar();
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
+    }
+
+    public function activarObra($id){
+        if(!($id!=$_POST['idObra'])){
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Error al activar la obra']);
+            return;
+        }
+        $obra=Obra::crearInstancia($id);
+        if(!$obra){
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Obra no encontrada']);
+            return;
+        }
+        
+        $obra->setFechaBorrado(null);
         header('Content-Type: application/json');
         echo json_encode(['ok'=>true]);
     }

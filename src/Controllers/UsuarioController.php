@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../Models/Usuario.php';
 require_once __DIR__ . '/../Models/Lista.php';
 require_once __DIR__ . '/../Models/Obra.php';
+require_once __DIR__ . '/ListaController.php';
 
 
 class UsuarioController {
@@ -38,7 +39,6 @@ class UsuarioController {
             $actor=Usuario::crearInstancia($datosActor['nombre_usuario']);
             $esSeguido=$actor->esSeguido($id_usuario);
         }
-
 
         ob_start();
         require_once __DIR__ . '/../Views/VistaUsuario.php';
