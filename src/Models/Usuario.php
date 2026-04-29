@@ -189,7 +189,7 @@ class Usuario{
 
     public function obtenerSeguidos(){
         $bd=Database::conectar();
-        $stmt=$bd->prepare("SELECT * FROM seguidores WHERE id_seguidor=?");
+        $stmt=$bd->prepare("SELECT * FROM seguidores JOIN usuarios ON seguidores.id_seguido = usuarios.id WHERE seguidores.id_seguidor=? AND usuarios.activo=1");
         $stmt->execute([$this->id]);
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
         
@@ -202,7 +202,7 @@ class Usuario{
 
     public function obtenerSeguidores(){
         $bd=Database::conectar();
-        $stmt=$bd->prepare("SELECT * FROM seguidores WHERE id_seguido=?");
+        $stmt=$bd->prepare("SELECT * FROM seguidores JOIN usuarios ON seguidores.id_seguidor = usuarios.id WHERE seguidores.id_seguido=? AND usuarios.activo=1");
         $stmt->execute([$this->id]);
         
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);

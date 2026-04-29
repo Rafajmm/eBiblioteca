@@ -10,8 +10,8 @@ class AdminController {
         $comentariosReportados=(new ComentarioController())->obtenerComentariosReportados();
         $comentariosUsuariosSinModerar=(new ComentarioController())->obtenerComentariosSinModerar();
         $usuarios=(new UsuarioController())->cargarTodos();
-        $obras=(new ObraController())->cargarTodas();
-        $autores=(new AutorController())->cargarTodos();
+        $obras=(new ObraController())->cargarTodasParaAdmin();
+        $autores=(new AutorController())->cargarTodosParaAdmin();
         $etiquetas=(new EtiquetaController())->obtenerTodas();
         $title="Panel de Administración";
         
@@ -27,9 +27,9 @@ class AdminController {
         $controlador->crearObra();
     }
 
-    public function editarObra(){
+    public function editarObra($id){
         $controlador=new ObraController();
-        $controlador->editarObra();
+        $controlador->editarObra($id);
     }
 
     public function eliminarObra(){
@@ -47,38 +47,48 @@ class AdminController {
         $controlador->crearAutor();
     }
 
-    public function editarAutor(){
+    public function editarAutor($id){
         $controlador=new AutorController();
-        $controlador->editarAutor();
+        $controlador->editarAutor($id);
     }
 
-    public function eliminarAutor(){
+    public function eliminarAutor($id){
         $controlador=new AutorController();
-        $controlador->eliminarAutor();
+        $controlador->eliminarAutor($id);
     }
 
-    public function banearUsuario(){
+    public function activarAutor($id){
+        $controlador=new AutorController();
+        $controlador->activarAutor($id);
+    }
+
+    public function banearUsuario($id){
         $controlador=new UsuarioController();
-        $controlador->banearUsuario();
+        $controlador->banearUsuario($id);
     }
 
-    public function activarUsuario(){
+    public function activarUsuario($id){
         $controlador=new UsuarioController();
-        $controlador->activarUsuario();
+        $controlador->activarUsuario($id);
     }
 
-    public function editarUsuario(){
+    public function editarUsuario($id){
         $controlador=new UsuarioController();
-        $controlador->editarUsuario();
+        $controlador->editarUsuario($id);
     }
 
-    public function revisarComentario(){
+    public function revisarComentario($id){
         $controlador=new ComentarioController();
-        $controlador->revisarComentario();
+        $controlador->revisarComentario($id);
     }
 
-    public function eliminarComentario(){
+    public function eliminarComentario($id){
         $controlador=new ComentarioController();
-        $controlador->eliminarComentario();
+        $controlador->eliminarComentario($id);
+    }
+
+    public function aprobarComentario($id){
+        $controlador=new ComentarioController();
+        $controlador->aprobarComentario($id);
     }
 }

@@ -210,9 +210,9 @@ class UsuarioController {
         return Usuario::cargarTodos();
     }
 
-    public function banearUsuario(){
-        $id=(int)$_POST['idUsuario'];
-        $usuario=Usuario::crearInstancia($id);
+    public function banearUsuario($id){
+        $id=(int)$id;
+        $usuario=Usuario::crearInstanciaId($id);
         if(!$usuario){
             http_response_code(404);
             echo json_encode(['error'=>'Usuario no encontrado']);
@@ -225,9 +225,9 @@ class UsuarioController {
         echo json_encode(['ok'=>true]);
     }
 
-    public function activarUsuario(){
-        $id=(int)$_POST['idUsuario'];
-        $usuario=Usuario::crearInstancia($id);
+    public function activarUsuario($id){
+        $id=(int)$id;
+        $usuario=Usuario::crearInstanciaId($id);
         if(!$usuario){
             http_response_code(404);
             echo json_encode(['error'=>'Usuario no encontrado']);
@@ -240,9 +240,9 @@ class UsuarioController {
         echo json_encode(['ok'=>true]);
     }
 
-    public function editarUsuario(){
-        $id=(int)$_POST['idUsuario'];
-        $usuario=Usuario::crearInstancia($id);
+    public function editarUsuario($id){
+        $id=(int)$id;
+        $usuario=Usuario::crearInstanciaId($id);
         if(!$usuario){
             http_response_code(404);
             echo json_encode(['error'=>'Usuario no encontrado']);
@@ -262,6 +262,21 @@ class UsuarioController {
         if(!empty($bio)) $usuario->setBio($bio);
         if(!empty($ruta_foto)) $usuario->setRutaFoto($ruta_foto);
         if(!empty($pass)) $usuario->setPass($pass);
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
+    }
+    
+    public function fiableUsuario($id){
+        $id=(int)$id;
+        $usuario=Usuario::crearInstanciaId($id);
+        if(!$usuario){
+            http_response_code(404);
+            echo json_encode(['error'=>'Usuario no encontrado']);
+            return;
+        }
+        
+        $usuario->fiable();
         
         header('Content-Type: application/json');
         echo json_encode(['ok'=>true]);

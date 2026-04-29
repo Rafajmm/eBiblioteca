@@ -99,6 +99,25 @@ class Obra {
                                 on obras.id=obra_autores.id_obra 
                             LEFT JOIN autores 
                                 on obra_autores.id_autor=autores.id 
+                            WHERE obras.fecha_borrado IS NULL
+                            GROUP BY obras.id");
+        
+        $stmt->execute();
+        $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
+        if($datos){
+            return $datos;
+        }
+        return null;
+    }
+
+    public static function cargarTodasParaAdmin(){
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT obras.*, GROUP_CONCAT(autores.nombre SEPARATOR ', ') as autor 
+                            FROM obras 
+                            LEFT JOIN obra_autores 
+                                on obras.id=obra_autores.id_obra 
+                            LEFT JOIN autores 
+                                on obra_autores.id_autor=autores.id 
                             GROUP BY obras.id");
         
         $stmt->execute();
@@ -201,7 +220,7 @@ class Obra {
             $consulta.=" OR anio_publicacion=?";
             $parametros[]=(int)$parametro;
         }
-        $consulta.=" GROUP BY obras.id";
+        $consulta.=" AND obras.fecha_borrado IS NULL GROUP BY obras.id";
         $stmt=$db->prepare($consulta);
         $stmt->execute($parametros);
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -302,6 +321,20 @@ class Obra {
         $stmt->execute([$this->id]);
         $datos=$stmt->fetch(PDO::FETCH_ASSOC);
         return $datos['puntuacion_media'];
+    }
+
+    public function eliminarAutores(){
+        $db=Database::conectar();
+        $stmt=$db->prepare("DELETE FROM obra_autores WHERE id_obra=?");
+        $stmt->execute([$this->id]);
+        return $stmt->rowCount() > 0;
+    }
+
+    public function eliminarEtiquetas(){
+        $db=Database::conectar();
+        $stmt=$db->prepare("DELETE FROM obra_etiquetas WHERE id_obra=?");
+        $stmt->execute([$this->id]);
+        return $stmt->rowCount() > 0;
     }
 
     public static function obtenerPortada($titulo) {

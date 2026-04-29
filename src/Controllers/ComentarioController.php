@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../Models/Comentario.php';
+require_once __DIR__ . '/UsuarioController.php';
 
 class ComentarioController {
     public function obtenerComentariosPorObra($id_obra){
@@ -15,9 +16,9 @@ class ComentarioController {
         return $comentarios;
     }
 
-    public function revisarComentario(){
+    public function revisarComentario($id){
         $id=(int)($_POST['idComentario']);
-        $comentario=Comentario::creaInstancia($id);
+        $comentario=Comentario::crearInstancia($id);
         if(!$comentario){
             http_response_code(404);
             header('Content-Type: application/json');
@@ -31,7 +32,7 @@ class ComentarioController {
         echo json_encode(['ok'=>true]);
     }
 
-    public function eliminarComentario(){
+    public function eliminarComentario($id){
         $id=(int)($_POST['idComentario']);
         $comentario=Comentario::creaInstancia($id);
         if(!$comentario){
@@ -41,6 +42,7 @@ class ComentarioController {
             return;
         }
         
+        $comentario->eliminarReporte();
         $comentario->eliminar();
         
         header('Content-Type: application/json');
@@ -125,6 +127,24 @@ class ComentarioController {
         }
         
         $comentario->eliminarMeGusta($_SESSION['id_usuario']);
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
+    }
+
+    public function aprobarComentario($id){
+        $comentario=Comentario::crearInstancia($id);
+        if(!$comentario){
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Comentario no encontrado']);
+            return;
+        }
+
+        $controlador=new UsuarioController();
+        $controlador->fiableUsuario($comentario->getIdUsuario());
+        
+        $comentario->revisar();
         
         header('Content-Type: application/json');
         echo json_encode(['ok'=>true]);

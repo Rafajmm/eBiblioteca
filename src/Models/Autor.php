@@ -106,6 +106,17 @@ class Autor {
 
     public static function cargarTodos() {
         $db=Database::conectar();
+        $stmt=$db->prepare("SELECT * FROM autores WHERE fecha_borrado IS NULL");
+        $stmt->execute();
+        $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
+        if($datos){
+            return $datos;
+        }
+        return null;
+    }
+
+    public static function cargarTodosParaAdmin() {
+        $db=Database::conectar();
         $stmt=$db->prepare("SELECT * FROM autores");
         $stmt->execute();
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -154,8 +165,8 @@ class Autor {
 
     public function actualizar() {
         $db=Database::conectar();
-        $stmt=$db->prepare("UPDATE autores SET nombre=?, pais=?, fecha_nacimiento=?, biografia=?, ruta_foto=? WHERE id=?");
-        return $stmt->execute([$this->nombre,$this->pais,$this->fecha_nacimiento,$this->biografia,$this->ruta_foto,$this->id]);
+        $stmt=$db->prepare("UPDATE autores SET nombre=?, pais=?, fecha_nacimiento=?,fecha_borrado=?, biografia=?, ruta_foto=? WHERE id=?");
+        return $stmt->execute([$this->nombre,$this->pais,$this->fecha_nacimiento,$this->fecha_borrado,$this->biografia,$this->ruta_foto,$this->id]);
     }
 
     public function eliminar(){

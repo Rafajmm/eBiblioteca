@@ -64,8 +64,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const campoSinopsis=document.getElementById('edSinopsis');
             campoSinopsis.placeholder=sinopsis;
 
-            seleccionarMultiple(document.getElementById('edAutores'),autores);
-            seleccionarMultiple(document.getElementById('edEtiquetas'),etiquetas);            
+            seleccionarMultiple(document.getElementById('edAutores'),leerJSON(autores));
+            seleccionarMultiple(document.getElementById('edEtiquetas'),leerJSON(etiquetas));            
         });        
     }
 
@@ -130,8 +130,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-// CRUD Obra
+// CRUD panel admin
 document.addEventListener('DOMContentLoaded', function() {
+    // OBRAS
     // Enviar formulario de nueva obra
     const fObraNueva = document.getElementById('formObraNueva');
     if (fObraNueva) {
@@ -140,6 +141,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const formData = new FormData(this);
             const datos = Object.fromEntries(formData.entries());
+
+            const btn = this.querySelector('button[type="submit"]') || document.querySelector('button[form="formObraNueva"]');
+            btn.disabled = true;
+            btn.innerHTML = 'Creando...';
             
             try {
                 const resp = await peticion('/admin/obra/crear', { body: datos });
@@ -155,6 +160,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
             } catch (error) {
                 mostrarNotificacion(error.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Crear Obra';
             }
         });
     }
@@ -168,8 +176,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData=new FormData(this);
             const datos=Object.fromEntries(formData.entries());
 
-            datos.autores_actualizar=formData.getAll('autores_actualizar[]');
-            datos.etiquetas_actualizar=formData.getAll('etiquetas_actualizar[]');
+            datos.autores_actualizar=JSON.stringify(formData.getAll('autores_actualizar[]'));
+            datos.etiquetas_actualizar=JSON.stringify(formData.getAll('etiquetas_actualizar[]'));
 
             try{
                 await peticion(`/admin/obra/${datos.idObra}/editar`,{body:datos});
@@ -205,12 +213,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             // Eliminar la fila de la tabla
-            const fila = btn.closest('tr');
-            if (fila) {
-                fila.style.transition = 'opacity 0.3s';
-                fila.style.opacity = '0';
-                setTimeout(() => fila.remove(), 300);
-            }
+            btn.classList.replace('btn-outline-danger', 'btn-outline-success');
+            const icono = btn.querySelector('i');
+            icono.className = 'bi bi-arrow-counterclockwise';
+            btn.dataset.action = 'activar-obra';
             
             mostrarNotificacion('Obra eliminada', 'success');
         } catch (error) {
@@ -235,14 +241,269 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             // Eliminar la fila de la tabla
-            const fila = btn.closest('tr');
-            if (fila) {
-                fila.style.transition = 'opacity 0.3s';
-                fila.style.opacity = '0';
-                setTimeout(() => fila.remove(), 300);
-            }
+            btn.classList.replace('btn-outline-success', 'btn-outline-danger');
+            const icono = btn.querySelector('i');
+            icono.className = 'bi bi-trash';
+            btn.dataset.action = 'eliminar-obra';
             
             mostrarNotificacion('Obra activada', 'success');
+        } catch (error) {
+            mostrarNotificacion(error.message, 'danger');
+        }
+    });
+
+    // AUTORES
+    // Autor nuevo
+    const fAutorNuevo=document.getElementById('formAutorNuevo');
+    if(fAutorNuevo){
+        fAutorNuevo.addEventListener('submit', async function(e){
+            e.preventDefault();
+            const formData=new FormData(this);
+            const datos=Object.fromEntries(formData);
+            const btn = this.querySelector('button[type="submit"]') || document.querySelector('button[form="formAutorNuevo"]');
+            btn.disabled = true;
+            btn.innerHTML = 'Creando...';
+
+            try{
+                const resp=await peticion('/admin/autor/crear',{body:datos});
+                if(!resp || !resp.id || isNaN(parseInt(resp.id))) {
+                    throw new Error(resp?.error || 'No se pudo crear el autor');
+                }
+
+                const modal=bootstrap.Modal.getInstance(document.getElementById('modalAutorNuevo'));
+                modal.hide();
+                mostrarNotificacion('Autor creado correctamente','success');
+            } catch (error) {
+                mostrarNotificacion(error.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Crear Autor';
+            }
+        });
+    }
+
+    // Editar autor
+    const fEdAutor=document.getElementById('formEdAutor');
+    if(fEdAutor){
+        fEdAutor.addEventListener('submit',async function(e){
+            e.preventDefault();
+            const datos=Object.fromEntries(new FormData(this).entries());
+            const id=datos.edIdAutor;
+            const nombre=datos.edNombreAutor;
+            
+            const fila = document.querySelector(`tr[data-id-autorT="${id}"]`);
+            if (fila) {
+                const celda = fila.querySelector('.edNombre');
+                if (celda) celda.textContent = nombre;
+            }
+
+            try{
+                await peticion(`/admin/autor/${id}/editar`,{body:datos});
+                const modal=bootstrap.Modal.getInstance(document.getElementById('modalEditarAutor'));
+                modal.hide();
+                                
+                mostrarNotificacion('Autor editado correctamente','success');
+            } catch (error) {
+                mostrarNotificacion(error.message, 'danger');
+            }
+        });
+    }
+
+    // Eliminar autor
+    document.body.addEventListener('click',async function(e){
+        const btn=e.target.closest('[data-action="eliminar-autor"]');
+        if(!btn) return;
+        e.preventDefault();
+
+        if(!confirm('¿Estás seguro de eliminar este autor?')) return;
+
+        const idAutor=btn.dataset.idAutor;
+        try{
+            await peticion(`/admin/autor/${idAutor}/eliminar`, {body:{idAutor}});
+            
+            btn.classList.replace('btn-outline-danger', 'btn-outline-success');
+            const icono = btn.querySelector('i');
+            icono.className = 'bi bi-arrow-counterclockwise';
+            btn.dataset.action = 'activar-autor';
+            
+            mostrarNotificacion('Autor eliminado correctamente','success');
+        } catch (error) {
+            mostrarNotificacion(error.message, 'danger');
+        }
+    })
+
+    // Activar autor
+    document.body.addEventListener('click',async function(e){
+        const btn=e.target.closest('[data-action="activar-autor"]');
+        if(!btn) return;
+        e.preventDefault();
+
+        if(!confirm('¿Estás seguro de activar este autor?')) return;
+
+        const idAutor=btn.dataset.idAutor;
+        try{
+            await peticion(`/admin/autor/${idAutor}/activar`,{body:{idAutor}});
+            
+            btn.classList.replace('btn-outline-success', 'btn-outline-danger');
+            const icono = btn.querySelector('i');
+            icono.className = 'bi bi-trash';
+            btn.dataset.action = 'eliminar-autor';
+            
+            mostrarNotificacion('Autor activado correctamente','success');
+        } catch (error) {
+            mostrarNotificacion(error.message, 'danger');
+        }
+    });
+
+    // USUARIOS
+    // Banear/Activar usuario
+    document.body.addEventListener('click', async function(e) {
+        const btn = e.target.closest('[data-action="cambiar-estado-usuario"]');
+        if (!btn) return;
+
+        e.preventDefault();
+
+        const idUsuario = btn.dataset.usuarioId;
+        const activo = btn.dataset.activo === '1';
+
+        const accion = activo ? 'banear' : 'activar';
+        const confirmMsg = activo ? '¿Banear este usuario?' : '¿Activar este usuario?';
+
+        if (!confirm(confirmMsg)) return;
+
+        try {
+            await peticion(`/admin/usuario/${idUsuario}/${accion}`, {
+                body: { idUsuario }
+            });
+
+            const nuevoActivo = !activo;
+
+            btn.dataset.activo = nuevoActivo ? '1' : '0';
+
+            btn.classList.remove(
+                'text-warning',
+                'text-success',
+                'text-danger',
+                'text-secondary'
+            );
+
+            btn.classList.add(nuevoActivo ? 'text-warning' : 'text-success');
+
+            const icono = btn.querySelector('i');
+            if (icono) {
+                icono.className = 'bi bi-' + (nuevoActivo ? 'slash-circle' : 'arrow-counterclockwise');
+            }
+
+            const fila = btn.closest('tr');
+            const badge = fila?.querySelector('.badge');
+
+            if (badge) {
+                badge.textContent = nuevoActivo ? 'Activo' : 'Inactivo';
+
+                badge.className = nuevoActivo
+                    ? 'badge text-bg-success-subtle text-success border border-success-subtle'
+                    : 'badge text-bg-danger-subtle text-danger border border-danger-subtle';
+            }
+
+            mostrarNotificacion(
+                nuevoActivo ? 'Usuario activado' : 'Usuario baneado',
+                'success'
+            );
+
+        } catch (error) {
+            mostrarNotificacion(error.message, 'danger');
+        }
+    });
+
+    // Editar usuario
+    const fEdUsuario=document.getElementById('formEdUsuario');
+    if(fEdUsuario){
+        fEdUsuario.addEventListener('submit',async function(e){
+            e.preventDefault();
+            const datos=Object.fromEntries(new FormData(this).entries());
+            const id=datos.edIdUsuario;            
+
+            const fila = document.querySelector(`tr[data-id-usuarioT="${id}"]`);
+            if (fila) {
+                const celda = fila.querySelector('[data-nombre-usuarioT]');
+                if (celda) celda.textContent = datos.edNombreUsuario;
+            }
+
+            try{
+                await peticion(`/admin/usuario/${id}/editar`,{body:datos});
+                const modal=bootstrap.Modal.getInstance(document.getElementById('modalEditarUsuario'));
+                if(modal) modal.hide();
+                mostrarNotificacion('Usuario editado correctamente','success');
+                
+            }catch(error){
+                mostrarNotificacion(error.message,'danger');
+            }
+        });
+    }
+
+    // COMENTARIOS
+    // Eliminar comentario (reportado)
+    document.body.addEventListener('click',async function(e){
+        const btn=e.target.closest('[data-action="eliminar-comentario"]');
+        if(!btn) return;
+
+        const idComentario=btn.dataset.idComentario;
+        
+        try{
+            await peticion(`/admin/comentario/${idComentario}/eliminar`,{body:{idComentario}});
+            const comentario=btn.closest('.comentario');
+            comentario.remove();
+            mostrarNotificacion('Comentario eliminado correctamente','success');
+        }catch(error){
+            mostrarNotificacion(error.message,'danger');
+        }
+    });
+
+    // Revisar comentario (reportado)
+    document.body.addEventListener('click', async function(e){
+        const btn=e.target.closest('[data-action="revisar-comentario"]');
+        if(!btn) return;
+
+        const idComentario=btn.dataset.idComentario;
+
+        try{
+            await peticion(`/admin/comentario/${idComentario}/revisar`,{body:{idComentario}});
+            const comentario=btn.closest('.comentario');
+            comentario.remove();
+            mostrarNotificacion('Comentario revisado correctamente','success');
+        }catch(error){
+            mostrarNotificacion(error.message,'danger');
+        }
+    });
+
+    //Aprobar comentario (usuario sin moderar)
+    document.body.addEventListener('click',async function(e){
+        const btn=e.target.closest('[data-action="aprobar-comentario"]');
+
+        if(!btn) return;
+
+        const idComentario=btn.dataset.idComentario;
+
+        try{
+            await peticion(`/admin/comentario/${idComentario}/aprobar`,{body:{idComentario}});
+            const tarjeta=btn.closest('.comentario');
+            if(tarjeta) tarjeta.remove();
+            mostrarNotificacion('Comentario aprobado correctamente: usuario marcado como fiable','success');
+        }catch(error){
+            mostrarNotificacion(error.message,'danger');
+        }
+    });
+
+    //Rechazar comentario (usuario sin moderar)
+    document.body.addEventListener('click', async function(e) {
+        const btn = e.target.closest('[data-action="rechazar-comentario"]');
+        if (!btn) return;
+        const idComentario = btn.dataset.idComentario;
+        try {
+            await peticion(`/admin/comentario/${idComentario}/eliminar`, { body: { idComentario } });
+            const tarjeta = btn.closest('.comentario');
+            if (tarjeta) tarjeta.remove();
+            mostrarNotificacion('Comentario rechazado', 'success');
         } catch (error) {
             mostrarNotificacion(error.message, 'danger');
         }

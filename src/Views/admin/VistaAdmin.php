@@ -70,7 +70,7 @@
                           <button class="btn btn-sm btn-outline-success"
                           data-action="activar-obra"
                           data-id-obra="<?= (int)$obra['id'] ?>"
-                          ><i class="bi bi-check"></i></button>
+                          ><i class="bi bi-arrow-counterclockwise"></i></button>
                         <?php endif; ?>
                       </td>
                     </tr>                
@@ -109,8 +109,9 @@
               <tbody>
                 <?php if(!empty($autores)):?>
                   <?php foreach($autores as $autor):?>
-                    <tr>
-                      <td class="fw-semibold"><?= $autor['nombre'] ?></td>
+                    <tr data-id-autorT="<?= $autor['id'] ?>">
+                      <td class="fw-semibold edNombre"
+                      data-nombre-autorT="<?= $autor['nombre'] ?>"><?= $autor['nombre'] ?></td>
                       <td><?= Autor::contarObras($autor['id']) ?></td>
                       <td><?= $autor['fecha_registro'] ?></td>
                       <td class="text-end">
@@ -126,7 +127,15 @@
                           >
                           <i class="bi bi-pencil"></i>
                         </button>
-                        <button type="button" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                        <?php if(!$autor['fecha_borrado']): ?>
+                          <button type="button" class="btn btn-sm btn-outline-danger"
+                          data-action="eliminar-autor"
+                          data-id-autor="<?= $autor['id'] ?>"><i class="bi bi-trash"></i></button>
+                        <?php else: ?>
+                          <button type="button" class="btn btn-sm btn-outline-success"
+                          data-action="activar-autor"
+                          data-id-autor="<?= $autor['id'] ?>"><i class="bi bi-arrow-counterclockwise"></i></button>
+                        <?php endif; ?>
                       </td>
                     </tr>
                   <?php endforeach;?>
@@ -161,8 +170,8 @@
                   <tbody>
                     <?php if(!empty($usuarios)) :?>
                       <?php foreach($usuarios as $usuario) :?>
-                        <tr>
-                          <td><span class="fw-bold"><?= $usuario['nombre_usuario'] ?></span><br><small class="text-muted"><?= $usuario['correo'] ?></small></td>
+                        <tr data-id-usuarioT="<?= $usuario['id'] ?>">
+                          <td data-nombre-usuarioT="<?= $usuario['nombre_usuario'] ?>"><span class="fw-bold"><?= $usuario['nombre_usuario'] ?></span><br><small class="text-muted"><?= $usuario['correo'] ?></small></td>
                           <td><?= $usuario['es_admin'] ? 'Administrador' : 'Usuario' ?></td>                          
                           <td><span class="badge text-bg-success-subtle text-<?= $usuario['activo'] ? 'success' : 'danger' ?> border border-<?= $usuario['activo'] ? 'success' : 'danger' ?>-subtle"><?= $usuario['activo'] ? 'Activo' : 'Inactivo' ?></span></td>
                           <td class="text-end">
@@ -181,7 +190,7 @@
                             >
                               <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn btn-link text-<?= $usuario['activo'] ? 'warning' : 'primary' ?> p-0"
+                            <button class="btn btn-link text-<?= $usuario['activo'] ? 'warning' : 'success' ?> p-0"
                               data-action="cambiar-estado-usuario"
                               data-usuario-id="<?= (int)$usuario['id'] ?>"
                               data-activo="<?= $usuario['activo'] ? '1' : '0' ?>"
@@ -203,33 +212,43 @@
               <div class="d-flex flex-column gap-3">
                 <?php if(!empty($comentariosReportados)) :?>
                   <?php foreach($comentariosReportados as $comentario) :?>
-                    <div class="p-3 border rounded bg-light-subtle">
+                    <div class="p-3 border rounded bg-light-subtle comentario">
                       <div class="d-flex justify-content-between">
                         <span class="fw-bold">@<?= $comentario['usuario'] ?></span>
                         <small class="text-muted fecha"><?= $comentario['fecha_comentario'] ?></small>
                       </div>
                       <p class="small mb-2 mt-1">"<?= $comentario['contenido'] ?>"</p>
                       <div class="d-flex gap-2 justify-content-end">
-                        <button class="btn btn-sm btn-outline-danger">Borrar</button>
-                        <button class="btn btn-sm btn-primary">Mantener</button>
+                        <button class="btn btn-sm btn-outline-danger"
+                        data-action="eliminar-comentario"
+                        data-id-comentario="<?= $comentario['id'] ?>">Borrar</button>
+                        <button class="btn btn-sm btn-primary"
+                        data-action="revisar-comentario"
+                        data-id-comentario="<?= $comentario['id'] ?>">Mantener</button>
                       </div>
                     </div>
                   <?php endforeach;?>
-                <?php elseif(!empty($comentariosUsuariosSinModerar)) :?>
+                <?php endif;?>
+                <?php if(!empty($comentariosUsuariosSinModerar)) :?>
                   <?php foreach($comentariosUsuariosSinModerar as $comentario) :?>
-                    <div class="p-3 border rounded bg-light-subtle">
+                    <div class="p-3 border rounded bg-light-subtle comentario">
                       <div class="d-flex justify-content-between">
                         <span class="fw-bold">@<?= $comentario['usuario'] ?></span>
                         <small class="text-muted fecha" data-fecha="<?= $comentario['fecha_comentario'] ?>"></small>
                       </div>
                       <p class="small mb-2 mt-1">"<?= $comentario['contenido'] ?>"</p>
                       <div class="d-flex gap-2 justify-content-end">
-                        <button class="btn btn-sm btn-outline-danger">Rechazar</button>
-                        <button class="btn btn-sm btn-primary">Aprobar</button>
+                        <button class="btn btn-sm btn-outline-danger"
+                        data-action="rechazar-comentario"
+                        data-id-comentario="<?= $comentario['id'] ?>">Rechazar</button>
+                        <button class="btn btn-sm btn-primary"
+                        data-action="aprobar-comentario"
+                        data-id-comentario="<?= $comentario['id'] ?>">Aprobar</button>
                       </div>
                     </div>
                   <?php endforeach;?>
-                <?php else :?>
+                <?php endif;?>
+                <?php if(empty($comentariosReportados) && empty($comentariosUsuariosSinModerar)) :?>
                   <p class="text-muted">No hay comentarios por moderar.</p>
                 <?php endif;?>
               </div>
@@ -350,7 +369,7 @@
 
             <div class="col-md-8">
               <label class="form-label fw-semibold">Género principal</label>
-              <select name="edGenero" id="edGenero" class="form-select">
+              <select name="genero" id="edGenero" class="form-select">
                 <option value="Narrativa">Narrativa</option>
                 <option value="Ensayo">Ensayo</option>
                 <option value="Poesía">Poesía</option>
@@ -411,28 +430,28 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form id="formObraNueva">
+        <form id="formAutorNuevo">
           <div class="mb-3">
             <label class="form-label fw-semibold">Nombre Completo</label>
-            <input type="text" name="idNombreAutor" class="form-control" placeholder="Nombre del autor" required />
+            <input type="text" name="nombre" class="form-control" placeholder="Nombre del autor" required />
           </div>
           <div class="mb-3">
             <label class="form-label fw-semibold">País</label>
-            <input type="text" name="pais" class="form-control" placeholder="País de origen" />
+            <input type="text" name="pais" class="form-control" placeholder="País de origen" required/>
           </div>
           <div class="mb-3">
             <label for="fecha_nacimiento">Fecha de nacimiento</label>
-            <input type="date" name="fechaNacimiento" class="form-control" />
+            <input type="date" name="fechaNacimiento" class="form-control" required/>
           </div>
           <div class="mb-3">
             <label class="form-label fw-semibold">Biografía</label>
-            <textarea name="biografia" class="form-control" rows="4" placeholder="Breve reseña del autor..."></textarea>
+            <textarea name="biografia" class="form-control" rows="4" placeholder="Breve reseña del autor..." required></textarea>
           </div>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" form="formObraNueva" class="btn btn-primary">Crear Autor</button>
+        <button type="submit" form="formAutorNuevo" class="btn btn-primary">Crear Autor</button>
       </div>
     </div>
   </div>
@@ -446,7 +465,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form id="formEdAutor" action="/autores/editar" method="POST">
+        <form id="formEdAutor" action="" method="POST">
           <input type="hidden" name="edIdAutor" id="edIdAutor">
 
           <div class="mb-3">
@@ -486,7 +505,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form id="formEditUser" action="/usuarios/editar" method="POST">
+        <form id="formEdUsuario" action="/usuarios/editar" method="POST">
           <input type="hidden" name="edIdUsuario" id="edIdUsuario">
 
           <div class="mb-3">

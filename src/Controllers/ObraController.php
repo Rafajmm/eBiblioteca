@@ -153,8 +153,8 @@ class ObraController {
         echo json_encode(['ok'=>true, 'id'=>$id]);
     }
 
-    public function editarObra(){
-        $id=(int)($_POST['idObra']);
+    public function editarObra($id){
+        $id=(int)($id);
         if(!$id){
             http_response_code(400);
             header('Content-Type: application/json');
@@ -172,19 +172,23 @@ class ObraController {
         
         if(!empty($_POST['titulo'])) $obra->setTitulo($_POST['titulo']);
         if(!empty($_POST['sinopsis'])) $obra->setSinopsis($_POST['sinopsis']);
-        if(!empty($_POST['pagina'])) $obra->setPagina($_POST['pagina']);
+        if(!empty($_POST['pagina'])) $obra->setPaginas($_POST['pagina']);
         if(!empty($_POST['anio'])) $obra->setAnioPublicacion($_POST['anio']);
         if(!empty($_POST['genero'])) $obra->setGenero($_POST['genero']);
 
-        if(!empty($_POST['autores_actualizar']) && is_array($_POST['autores_actualizar'])) {
-            foreach($_POST['autores_actualizar'] as $idAutor) {
-                $obra->addAutor((int)$idAutor);
+        $autoresActualizar=json_decode($_POST['autores_actualizar'] ?? '[]', true);
+        if(is_array($autoresActualizar) && count($autoresActualizar) > 0){
+            $obra->eliminarAutores();
+            foreach($autoresActualizar as $autor){
+                $obra->addAutor($autor);
             }
         }
 
-        if(!empty($_POST['etiquetas_actualizar']) && is_array($_POST['etiquetas_actualizar'])) {
-            foreach($_POST['etiquetas_actualizar'] as $idEtiqueta) {
-                $obra->addEtiqueta((int)$idEtiqueta);
+        $etiquetasActualizar=json_decode($_POST['etiquetas_actualizar'] ?? '[]', true);
+        if(is_array($etiquetasActualizar) && count($etiquetasActualizar) > 0){
+            $obra->eliminarEtiquetas();
+            foreach($etiquetasActualizar as $etiqueta){
+                $obra->addEtiqueta($etiqueta);
             }
         }
         
@@ -215,7 +219,7 @@ class ObraController {
     }
 
     public function activarObra($id){
-        if(!($id!=$_POST['idObra'])){
+        if($id!=$_POST['idObra']){
             http_response_code(400);
             header('Content-Type: application/json');
             echo json_encode(['error' => 'Error al activar la obra']);
@@ -307,5 +311,9 @@ class ObraController {
         
         readfile($rutaCompleta);
         exit;
+    }
+
+    public function cargarTodasParaAdmin(){
+        return Obra::cargarTodasParaAdmin();
     }
 }

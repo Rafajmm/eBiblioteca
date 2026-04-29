@@ -65,7 +65,7 @@ class Comentario {
 
     public static function obtenerReportados() {
         $db=Database::conectar();
-        $stmt=$db->prepare("SELECT * FROM comentarios join reporte_comentarios on comentarios.id=reporte_comentarios.id_comentario WHERE comentarios.revisado=0");
+        $stmt=$db->prepare("SELECT c.*,u.nombre_usuario AS usuario FROM comentarios c JOIN usuarios u ON c.id_usuario = u.id JOIN reporte_comentarios rc ON c.id = rc.id_comentario WHERE c.revisado=0 AND c.fecha_borrado is null");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

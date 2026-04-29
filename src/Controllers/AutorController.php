@@ -77,10 +77,17 @@ class AutorController {
     }
 
     public function crearAutor(){
-        $nombre=$_POST['idNombreAutor'];
+        $nombre=$_POST['nombre'];
         $pais=$_POST['pais'];
         $fecha_nacimiento=$_POST['fechaNacimiento'];
         $biografia=$_POST['biografia'];
+
+        if(empty($_POST['nombre']) || empty($_POST['pais']) || empty($_POST['fechaNacimiento']) || empty($_POST['biografia'])) {
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Todos los campos son obligatorios']);
+            return;
+        }
         
         $id=Autor::guardar($nombre, $pais, $fecha_nacimiento, $biografia);
         
@@ -88,8 +95,8 @@ class AutorController {
         echo json_encode(['ok'=>true, 'id' => $id]);
     }
 
-    public function editarAutor(){
-        $id=(int)$_POST['edIdAutor'];
+    public function editarAutor($id){
+        $id=(int)$id;
         $autor=Autor::crearInstancia($id);
         if(!$autor){
             http_response_code(404);
@@ -112,8 +119,8 @@ class AutorController {
         echo json_encode(['ok'=>true]);
     }
 
-    public function eliminarAutor(){
-        $id=(int)$_POST['idAutor'];
+    public function eliminarAutor($id){
+        $id=(int)$id;
         $autor=Autor::crearInstancia($id);
         if(!$autor){
             http_response_code(404);
@@ -126,5 +133,25 @@ class AutorController {
         
         header('Content-Type: application/json');
         echo json_encode(['ok'=>true]);
+    }
+
+    public function activarAutor($id){
+        $id=(int)$id;
+        $autor=Autor::crearInstancia($id);
+        if(!$autor){
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Autor no encontrado']);
+            return;
+        }
+        
+        $autor->setFechaBorrado(null);
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
+    }
+
+    public function cargarTodosParaAdmin(){
+        return Autor::cargarTodosParaAdmin();
     }
 }

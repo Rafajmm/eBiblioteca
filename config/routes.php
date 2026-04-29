@@ -210,7 +210,7 @@ $router->post('/puntuacion/crear', function() {
 },[['Middleware','autenticado']]);
 
 // RUTAS DE ADMINISTRACIÓN (Requieren rol admin)
-// Dashboard de administración
+// Panel de administración
 $router->get('/admin', function() {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
@@ -224,11 +224,11 @@ $router->post('/admin/obra/crear', function() {
     $controller->crearObra();
 },[['Middleware','admin']]);
 
-// Editar obra existente
-$router->post('/admin/obra/{id}/editar', function() {
+// Editar obra
+$router->post('/admin/obra/{id}/editar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
-    $controller->editarObra();
+    $controller->editarObra($id);
 },[['Middleware','admin']]);
 
 // Eliminar obra (soft delete)
@@ -266,6 +266,13 @@ $router->post('/admin/autor/{id}/eliminar', function($id) {
     $controller->eliminarAutor($id);
 },[['Middleware','admin']]);
 
+//Activar autor
+$router->post('/admin/autor/{id}/activar', function($id) {
+    require_once __DIR__ . '/../src/Controllers/AdminController.php';
+    $controller = new AdminController();
+    $controller->activarAutor($id);
+},[['Middleware','admin']]);
+
 // Banear usuario
 $router->post('/admin/usuario/{id}/banear', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
@@ -299,6 +306,13 @@ $router->post('/admin/comentario/{id}/eliminar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
     $controller->eliminarComentario($id);
+},[['Middleware','admin']]);
+
+// Aprobar comentario
+$router->post('/admin/comentario/{id}/aprobar', function($id) {
+    require_once __DIR__ . '/../src/Controllers/AdminController.php';
+    $controller = new AdminController();
+    $controller->aprobarComentario($id);
 },[['Middleware','admin']]);
 
 // Despachar la petición actual
