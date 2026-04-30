@@ -34,7 +34,7 @@ class ComentarioController {
 
     public function eliminarComentario($id){
         $id=(int)($_POST['idComentario']);
-        $comentario=Comentario::creaInstancia($id);
+        $comentario=Comentario::crearInstancia($id);
         if(!$comentario){
             http_response_code(404);
             header('Content-Type: application/json');

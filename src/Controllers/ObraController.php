@@ -67,7 +67,10 @@ class ObraController {
     public function verObra($id) {
         if(!$id) {
             http_response_code(400);
-            echo json_encode(['error' => 'ID de obra requerido']);
+            ob_start();
+            require_once __DIR__ . '/../Views/400.php';
+            $contenido=ob_get_clean();
+            require_once __DIR__ . '/../Views/layout.php';
             return;
         }
         
@@ -75,7 +78,19 @@ class ObraController {
         
         if(!$obra) {
             http_response_code(404);
-            echo json_encode(['error' => 'Obra no encontrada']);
+            ob_start();
+            require_once __DIR__ . '/../Views/404.php';
+            $contenido=ob_get_clean();
+            require_once __DIR__ . '/../Views/layout.php';
+            return;
+        }
+
+        if($obra->getFechaBorrado()){
+            http_response_code(404);
+            ob_start();
+            require_once __DIR__ . '/../Views/404.php';
+            $contenido=ob_get_clean();
+            require_once __DIR__ . '/../Views/layout.php';
             return;
         }
 

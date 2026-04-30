@@ -18,6 +18,8 @@
           </button>
         </div>
         <div class="card-body">
+          <input type="text" class="form-control form-control-sm mb-2" 
+       id="buscarObras" placeholder="Buscar obra...">
           <div class="table-responsive">
             <table class="table table-hover align-middle">
               <thead class="table-light">
@@ -29,7 +31,7 @@
                   <th class="text-end">Acciones</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="tablaObras">
                 <?php if(!empty($obras)): ?>
                   <?php foreach($obras as $obra): ?>
                     <tr>
@@ -96,6 +98,8 @@
           </button>
         </div>
         <div class="card-body">
+          <input type="text" class="form-control form-control-sm mb-2" 
+       id="buscarAutores" placeholder="Buscar autor...">
           <div class="table-responsive">
             <table class="table table-hover align-middle">
               <thead class="table-light">
@@ -106,7 +110,7 @@
                   <th class="text-end">Acciones</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="tablaAutores">
                 <?php if(!empty($autores)):?>
                   <?php foreach($autores as $autor):?>
                     <tr data-id-autorT="<?= $autor['id'] ?>">
@@ -157,6 +161,8 @@
           <div class="card h-100 shadow-sm border-0">
             <div class="card-header bg-white fw-bold py-3">Control de Usuarios</div>
             <div class="card-body">
+              <input type="text" class="form-control form-control-sm mb-2" 
+       id="buscarUsuarios" placeholder="Buscar usuario...">
               <div class="table-responsive">
                 <table class="table table-sm align-middle">
                   <thead>
@@ -167,7 +173,7 @@
                       <th class="text-end">Acciones</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="tablaUsuarios">
                     <?php if(!empty($usuarios)) :?>
                       <?php foreach($usuarios as $usuario) :?>
                         <tr data-id-usuarioT="<?= $usuario['id'] ?>">
@@ -209,13 +215,14 @@
           <div class="card h-100 shadow-sm border-0">
             <div class="card-header bg-white fw-bold py-3">Moderación de Comentarios</div>
             <div class="card-body">
-              <div class="d-flex flex-column gap-3">
+              <div id="contenedorReportados" class="d-flex flex-column gap-3">
                 <?php if(!empty($comentariosReportados)) :?>
+                  <h6 class="text-muted mb-0">Reportados</h6>
                   <?php foreach($comentariosReportados as $comentario) :?>
                     <div class="p-3 border rounded bg-light-subtle comentario">
                       <div class="d-flex justify-content-between">
                         <span class="fw-bold">@<?= $comentario['usuario'] ?></span>
-                        <small class="text-muted fecha"><?= $comentario['fecha_comentario'] ?></small>
+                        <small class="text-muted fecha" data-fecha="<?= $comentario['fecha_comentario'] ?>"></small>
                       </div>
                       <p class="small mb-2 mt-1">"<?= $comentario['contenido'] ?>"</p>
                       <div class="d-flex gap-2 justify-content-end">
@@ -229,7 +236,10 @@
                     </div>
                   <?php endforeach;?>
                 <?php endif;?>
+              </div>
+              <div id="contenedorSinModerar" class="d-flex flex-column gap-3">
                 <?php if(!empty($comentariosUsuariosSinModerar)) :?>
+                  <h6 class="text-muted mb-0">Sin moderar</h6>
                   <?php foreach($comentariosUsuariosSinModerar as $comentario) :?>
                     <div class="p-3 border rounded bg-light-subtle comentario">
                       <div class="d-flex justify-content-between">

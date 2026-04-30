@@ -1,6 +1,149 @@
 import { peticion, mostrarNotificacion } from './utilidades.js';
 
+function paginar(contenedorID,itemsPorPagina){
+    const contenedor=document.getElementById(contenedorID);
+    if(!contenedor) return;
+    
+    const esTabla=contenedor.tagName==='TBODY' || contenedor.tagName==='TABLE';
+    const todosElementos=esTabla
+    ? Array.from(contenedor.querySelectorAll('tr')) 
+    : Array.from(contenedor.children).filter(elem=> elem.classList.contains('comentario'));
+
+    let elementos=[...todosElementos];
+    let paginaActual=1;
+
+    const nav=document.createElement('nav');
+    nav.setAttribute('aria-label','Paginación');
+    const ul=document.createElement('ul');
+    ul.className='pagination pagination-sm justify-content-center mb-0 mt-3';
+    nav.appendChild(ul);
+
+    if(esTabla){
+        const hermano=contenedor.closest('.table-responsive');
+        hermano.parentNode.insertBefore(nav,hermano.nextSibling);
+    }
+    else{
+        contenedor.appendChild(nav);
+    }
+
+    function calcularTotalPaginas(){
+        return Math.ceil(elementos.length/itemsPorPagina);
+    }
+
+    function renderizarPagina(pagina){
+        paginaActual=pagina;
+        const inicio=(pagina-1)*itemsPorPagina;
+        const fin=inicio+itemsPorPagina;
+
+        todosElementos.forEach(el=> el.style.display='none');
+
+        elementos.forEach((elemento,i)=>{
+            elemento.style.display=(i>=inicio && i<fin) ? '' : 'none';
+        });
+
+        renderizarControles();
+    }
+
+    function renderizarControles(){
+        const totalPaginas=calcularTotalPaginas();
+        ul.innerHTML='';
+        
+        const liAnt=document.createElement('li');
+        liAnt.className='page-item'+(paginaActual<=1 ? ' disabled' : '');
+        const aAnt=document.createElement('a');
+        aAnt.className='page-link';
+        aAnt.href='#';
+        aAnt.textContent='Anterior';
+        aAnt.addEventListener('click',e=>{
+            e.preventDefault();
+            if(paginaActual>1){
+                renderizarPagina(paginaActual-1);
+            }
+        });
+        liAnt.appendChild(aAnt);
+        ul.appendChild(liAnt);
+
+        for (let i = 1; i <= totalPaginas; i++) {
+            const li = document.createElement('li');
+            li.className = 'page-item' + (i === paginaActual ? ' active' : '');
+            const a = document.createElement('a');
+            a.className = 'page-link';
+            a.href = '#';
+            a.textContent = i;
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                renderizarPagina(i);
+            });
+            li.appendChild(a);
+            ul.appendChild(li);
+        }
+
+        const liSig = document.createElement('li');
+        liSig.className = 'page-item' + (paginaActual >= totalPaginas ? ' disabled' : '');
+        const aSig = document.createElement('a');
+        aSig.className = 'page-link';
+        aSig.href = '#';
+        aSig.textContent = 'Siguiente';
+        aSig.addEventListener('click', e => {
+            e.preventDefault();
+            if (paginaActual < totalPaginas) renderizarPagina(paginaActual + 1);
+        });
+        liSig.appendChild(aSig);
+        ul.appendChild(liSig);
+    }
+
+    function filtrar(termino){
+        termino=termino.toLowerCase().trim();
+        
+        if(!termino){
+            elementos=[...todosElementos];
+        }
+        else{
+            elementos=todosElementos.filter(el=>{
+                return el.textContent.toLowerCase().includes(termino);
+            });
+        }
+
+        if(elementos.length===0){
+            todosElementos.forEach(el=> el.style.display = 'none');
+            ul.innerHTML='<li class="page-item disabled"><span class="page-link">Sin resultados</span></li>';
+            return;
+        }
+        renderizarPagina(1);
+    }
+ 
+    renderizarPagina(1);
+
+    return {filtrar};
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    const pagObras=paginar('tablaObras', 15);
+    const pagAutores=paginar('tablaAutores',15);
+    const pagUsuarios=paginar('tablaUsuarios', 15);
+    paginar('contenedorReportados', 5);
+    paginar('contenedorSinModerar', 5);
+
+    const inputObras=document.getElementById('buscarObras');
+    const inputAutores=document.getElementById('buscarAutores');
+    const inputUsuarios=document.getElementById('buscarUsuarios');
+
+    if(inputObras && pagObras){
+        inputObras.addEventListener('input', function(){
+            pagObras.filtrar(this.value);
+        });
+    }
+    if(inputAutores && pagAutores){
+        inputAutores.addEventListener('input', function(){
+            pagAutores.filtrar(this.value);
+        });
+    }
+    if(inputUsuarios && pagUsuarios){
+        inputUsuarios.addEventListener('input', function(){
+            pagUsuarios.filtrar(this.value);
+        });
+    }
+
     const botones = document.querySelectorAll('#admin-nav button');
     const secciones = document.querySelectorAll('.admin-section');
 
@@ -175,6 +318,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const formData=new FormData(this);
             const datos=Object.fromEntries(formData.entries());
+            delete datos['autores_actualizar[]'];
+            delete datos['etiquetas_actualizar[]'];
 
             datos.autores_actualizar=JSON.stringify(formData.getAll('autores_actualizar[]'));
             datos.etiquetas_actualizar=JSON.stringify(formData.getAll('etiquetas_actualizar[]'));
