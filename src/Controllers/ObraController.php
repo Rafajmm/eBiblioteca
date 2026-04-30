@@ -17,6 +17,7 @@ class ObraController {
         $porPagina=(int)($_GET['porPagina'] ?? 15);
 
         $obras=$busqueda ? Obra::buscarTodo($busqueda) : Obra::cargarTodas();
+        $autores=Autor::cargarTodos();
 
         if(!$obras) {
             $obras=[];
@@ -37,7 +38,7 @@ class ObraController {
         if($epoca) {
             $obras=array_filter($obras, function($obra) use ($epoca) {
                 $anio=$obra['anio_publicacion'];
-                return ceil($anio / 100) === $epoca;
+                return ceil($anio / 100) == $epoca;
             });
         }
 

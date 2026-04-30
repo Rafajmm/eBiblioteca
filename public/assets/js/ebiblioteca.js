@@ -28,6 +28,7 @@ function calcularTiempoRelativo(fechaDB){
     const opciones={year:'numeric', month:'long', day:'numeric'};
     return fecha.toLocaleDateString('es-ES', opciones);    
 }
+
 function actualizarFechas(){
     const elementosFecha=document.querySelectorAll('.fecha');
     elementosFecha.forEach(elemento => {
@@ -37,10 +38,31 @@ function actualizarFechas(){
         }
     });
 }
+
 document.addEventListener('DOMContentLoaded', ()=>{
     actualizarFechas();
     setInterval(actualizarFechas, 60000);
 });
+
+// Cambiar cantidad de elementos a mostrar
+function cambiarPorPagina(valor) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('porPagina', valor);
+    url.searchParams.set('pagina','1');
+    window.location.href = url.toString();
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+    const selectElems=document.getElementById('selectElems');
+
+    if(selectElems){
+        selectElems.addEventListener('change',function(e){
+            const valor=e.target.value;
+            cambiarPorPagina(valor);
+        });
+    }
+});
+
 
 // Seguir/dejar de seguir
 document.addEventListener('DOMContentLoaded',function(){

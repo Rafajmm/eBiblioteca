@@ -4,17 +4,16 @@
             <label class="form-label small fw-bold text-secondary">Nombre del autor</label>
             <div class="input-group">
                 <span class="input-group-text bg-white border-end-0"><i class="bi bi-person-search"></i></span>
-                <input type="text" class="form-control border-start-0" placeholder="Ej: Cervantes, Allende...">
+                <input type="text" class="form-control border-start-0" placeholder="Ej: Cervantes, Allende..." name="nombre">
             </div>
         </div>
         <div class="col-6 col-md-3">
             <label class="form-label small fw-bold text-secondary">País / Nacionalidad</label>
-            <select class="form-select">
-                <option selected>Todos los países</option>
-                <option>España</option>
-                <option>México</option>
-                <option>Argentina</option>
-                <option>Chile</option>
+            <select class="form-select" name="pais">
+                <option value="" <?= $_GET['pais'] === '' ? ' selected' : '' ?>>Todos los países</option>
+                <?php foreach ($paises as $pais): ?>
+                    <option value="<?= $pais['pais'] ?>"<?= $pais['pais'] === $_GET['pais'] ? ' selected' : '' ?>><?= $pais['pais'] ?></option>
+                <?php endforeach; ?>
             </select>
         </div>
         <div class="col-6 col-md-3">

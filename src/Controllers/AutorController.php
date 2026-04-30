@@ -31,6 +31,7 @@ class AutorController {
         }
 
         $autores=array_values($autores);
+        $paises=Autor::cargarPaises();
         $total=count($autores);
         $totalPaginas=ceil($total / $porPagina);
         $autores=array_slice($autores, ($pagina - 1) * $porPagina, $porPagina);

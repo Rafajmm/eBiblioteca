@@ -1,31 +1,34 @@
 <section class="seccionFiltros p-4 mb-5 shadow-sm">
-    <form class="row g-3 align-items-end">
+    <form class="row g-3 align-items-end" action="/catalogo" method="GET">
         <div class="col-12 col-md-4">
             <label for="inputBusqueda" class="form-label small fw-bold text-secondary">Búsqueda general</label>
             <div class="input-group">
                 <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
-                <input type="text" class="form-control border-start-0" id="inputBusqueda" placeholder="Título, autor, género...">
+                <input type="text" class="form-control border-start-0" id="inputBusqueda" placeholder="Título, autor, género..." name="parametro" value="<?=htmlspecialchars($_GET['parametro'] ?? '')?>">
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <label for="genreSelect" class="form-label small fw-bold text-secondary">Género</label>
-            <select class="form-select" id="genreSelect">
-                <option selected>Todos</option>
-                <option>Narrativa <span class="bg-narrativa "></span></option>
-                <option>Ensayo</option>
-                <option>Poesía</option>
-                <option>Dramática</option>
+            <label for="genero" class="form-label small fw-bold text-secondary">Género</label>
+            <select class="form-select" id="genero" name="genero">
+                <option value="" <?= empty($_GET['genero']) ? 'selected' : '' ?>>Todos</option>
+                <option value="Narrativa" <?= $_GET['genero'] === 'Narrativa' ? 'selected' : '' ?>>Narrativa</option>
+                <option value="Ensayo" <?= $_GET['genero'] === 'Ensayo' ? 'selected' : '' ?>>Ensayo</option>
+                <option value="Poesía" <?= $_GET['genero'] === 'Poesía' ? 'selected' : '' ?>>Poesía</option>
+                <option value="Teatro" <?= $_GET['genero'] === 'Teatro' ? 'selected' : '' ?>>Teatro</option>
             </select>
         </div>
         <div class="col-6 col-md-3">
             <label for="authorSelect" class="form-label small fw-bold text-secondary">Autor</label>
-            <select class="form-select" id="authorSelect">
-                <option selected>Todos los autores</option>
-                <option>Isabel Torres</option>
-                <option>Carlos Ruiz</option>
-                <option>Elena P. Bazán</option>
+            <select class="form-select" id="selectAutor" name="autor">
+                <option value="">Todos los autores</option>
+                <?php foreach ($autores as $autor): ?>
+                    <option value="<?= $autor['nombre'] ?>" <?= $_GET['autor'] === $autor['nombre'] ? 'selected' : '' ?>><?= $autor['nombre'] ?></option>
+                <?php endforeach; ?>
             </select>
         </div>
+        <?php if(isset($_GET['porPagina'])): ?>
+            <input type="hidden" name="porPagina" value="<?= htmlspecialchars($_GET['porPagina']) ?>">
+        <?php endif; ?>
         <div class="col-12 col-md-2">
             <button type="submit" class="btn btn-primary w-100">Filtrar</button>
         </div>
@@ -33,15 +36,14 @@
 </section>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <p class="text-secondary small mb-0">Mostrando de <strong><?= 1+($porPagina*$pagina)-$porPagina ?></strong> a <strong><?= $porPagina*$pagina ?></strong> de <strong><?= $total ?></strong> obras</p>
+    <p class="text-secondary small mb-0">Mostrando de <strong><?= 1+($porPagina*$pagina)-$porPagina ?></strong> a <strong><?= min($porPagina*$pagina,$total) ?></strong> de <strong><?= $total ?></strong> obras</p>
     <div class="d-flex align-items-center">
-        <label for="limitSelect" class="small fw-bold text-secondary me-2 mb-0">Mostrar:</label>
-        <select class="form-select form-select-sm" id="limitSelect" style="width: auto;">
-            <option value="15" selected>15</option>
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="all">Todas</option>
+        <label for="selectElems" class="small fw-bold text-secondary me-2 mb-0">Mostrar:</label>
+        <select class="form-select form-select-sm" id="selectElems" style="width: auto;" onchange="cambiarPorPagina(this.value)">
+            <option value="10" <?= $porPagina == 10 ? 'selected' : '' ?>>10</option>
+            <option value="15" <?= $porPagina == 15 ? 'selected' : '' ?>>15</option>
+            <option value="25" <?= $porPagina == 25 ? 'selected' : '' ?>>25</option>
+            <option value="50" <?= $porPagina == 50 ? 'selected' : '' ?>>50</option>
         </select>
     </div>
 </div>
@@ -53,10 +55,9 @@
         <a class="text-decoration-none" href="/obra/<?= $obra['id'] ?>">
             <div class="card tarjetaLibro border-0 shadow-sm h-100">
                 <div class="portadaLibroWrapper">
-                    <?php 
-                        $obj=Obra::crearInstancia($obra['id']);
-                        if($obj && $obj->getPortada()){
-                            echo '<img src="https://covers.openlibrary.org/b/olid/' . $obj->getPortada() . '-L.jpg" alt="' . $obra['titulo'] . '">';
+                    <?php                         
+                        if($obra['portada']){
+                            echo '<img src="https://covers.openlibrary.org/b/olid/' . $obra['portada'] . '-L.jpg" alt="' . $obra['titulo'] . '">';
                         }else{
                             echo '<img src="/assets/img/default/imgportada.jpg" alt="' . $obra['titulo'] . '">';
                         }
@@ -66,9 +67,8 @@
                     <div class="mb-2 d-flex flex-wrap gap-1">
                         <span class="badge bg-<?= strtolower($obra['genero']) ?> shadow-sm"><?= $obra['genero'] ?></span>
                         <?php 
-                            $objeto=Obra::crearInstancia($obra['id']);
-                            if(!empty($objeto)){
-                                $etiquetas=$objeto->obtenerEtiquetas();
+                            if(!empty($obra['etiquetas'])){
+                                $etiquetas=$obra['etiquetas'];
                                 for($i=0;$i<2;$i++){
                                     if(isset($etiquetas[$i])){
                                         echo '<span class="badge bg-secondary-subtle text-secondary small" style="font-size: 0.7rem;">' . $etiquetas[$i]['nombre'] . '</span>';
@@ -110,16 +110,26 @@
 
 <nav aria-label="Navegación de páginas" class="d-flex justify-content-center mt-5">
     <ul class="pagination">
-        <li class="page-item disabled">
-            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+        <?php
+            function crearUrlPagina($numPagina){
+                $parametros=$_GET;
+                $parametros['pagina']=$numPagina;
+                return '?' . http_build_query($parametros);
+            }
+        ?>
+
+        <li class="page-item <?= $pagina<=1 ? 'disabled' : '' ?>">
+            <a class="page-link" href="<?= ($pagina>1) ? crearUrlPagina($pagina-1) : '#' ?>">Anterior</a>
         </li>
-        <li class="page-item active" aria-current="page">
-            <a class="page-link" href="#"><?= $pagina ?></a>
-        </li>
-        <li class="page-item"><a class="page-link" href="#"><?= $pagina + 1 ?></a></li>
-        <li class="page-item"><a class="page-link" href="#"><?= $pagina + 2 ?></a></li>
-        <li class="page-item">
-            <a class="page-link" href="#">Siguiente</a>
+
+        <?php for($i=1;$i<=$totalPaginas;$i++): ?>
+            <li class="page-item <?= ($pagina==$i) ? 'active' : '' ?>">
+                <a class="page-link" href="<?= crearUrlPagina($i) ?>"><?= $i ?></a>
+            </li>
+        <?php endfor; ?>
+
+        <li class="page-item <?= $pagina>=$totalPaginas ? 'disabled' : '' ?>">
+            <a class="page-link" href="<?= ($pagina<$totalPaginas) ? crearUrlPagina($pagina+1) : '#' ?>">Siguiente</a>
         </li>
     </ul>
 </nav>

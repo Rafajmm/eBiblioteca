@@ -115,6 +115,17 @@ class Autor {
         return null;
     }
 
+    public static function cargarPaises(){
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT DISTINCT pais FROM autores WHERE pais IS NOT NULL");
+        $stmt->execute();
+        $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
+        if($datos){
+            return $datos;
+        }
+        return null;
+    }
+
     public static function cargarTodosParaAdmin() {
         $db=Database::conectar();
         $stmt=$db->prepare("SELECT * FROM autores");
