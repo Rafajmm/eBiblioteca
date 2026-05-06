@@ -9,7 +9,7 @@ class AutorController {
         $epoca=$_GET['epoca'] ?? null;
         $letra=$_GET['letra'] ?? null;
         $pagina=(int)($_GET['pagina'] ?? 1);
-        $porPagina=(int)($_GET['porPagina'] ?? 15);
+        $porPagina=(int)($_GET['porPagina'] ?? 12);
 
         $autores=$nombre ? Autor::busquedaAvanzada($nombre) : Autor::cargarTodos();
 
@@ -19,10 +19,18 @@ class AutorController {
             });
         }
         if($epoca){
-            $autores=array_filter($autores, function($autor) use ($epoca) {
-                $anio=(int)substr($autor['fecha_nacimiento'], 0, 4);
-                return ceil($anio / 100) === $epoca;
-            });
+            if($epoca==='anterior'){
+                $autores=array_filter($autores,function($autor){
+                    $anio=(int)substr($autor['fecha_nacimiento'], 0, 4);
+                    return $anio < 1400;
+                });
+            }
+            else{
+                $autores=array_filter($autores, function($autor) use ($epoca) {
+                    $anio=(int)substr($autor['fecha_nacimiento'], 0, 4);
+                    return ceil($anio / 100) == $epoca;
+                });
+            }
         }
         if($letra){
             $autores=array_filter($autores,function($autor) use($letra){

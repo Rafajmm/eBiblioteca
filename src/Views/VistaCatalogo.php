@@ -11,18 +11,19 @@
             <label for="genero" class="form-label small fw-bold text-secondary">Género</label>
             <select class="form-select" id="genero" name="genero">
                 <option value="" <?= empty($_GET['genero']) ? 'selected' : '' ?>>Todos</option>
-                <option value="Narrativa" <?= $_GET['genero'] === 'Narrativa' ? 'selected' : '' ?>>Narrativa</option>
-                <option value="Ensayo" <?= $_GET['genero'] === 'Ensayo' ? 'selected' : '' ?>>Ensayo</option>
-                <option value="Poesía" <?= $_GET['genero'] === 'Poesía' ? 'selected' : '' ?>>Poesía</option>
-                <option value="Teatro" <?= $_GET['genero'] === 'Teatro' ? 'selected' : '' ?>>Teatro</option>
+                <option value="Narrativa" <?= !empty($_GET['genero']) && $_GET['genero'] === 'Narrativa' ? 'selected' : '' ?>>Narrativa</option>
+                <option value="Ensayo" <?= !empty($_GET['genero']) && $_GET['genero'] === 'Ensayo' ? 'selected' : '' ?>>Ensayo</option>
+                <option value="Poesía" <?= !empty($_GET['genero']) && $_GET['genero'] === 'Poesía' ? 'selected' : '' ?>>Poesía</option>
+                <option value="Teatro" <?= !empty($_GET['genero']) && $_GET['genero'] === 'Teatro' ? 'selected' : '' ?>>Teatro</option>
+                <option value="Infantil" <?= !empty($_GET['genero']) && $_GET['genero'] === 'Infantil' ? 'selected' : '' ?>>Infantil</option>
             </select>
         </div>
         <div class="col-6 col-md-3">
             <label for="authorSelect" class="form-label small fw-bold text-secondary">Autor</label>
             <select class="form-select" id="selectAutor" name="autor">
-                <option value="">Todos los autores</option>
+                <option value="" <?= empty($_GET['autor']) ? 'selected' : '' ?>>Todos los autores</option>
                 <?php foreach ($autores as $autor): ?>
-                    <option value="<?= $autor['nombre'] ?>" <?= $_GET['autor'] === $autor['nombre'] ? 'selected' : '' ?>><?= $autor['nombre'] ?></option>
+                    <option value="<?= $autor['nombre'] ?>" <?= !empty($_GET['autor']) && $_GET['autor'] === $autor['nombre'] ? 'selected' : '' ?>><?= $autor['nombre'] ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
@@ -67,8 +68,9 @@
                     <div class="mb-2 d-flex flex-wrap gap-1">
                         <span class="badge bg-<?= strtolower($obra['genero']) ?> shadow-sm"><?= $obra['genero'] ?></span>
                         <?php 
-                            if(!empty($obra['etiquetas'])){
-                                $etiquetas=$obra['etiquetas'];
+                            $objeto=Obra::crearInstancia($obra['id']);
+                            if(!empty($objeto)){
+                                $etiquetas=$objeto->obtenerEtiquetas();
                                 for($i=0;$i<2;$i++){
                                     if(isset($etiquetas[$i])){
                                         echo '<span class="badge bg-secondary-subtle text-secondary small" style="font-size: 0.7rem;">' . $etiquetas[$i]['nombre'] . '</span>';
@@ -84,7 +86,6 @@
                     <h5 class="card-title h6 fw-bold mb-1 text-truncate"><?= $obra['titulo'] ?></h5>
                     <p class="card-text small text-secondary mb-1">
                         <?php
-                            $objeto=Obra::crearInstancia($obra['id']);
                             if(!empty($objeto)){
                                 $autores=$objeto->obtenerAutores();
                                 if(!empty($autores)){

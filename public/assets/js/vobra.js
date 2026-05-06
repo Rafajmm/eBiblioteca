@@ -373,3 +373,58 @@ document.addEventListener('DOMContentLoaded', function() {
         return div.innerHTML;
     }
 });
+
+// Me gusta y reportar comentario
+document.body.addEventListener('click',async function(e){
+    const btnLike=e.target.closest("#btnLikeComentario");
+    if(btnLike){
+        e.preventDefault();
+        const idComentario=btnLike.dataset.idComentario;
+        const dioLike=btnLike.dataset.usuarioLike==='1';
+        const icono=btnLike.querySelector('i');
+        
+        try{
+            if(dioLike){
+                await peticion(`/comentario/${idComentario}/quitar-megusta`,{body:{idComentario}});
+                icono.classList.remove('bi-hand-thumbs-up-fill');
+                icono.classList.add('bi-hand-thumbs-up');
+                btnLike.dataset.usuarioLike='0';
+                mostrarNotificacion('Me gusta quitado','success');
+            }
+            else{
+                await peticion(`/comentario/${idComentario}/megusta`,{body:{idComentario}});
+                icono.classList.remove('bi-hand-thumbs-up');
+                icono.classList.add('bi-hand-thumbs-up-fill');
+                btnLike.dataset.usuarioLike='1';
+                mostrarNotificacion('Me gusta añadido','success');
+            }
+        }
+        catch(error){
+            mostrarNotificacion('Error al procesar me gusta: '+error.message, 'danger');
+        }
+        return;
+    }
+
+    const btnReportar=e.target.closest("#btnReportarComentario");
+    if(btnReportar) {
+        e.preventDefault();
+        const idComentario = btnReportar.dataset.idComentario;
+        const yaReporto = btnReportar.dataset.usuarioReporto === '1';
+        
+        if(yaReporto) {
+            mostrarNotificacion('Ya has reportado este comentario', 'warning');
+            return;
+        }
+ 
+        try {
+            await peticion(`/comentario/${idComentario}/reportar`, {method: 'POST'});
+            const icono = btnReportar.querySelector('i');
+            icono.classList.remove('bi-flag');
+            icono.classList.add('bi-flag-fill');
+            btnReportar.dataset.usuarioReporto = '1';
+            mostrarNotificacion('Comentario reportado', 'success');
+        } catch(error) {
+            mostrarNotificacion(error.message, 'danger');
+        }
+    }
+});

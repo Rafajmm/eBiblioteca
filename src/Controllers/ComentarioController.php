@@ -88,7 +88,7 @@ class ComentarioController {
     }
 
     public function reportar($id){
-        $comentario=Comentario::creaInstancia($id);
+        $comentario=Comentario::crearInstancia($id);
         if(!$comentario){
             http_response_code(404);
             header('Content-Type: application/json');
@@ -103,7 +103,7 @@ class ComentarioController {
     }
 
     public function meGusta($id){
-        $comentario=Comentario::creaInstancia($id);
+        $comentario=Comentario::crearInstancia($id);
         if(!$comentario){
             http_response_code(404);
             header('Content-Type: application/json');
@@ -118,7 +118,7 @@ class ComentarioController {
     }
 
     public function quitarMeGusta($id){
-        $comentario=Comentario::creaInstancia($id);
+        $comentario=Comentario::crearInstancia($id);
         if(!$comentario){
             http_response_code(404);
             header('Content-Type: application/json');

@@ -28,7 +28,7 @@
                         <?php endif; ?>
                         
                         <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-4 flex-wrap">
-                            <span class="badge bg-<?= strtolower($obra->getGenero()) ?> text-dark border px-3 py-2"><?= $obra->getGenero() ?></span>
+                            <span class="badge bg-<?= strtolower($obra->getGenero()) ?> border px-3 py-2"><?= $obra->getGenero() ?></span>
                             <?php if(!empty($etiquetas)): ?>
                                 <?php foreach($etiquetas as $etiqueta): ?>
                                     <span class="badge bg-light text-dark border px-3 py-2"><?= $etiqueta['nombre'] ?></span>
@@ -140,16 +140,35 @@
     <div class="d-flex flex-column gap-3" id="listaComentarios">
         <?php if($comentarios) : ?>
         <?php foreach ($comentarios as $comentario): ?>
+            <?php
+                $usuarioDioMg=false;
+                $usuarioReporto=false;
+                if(isset($_SESSION['id_usuario'])){
+                    $usuarioDioMg=Comentario::usuarioDioMg($_SESSION['id_usuario'], $comentario['id']);
+                    $usuarioReporto=Comentario::usuarioReporto($_SESSION['id_usuario'], $comentario['id']);
+                }
+            ?>
             <div class="bg-white p-3 rounded shadow-sm border">
                 <div class="d-flex justify-content-between align-items-center mb-1">                    
-                    <span class="fw-bold small">@<?= htmlspecialchars($comentario['usuario']) ?></span>
+                    <a href="/usuario/<?= htmlspecialchars($comentario['id_usuario']) ?>" class="fw-bold small text-decoration-none">@<?= htmlspecialchars($comentario['usuario']) ?></a>
                 </div>
                 <p class="small text-secondary mb-2 w-100 pComentario"><?= nl2br(htmlspecialchars($comentario['contenido'])) ?></p>
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="text-muted fecha" data-fecha="<?= $comentario['fecha_comentario'] ?>" style="font-size: 0.75rem;"></span>
-                    <button class="btn btn-link p-0 text-decoration-none">
-                        <i class="bi bi-hand-thumbs-up-fill text-primary"></i>
-                    </button>
+                    <div>                        
+                        <button class="btn btn-link p-0 text-decoration-none" id="btnReportarComentario"
+                        data-id-comentario="<?= $comentario['id'] ?>"
+                        data-usuario-reporto="<?= $usuarioReporto ? '1' : '0' ?>">
+                            <i class="bi bi-flag<?= $usuarioReporto ? '-fill' : '' ?> text-danger"></i>
+                        </button>
+
+                        <button class="btn btn-link p-0 text-decoration-none" id="btnLikeComentario"
+                        data-id-comentario="<?= $comentario['id'] ?>"
+                        data-usuario-like="<?= $usuarioDioMg ? '1' : '0' ?>">
+                            <i class="bi bi-hand-thumbs-up<?= $usuarioDioMg ? '-fill' : '' ?> text-primary"></i>
+                        </button>
+                        <span class="text-muted small"><?= "(" . (Comentario::crearInstancia($comentario['id'])->totalMeGusta()>0 ? Comentario::crearInstancia($comentario['id'])->totalMeGusta() : '0') . ")" ?></span>
+                    </div>
                 </div>
             </div>
         <?php endforeach; ?>

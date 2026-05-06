@@ -38,6 +38,11 @@ class UsuarioController {
         $seguidos=$usuario->obtenerSeguidos();
         
         $listas=$usuario->cargarListas();
+        $listasSeguidas=[];
+        if($esPerfilUsuario && isset($_SESSION['id_usuario'])) {
+            $listasSeguidas=$usuario->cargarListasSeguidas();
+        }
+        
         $title=htmlspecialchars($usuario->getNombreUsuario());
 
         

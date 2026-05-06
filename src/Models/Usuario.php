@@ -227,6 +227,18 @@ class Usuario{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function cargarListasSeguidas(){
+        $bd=Database::conectar();
+        $stmt=$bd->prepare("SELECT l.*, u.nombre_usuario as creador, u.nombre as nombre_creador
+            FROM megusta_lista ml 
+            JOIN listas l ON ml.id_lista = l.id 
+            JOIN usuarios u ON l.id_usuario = u.id 
+            WHERE ml.id_usuario = ? AND l.id_usuario != ?
+            ORDER BY l.fecha_creacion DESC");
+        $stmt->execute([$this->id, $this->id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function crearLista($nombre){
         $bd=Database::conectar();
         $stmt=$bd->prepare("INSERT INTO listas(nombre,id_usuario) VALUES (?,?)");

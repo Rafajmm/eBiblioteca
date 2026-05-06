@@ -68,7 +68,7 @@
 </div>
 
 <section id="muro" class="seccion-usuario" aria-labelledby="titulo-actividad">
-    <h2 id="titulo-actividad" class="h5 fw-bold mb-4"><i class="bi bi-broadcast me-2"></i>Actividad reciente</h2>
+    <h3 id="titulo-actividad" class="h5 fw-bold mb-4"><i class="bi bi-broadcast me-2"></i>Actividad reciente</h2>
     <div class="row g-4">
         <a href=""></a>
         <?php if($tablon): ?>
@@ -248,11 +248,21 @@
 
 <section id="listas" class="seccion-usuario d-none">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="h4 fw-bold mb-0 fuenteSerif">Tus Listas de Lectura</h3>
-        <button class="btn btn-dark rounded-pill px-4"
-        data-action="crear-lista">
-            <i class="bi bi-plus-lg me-2"></i>Nueva Lista
-        </button>
+        <?php if($esPerfilUsuario) : ?>
+            <div class="d-flex align-items-center gap-2">
+                <h3 class="h5 fw-bold mb-0 ">Tus listas</h3>
+                <button type="button" class="btn btn-link text-decoration-none text-dark large dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Listas seguidas</a></li>                
+                </ul>
+            </div>
+            <button class="btn btn-dark rounded-pill px-4"
+            data-action="crear-lista">
+                <i class="bi bi-plus-lg me-2"></i>Nueva Lista
+            </button>
+        <?php else: ?>
+            <h3 class="fw-bold mb-0 fuenteSerif">Listas de <?= $usuario->getNombreUsuario(); ?></h3>
+        <?php endif; ?>
     </div>
     <div class="row g-4">
         <?php if(!empty($listas)):?>

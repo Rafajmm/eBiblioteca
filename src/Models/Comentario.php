@@ -44,7 +44,7 @@ class Comentario {
 
     public static function obtenerPorObra($id_obra) {
         $db=Database::conectar();
-        $stmt=$db->prepare("SELECT c.*, u.nombre_usuario as usuario FROM comentarios c JOIN usuarios u ON c.id_usuario = u.id WHERE c.id_obra=? ORDER BY c.fecha_comentario DESC");
+        $stmt=$db->prepare("SELECT c.*, u.nombre_usuario as usuario FROM comentarios c JOIN usuarios u ON c.id_usuario = u.id WHERE c.id_obra=? and c.fecha_borrado is null and u.activo=1 ORDER BY c.fecha_comentario DESC");
         $stmt->execute([$id_obra]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -75,6 +75,20 @@ class Comentario {
         $stmt=$db->prepare("SELECT c.*, u.nombre_usuario AS usuario, u.id AS id_usuario FROM comentarios c JOIN usuarios u ON c.id_usuario = u.id WHERE u.moderado=0");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function usuarioDioMg($id_usuario,$id_comentario){
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT * FROM megusta_comentario WHERE id_usuario=? AND id_comentario=?");
+        $stmt->execute([$id_usuario,$id_comentario]);
+        return $stmt->fetch() !==false;
+    }
+
+    public static function usuarioReporto($id_usuario,$id_comentario){
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT * FROM reporte_comentarios WHERE id_usuario=? AND id_comentario=?");
+        $stmt->execute([$id_usuario,$id_comentario]);
+        return $stmt->fetch() !==false;
     }
 
     public function getId() {return $this->id;}
