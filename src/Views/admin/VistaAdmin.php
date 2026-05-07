@@ -551,7 +551,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" form="formEditUser" class="btn btn-primary">Guardar cambios</button>
+        <button type="submit" form="formEdUsuario" class="btn btn-primary">Guardar cambios</button>
       </div>
     </div>
   </div>

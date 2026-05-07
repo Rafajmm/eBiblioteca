@@ -1,6 +1,6 @@
 <section class="seccionFiltros p-4 mb-5 shadow-sm">
     <form class="row g-3 align-items-end" action="/catalogo" method="GET">
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-3">
             <label for="inputBusqueda" class="form-label small fw-bold text-secondary">Búsqueda general</label>
             <div class="input-group">
                 <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
@@ -27,10 +27,24 @@
                 <?php endforeach; ?>
             </select>
         </div>
+        <div class="col-12 col-md-2">
+            <label class="form-label small fw-bold text-secondary">Época</label>
+            <select class="form-select" name="epoca">
+                <option value="" <?= empty($_GET['epoca']) ? ' selected' : '' ?>>Cualquier época</option>
+                <option value="21" <?= !empty($_GET['epoca']) && $_GET['epoca'] === '21' ? ' selected' : '' ?>>Siglo XXI</option>
+                <option value="20" <?= !empty($_GET['epoca']) && $_GET['epoca'] === '20' ? ' selected' : '' ?>>Siglo XX</option>
+                <option value="19" <?= !empty($_GET['epoca']) && $_GET['epoca'] === '19' ? ' selected' : '' ?>>Siglo XIX</option>
+                <option value="18" <?= !empty($_GET['epoca']) && $_GET['epoca'] === '18' ? ' selected' : '' ?>>Siglo XVIII</option>
+                <option value="17" <?= !empty($_GET['epoca']) && $_GET['epoca'] === '17' ? ' selected' : '' ?>>Siglo XVII</option>
+                <option value="16" <?= !empty($_GET['epoca']) && $_GET['epoca'] === '16' ? ' selected' : '' ?>>Siglo XVI</option>
+                <option value="15" <?= !empty($_GET['epoca']) && $_GET['epoca'] === '15' ? ' selected' : '' ?>>Siglo XV</option>
+                <option value="anterior" <?= !empty($_GET['epoca']) && $_GET['epoca'] === 'anterior' ? ' selected' : '' ?>>Anterior al siglo XV</option>
+            </select>
+        </div>
         <?php if(isset($_GET['porPagina'])): ?>
             <input type="hidden" name="porPagina" value="<?= htmlspecialchars($_GET['porPagina']) ?>">
         <?php endif; ?>
-        <div class="col-12 col-md-2">
+        <div class="col-12 col-md-1">
             <button type="submit" class="btn btn-primary w-100">Filtrar</button>
         </div>
     </form>

@@ -98,10 +98,17 @@ $router->get('/usuario/{id}', function($id) {
 });
 
 // Editar perfil propio
-$router->post('/usuario/{id}/editar', function() {
+$router->post('/usuario/{id}/editar', function($id) {
     require_once __DIR__ . '/../src/Controllers/UsuarioController.php';
     $controller = new UsuarioController();
     $controller->editarPerfil();
+},[['Middleware','autenticado']]);
+
+// Subir foto
+$router->post('/usuario/{id}/subir-foto', function($id) {
+    require_once __DIR__ . '/../src/Controllers/UsuarioController.php';
+    $controller = new UsuarioController();
+    $controller->subirFoto($id);
 },[['Middleware','autenticado']]);
 
 // Seguir a un usuario
@@ -116,6 +123,13 @@ $router->post('/usuario/{id}/dejar-seguir', function($id) {
     require_once __DIR__ . '/../src/Controllers/UsuarioController.php';
     $controller = new UsuarioController();
     $controller->dejarSeguir($id);
+},[['Middleware','autenticado']]);
+
+// Eliminar seguidor
+$router->post('/usuario/{id}/eliminar-seguidor', function($id) {
+    require_once __DIR__ . '/../src/Controllers/UsuarioController.php';
+    $controller = new UsuarioController();
+    $controller->eliminarSeguidor($id);
 },[['Middleware','autenticado']]);
 
 // Obtener listas de un usuario
@@ -147,10 +161,17 @@ $router->post('/lista/{id}/eliminar-obra', function($id) {
 },[['Middleware','autenticado']]);
 
 // Dar me gusta a una lista (seguir lista)
-$router->post('/lista/{id}/me-gusta', function($id) {
+$router->post('/lista/{id}/seguir', function($id) {
     require_once __DIR__ . '/../src/Controllers/ListaController.php';
     $controller = new ListaController();
-    $controller->meGusta($id);
+    $controller->seguir($id);
+},[['Middleware','autenticado']]);
+
+// Quitar me gusta a una lista (dejar de seguir)
+$router->post('/lista/{id}/dejar-seguir',function($id){
+    require_once __DIR__ . '/../src/Controllers/ListaController.php';
+    $controller = new ListaController();
+    $controller->dejarDeSeguir($id);
 },[['Middleware','autenticado']]);
 
 // Copiar lista de otro usuario al perfil propio

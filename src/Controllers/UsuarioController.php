@@ -116,8 +116,24 @@ class UsuarioController {
         $correo=trim($_POST['correo'] ?? '');
         $bio=trim($_POST['bio'] ?? '');
         $rutaFoto=trim($_POST['ruta_foto'] ?? '');
-        $pass=trim($_POST['pass'] ?? '');
+        $passNueva=trim($_POST['pass_nueva'] ?? '');
+        $passRepite=trim($_POST['pass_repite'] ?? '');
         $passConfirmacion=trim($_POST['pass_confirmacion'] ?? '');
+
+        $correoCambiado = (!empty($correo) && $correo !== $usuario->getCorreo());
+        $passCambiado = (!empty($passNueva));
+        
+        if(($correoCambiado || $passCambiado) && empty($passConfirmacion)){
+            http_response_code(400);
+            echo json_encode(['error'=>'Debes confirmar tu contraseña actual para cambios de seguridad']);
+            return;
+        }
+        
+        if(($correoCambiado || $passCambiado) && !password_verify($passConfirmacion, $usuario->getPass())){
+            http_response_code(403);
+            echo json_encode(['error'=>'Contraseña actual incorrecta']);
+            return;
+        }
         
         if(!empty($nombre)) $usuario->setNombre($nombre);
 
@@ -144,12 +160,35 @@ class UsuarioController {
 
         if(!empty($bio)) $usuario->setBio($bio);
         if(!empty($rutaFoto)) $usuario->setRutaFoto($rutaFoto);
-        if(!empty($pass) && !empty($passConfirmacion) && $pass === $passConfirmacion) $usuario->setPass(password_hash($pass, PASSWORD_BCRYPT));
+        if(!empty($passNueva) && !empty($passRepite) && $passNueva === $passRepite) $usuario->setPass(password_hash($passNueva, PASSWORD_BCRYPT));
 
         $usuario->actualizar();
         
         header('Content-Type: application/json');
         echo json_encode(['ok'=>true]);
+    }
+
+    public function subirFoto($id){
+        if(!isset($_FILES['avatar']) || $_FILES['avatar']['error'] !== UPLOAD_ERR_OK){
+            http_response_code(400);
+            echo json_encode(['error' => 'Error al subir la foto']);
+            return;
+        }
+        
+        $dir=__DIR__ . '/../../public/assets/img/imgperfil/';
+        if(!is_dir($dir)) mkdir($dir,0755,true);
+        
+        $ext=pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION);
+        $nombre='usuario_'.$id.'_'.time().'.'.$ext;
+        move_uploaded_file($_FILES['avatar']['tmp_name'], $dir.$nombre);
+
+        $ruta='assets/img/imgperfil/'.$nombre;
+        $datos=Usuario::buscarPorId($id);
+        $usuario=Usuario::crearInstancia($datos['nombre_usuario']);
+        $usuario->setRutaFoto($ruta);
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true, 'ruta'=>$ruta]);
     }
 
     public function seguir($id){
@@ -198,6 +237,19 @@ class UsuarioController {
         
         header('Content-Type: application/json');
         echo json_encode(['ok'=>$resultado]);
+    }
+
+    public function eliminarSeguidor($id){
+        if(!isset($_SESSION['id_usuario'])){
+            http_response_code(401);
+            echo json_encode(['error'=>'No autenticado']);
+            return;
+        }
+        $datos=Usuario::buscarPorId($_SESSION['id_usuario']);
+        $usuario=Usuario::crearInstancia($datos['nombre_usuario']);
+        $usuario->eliminarSeguidor($id); // ya existe en modelo lín 217
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
     }
 
     public function buscarPorCorreo($correo){

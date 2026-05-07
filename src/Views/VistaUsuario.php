@@ -17,7 +17,7 @@
                 <h2 class="fw-bold mb-1" style="font-family: 'Merriweather', serif;"><?= $usuario->getNombre() ?></h2>
                 <?php if(!$esPerfilUsuario && isset($_SESSION['id_usuario'])): ?>
                     <?php if($esSeguido): ?>
-                        <button class="btn btn-outline-secondary btn-sm rounded-pill px-3"
+                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3"
                                 data-action="dejar-seguir"
                                 data-id-usuario="<?= $usuario->getId() ?>">
                             Siguiendo
@@ -36,11 +36,11 @@
                 
                 <div class="d-flex gap-4">
                     <button class="btn btn-link p-0 text-decoration-none text-primary text-center" id="btnSeguidores" aria-label="Ver <?= count($seguidores) ?> seguidores">
-                        <span class="d-block h5 mb-0 fw-bold"><?= count($seguidores) ?></span>
+                        <span class="d-block h5 mb-0 fw-bold" id="contadorSeguidores"><?= count($seguidores) ?></span>
                         <small class="text-uppercase" style="font-size: 0.7rem;">Seguidores</small>
                     </button>
                     <button class="btn btn-link p-0 text-decoration-none text-primary border-start ps-4" id="btnSeguidos" aria-label="Ver <?= count($seguidos) ?> seguidos">
-                        <span class="d-block h5 mb-0 fw-bold"><?= count($seguidos) ?></span>
+                        <span class="d-block h5 mb-0 fw-bold" id="contadorSeguidos"><?= count($seguidos) ?></span>
                         <small class="text-uppercase" style="font-size: 0.7rem;">Seguidos</small>
                     </button>
                     <div class="text-center border-start ps-4">
@@ -68,7 +68,7 @@
 </div>
 
 <section id="muro" class="seccion-usuario" aria-labelledby="titulo-actividad">
-    <h3 id="titulo-actividad" class="h5 fw-bold mb-4"><i class="bi bi-broadcast me-2"></i>Actividad reciente</h2>
+    <h3 id="titulo-actividad" class="h4 fw-bold mb-4"><i class="bi bi-broadcast me-2"></i>Actividad reciente</h2>
     <div class="row g-4">
         <a href=""></a>
         <?php if($tablon): ?>
@@ -117,7 +117,7 @@
 
 <section id="seguidos" class="seccion-usuario d-none">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h5 class="fw-bold mb-0">Seguidos</h5>
+        <h3 class="h4 fw-bold mb-0">Seguidos</h3>
         <div class="input-group input-group-sm" style="max-width: 250px;">
             <input type="text" class="form-control" placeholder="Buscar entre tus seguidos...">
             <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
@@ -145,7 +145,7 @@
                         <?php $imagenSeguido = $seguido->getRutaFoto() ? "/" . $seguido->getRutaFoto() : "/assets/img/default/imgperfil.png"; ?>
                         <a class="text-decoration-none text-dark w-100" href="/usuario/<?= $seguido->getId() ?>">
                             <div class="d-flex align-items-center gap-3">
-                                <img src="<?= $imagenSeguido ?>" class="rounded-circle" width="50">
+                                <img src="<?= $imagenSeguido ?>" class="rounded-circle imgperfilS">
                                 <div class="flex-grow-1 overflow-hidden">
                                     <h6 class="mb-0 text-truncate"><?= htmlspecialchars($seguido->getNombre()) ?></h6>
                                     <small class="text-muted">@<?= htmlspecialchars($seguido->getNombreUsuario()) ?></small>
@@ -155,14 +155,22 @@
                         <?php if($soyYo) : ?>
                             <span class="badge badge-secondary rounded-pill px-3">Tú</span>
                         <?php elseif(!$id_sesion) :?>
-                            <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;">Seguir</button>
+                            <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;"
+                            data-action="seguir"
+                            data-id-usuario="<?= $seguido->getId() ?>">Seguir</button>
                         <?php elseif($esPerfilUsuario) : ?>
-                            <button class="btn btn-sm btn-outline-danger border-0"><i class="bi bi-person-x-fill"></i></button>
+                            <button class="btn btn-sm btn-outline-danger border-0"
+                            data-action="dejar-seguir"
+                            data-id-usuario="<?= $seguido->getId() ?>"><i class="bi bi-person-x-fill"></i></button>
                         <?php else: ?>
                             <?php if($loSigo): ?>
-                                <button class="btn btn-sm btn-outline-primary rounded-pill px-3" style="font-size: 0.75rem;">Siguiendo</button>
+                                <button class="btn btn-sm btn-outline-primary rounded-pill px-3" style="font-size: 0.75rem;"
+                                data-action="dejar-seguir"
+                                data-id-usuario="<?= $seguido->getId() ?>">Siguiendo</button>
                             <?php else: ?>
-                                <button class="btn btn-sm btn-primary rounded-pill px-3" style="font-size: 0.75rem;">Seguir</button>
+                                <button class="btn btn-sm btn-primary rounded-pill px-3" style="font-size: 0.75rem;"
+                                data-action="seguir"
+                                data-id-usuario="<?= $seguido->getId() ?>">Seguir</button>
                             <?php endif; ?>
                         <?php endif; ?>
                     </div>
@@ -179,7 +187,7 @@
 
 <section id="seguidores" class="seccion-usuario d-none">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h5 class="fw-bold mb-0">Seguidores</h5>
+        <h3 class="h4 fw-bold mb-0">Seguidores</h3>
         <div class="input-group input-group-sm" style="max-width: 250px;">
             <input type="text" class="form-control" placeholder="Buscar entre tus seguidores...">
             <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
@@ -209,7 +217,7 @@
                         ?>
                         <a class="text-decoration-none text-dark w-100" href="/usuario/<?= $seguidor->getId() ?>">
                             <div class="d-flex align-items-center gap-3">
-                                <img src="<?= $imagenSeguido ?>" class="rounded-circle" width="50">
+                                <img src="<?= $imagenSeguidor ?>" class="rounded-circle imgperfilS">
                                 <div class="flex-grow-1 overflow-hidden">
                                     <h6 class="mb-0 text-truncate"><?= htmlspecialchars($seguidor->getNombre()) ?></h6>
                                     <small class="text-muted">@<?= htmlspecialchars($seguidor->getNombreUsuario()) ?></small>
@@ -219,20 +227,32 @@
                         <?php if($soyYo): ?>
                             <span class="badge bg-secondary rounded-pill px-3">Tú</span>
                         <?php elseif(!$id_sesion): ?>
-                            <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;">Seguir</button>
+                            <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;"
+                            data-action="seguir"
+                            data-id-usuario="<?= $seguidor->getId() ?>">Seguir</button>
                         <?php elseif($esPerfilUsuario): ?>
                             <?php if($loSigo): ?>
-                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;">Siguiendo</button>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;"
+                                data-action="dejar-seguir"
+                                data-id-usuario="<?= $seguidor->getId() ?>">Siguiendo</button>
                             <?php else: ?>
-                                <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;">Seguir</button>
+                                <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;"
+                                data-action="seguir"
+                                data-id-usuario="<?= $seguidor->getId() ?>">Seguir</button>
                             <?php endif; ?>
-                            <button class="btn btn-sm btn-outline-danger border-0"><i class="bi bi-person-x-fill"></i></button>
+                            <button class="btn btn-sm btn-outline-danger border-0"
+                            data-action="eliminar-seguidor"
+                            data-id-seguidor="<?= $seguidor->getId() ?>"><i class="bi bi-person-x-fill"></i></button>
                         
                         <?php else: ?>
                             <?php if($loSigo): ?>
-                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;">Siguiendo</button>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;"
+                                data-action="dejar-seguir"
+                                data-id-usuario="<?= $seguidor->getId() ?>">Siguiendo</button>
                             <?php else: ?>
-                                <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;">Seguir</button>
+                                <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;"
+                                data-action="seguir"
+                                data-id-usuario="<?= $seguidor->getId() ?>">Seguir</button>
                             <?php endif; ?>
                         <?php endif; ?>
                     </div>                    
@@ -250,58 +270,109 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <?php if($esPerfilUsuario) : ?>
             <div class="d-flex align-items-center gap-2">
-                <h3 class="h5 fw-bold mb-0 ">Tus listas</h3>
-                <button type="button" class="btn btn-link text-decoration-none text-dark large dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Listas seguidas</a></li>                
-                </ul>
+                <h3 class="h4 fw-bold mb-0" id="tituloListasView">Tus listas</h3>
+                <div class="dropdown">
+                    <button class="btn btn-link text-decoration-none text-dark dropdown-toggle p-0" 
+                            type="button" 
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false">
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" data-view="propias" href="#">Tus listas</a></li>
+                        <li><a class="dropdown-item" data-view="seguidas" href="#">Listas seguidas</a></li>
+                    </ul>
+                </div>
             </div>
-            <button class="btn btn-dark rounded-pill px-4"
-            data-action="crear-lista">
+            <button class="btn btn-dark rounded-pill px-4" data-action="crear-lista">
                 <i class="bi bi-plus-lg me-2"></i>Nueva Lista
             </button>
         <?php else: ?>
-            <h3 class="fw-bold mb-0 fuenteSerif">Listas de <?= $usuario->getNombreUsuario(); ?></h3>
+            <h3 class="h4 fw-bold mb-0 fuenteSerif">Listas de <?= htmlspecialchars($usuario->getNombreUsuario()) ?></h3>
         <?php endif; ?>
     </div>
-    <div class="row g-4">
-        <?php if(!empty($listas)):?>
+
+    <div id="listasPropias" class="row g-4">
+        <?php if(!empty($listas)): ?>
             <?php foreach($listas as $lista): ?>
-            <div class="col-12 col-md-4  col-xl-3">
-                <a href="/lista/<?= $lista['id'] ?>" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden tarjetaListaPerfil">
-                        <div class="card-body">
-                            <h6 class="fw-bold mb-0"><?= $lista['nombre'] ?></h6>
-                            <small class="text-muted"><?= count(Lista::obtenerObrasPorId($lista['id'])) ?> títulos</small>
-                            <div class="carousel slide mt-3" data-bs-ride="carousel">
-                                <div class="carousel-inner">
-                                    <?php 
-                                    $obrasLista = Lista::obtenerObrasPorId($lista['id']);
-                                    $contador = 0;
-                                    foreach($obrasLista as $obraLista):
-                                        $obra = Obra::crearInstancia($obraLista['id_obra']);
-                                        if(!$obra) continue;
-                                        
-                                        $portada = $obra->getPortada() 
-                                            ? "https://covers.openlibrary.org/b/olid/" . $obra->getPortada() . "-M.jpg"
-                                            : "/assets/img/default/imgportada.jpg";
-                                    ?>
-                                    <div class="carousel-item <?= $contador === 0 ? 'active' : '' ?>">
-                                        <img src="<?= $portada ?>" 
-                                            class="d-block w-100 rounded imagenPortadaLista" 
-                                            alt="<?= htmlspecialchars($obra->getTitulo()) ?>">
+                <div class="col-12 col-md-4 col-xl-3">
+                    <a href="/lista/<?= $lista['id'] ?>" class="text-decoration-none">
+                        <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden tarjetaListaPerfil">
+                            <div class="card-body">
+                                <h6 class="fw-bold mb-0"><?= htmlspecialchars($lista['nombre']) ?></h6>
+                                <small class="text-muted">
+                                    <?= count(Lista::obtenerObrasPorId($lista['id'])) ?> títulos
+                                </small>
+                                <div class="carousel slide mt-3" data-bs-ride="carousel">
+                                    <div class="carousel-inner">
+                                        <?php 
+                                        $obrasLista = Lista::obtenerObrasPorId($lista['id']);
+                                        $contador = 0;
+                                        foreach($obrasLista as $obraLista):
+                                            $obra = Obra::crearInstancia($obraLista['id_obra']);
+                                            if(!$obra) continue;
+                                            $portada = $obra->getPortada() 
+                                                ? "https://covers.openlibrary.org/b/olid/" . $obra->getPortada() . "-M.jpg"
+                                                : "/assets/img/default/imgportada.jpg";
+                                        ?>
+                                        <div class="carousel-item <?= $contador === 0 ? 'active' : '' ?>">
+                                            <img src="<?= $portada ?>" 
+                                                 class="d-block w-100 rounded imagenPortadaLista" 
+                                                 alt="<?= htmlspecialchars($obra->getTitulo()) ?>">
+                                        </div>
+                                        <?php $contador++; endforeach; ?>
                                     </div>
-                                    <?php $contador++; endforeach; ?>
-                                </div>                                                           
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </a>
-            </div>
-        <?php endforeach; ?>
+                    </a>
+                </div>
+            <?php endforeach; ?>
         <?php else: ?>
             <div class="col">
-                <p>Aún no hay listas</p>
+                <p>Aún no tienes listas. Crea tu primera lista.</p>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <div id="listasSeguidas" class="row g-4 d-none">
+        <?php if(!empty($listasSeguidas)): ?>
+            <?php foreach($listasSeguidas as $lista): ?>
+                <div class="col-12 col-md-4 col-xl-3">
+                    <a href="/lista/<?= $lista['id'] ?>" class="text-decoration-none">
+                        <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden tarjetaListaPerfil">
+                            <div class="card-body">
+                                <h6 class="fw-bold mb-0"><?= htmlspecialchars($lista['nombre']) ?></h6>
+                                <small class="text-muted">
+                                    <?= count(Lista::obtenerObrasPorId($lista['id'])) ?> títulos
+                                </small>
+                                <div class="carousel slide mt-3" data-bs-ride="carousel">
+                                    <div class="carousel-inner">
+                                        <?php 
+                                        $obrasLista = Lista::obtenerObrasPorId($lista['id']);
+                                        $contador = 0;
+                                        foreach($obrasLista as $obraLista):
+                                            $obra = Obra::crearInstancia($obraLista['id_obra']);
+                                            if(!$obra) continue;
+                                            $portada = $obra->getPortada() 
+                                                ? "https://covers.openlibrary.org/b/olid/" . $obra->getPortada() . "-M.jpg"
+                                                : "/assets/img/default/imgportada.jpg";
+                                        ?>
+                                        <div class="carousel-item <?= $contador === 0 ? 'active' : '' ?>">
+                                            <img src="<?= $portada ?>" 
+                                                 class="d-block w-100 rounded imagenPortadaLista" 
+                                                 alt="<?= htmlspecialchars($obra->getTitulo()) ?>">
+                                        </div>
+                                        <?php $contador++; endforeach; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="col">
+                <p>Aún no sigues ninguna lista.</p>
             </div>
         <?php endif; ?>
     </div>
@@ -313,13 +384,13 @@
             <div class="col-md-8">
                 <div class="card border-0 shadow-sm rounded-4">
                     <div class="card-body p-4">
-                        <form action="" method="POST" enctype="multipart/form-data">
-                            <input type="hidden" name="id_usuario" value="">
+                        <form action="" method="POST" enctype="multipart/form-data" id="formPerfil">
+                            <input type="hidden" name="id_usuario" value="<?= $usuario->getId() ?>">
 
                             <h3 class="h5 fw-bold mb-4">Información Pública</h3>
                             
                             <div class="d-flex align-items-center gap-4 mb-4">
-                                <img src="https://ui-avatars.com/api/?name=Nombre+Usuario" class="rounded-circle border" width="80" id="imgPrevia">
+                                <img src="/<?= $usuario->getRutaFoto() ?>" class="rounded-circle border" width="80" id="imgPrevia">
                                 <div>
                                     <label class="form-label small fw-bold">Foto de perfil</label>
                                     <input type="file" class="form-control form-control-sm" name="avatar" accept="image/*">
@@ -327,8 +398,13 @@
                             </div>
 
                             <div class="mb-3">
+                                <label for="nombre" class="form-label small fw-bold">Nombre</label>
+                                <input type="text" name="nombre" class="form-control" placeholder="">
+                            </div>
+
+                            <div class="mb-3">
                                 <label class="form-label small fw-bold">Nombre de Usuario (Username)</label>
-                                <input type="text" name="nombre" class="form-control" value="" placeholder="@usuario">
+                                <input type="text" name="nombreUsuario" class="form-control" placeholder="@usuario">
                             </div>
 
                             <div class="mb-3">
@@ -342,7 +418,7 @@
                             
                             <div class="mb-3">
                                 <label class="form-label small fw-bold">Correo electrónico</label>
-                                <input type="email" name="email" class="form-control" value="maria@ejemplo.com">
+                                <input type="email" name="correo" class="form-control">
                             </div>
 
                             <div class="row mb-3">
@@ -358,7 +434,7 @@
 
                             <div class="bg-light p-3 rounded-3 mb-4 border">
                                 <label class="form-label small fw-bold text-dark">Confirmar cambios con contraseña actual</label>
-                                <input type="password" name="pass_actual" class="form-control" placeholder="Introduce tu contraseña para validar" required>
+                                <input type="password" name="pass_confirmacion" class="form-control" placeholder="Introduce tu contraseña para validar">
                             </div>
 
                             <div class="d-grid d-md-flex justify-content-md-end">

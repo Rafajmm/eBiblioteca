@@ -148,7 +148,7 @@
                     $usuarioReporto=Comentario::usuarioReporto($_SESSION['id_usuario'], $comentario['id']);
                 }
             ?>
-            <div class="bg-white p-3 rounded shadow-sm border">
+            <div class="bg-white p-3 rounded shadow-sm border contComentario">
                 <div class="d-flex justify-content-between align-items-center mb-1">                    
                     <a href="/usuario/<?= htmlspecialchars($comentario['id_usuario']) ?>" class="fw-bold small text-decoration-none">@<?= htmlspecialchars($comentario['usuario']) ?></a>
                 </div>
@@ -156,18 +156,18 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="text-muted fecha" data-fecha="<?= $comentario['fecha_comentario'] ?>" style="font-size: 0.75rem;"></span>
                     <div>                        
-                        <button class="btn btn-link p-0 text-decoration-none" id="btnReportarComentario"
+                        <button class="btn btn-link p-0 text-decoration-none btnReportarComentario" id="btnReportarComentario"
                         data-id-comentario="<?= $comentario['id'] ?>"
                         data-usuario-reporto="<?= $usuarioReporto ? '1' : '0' ?>">
                             <i class="bi bi-flag<?= $usuarioReporto ? '-fill' : '' ?> text-danger"></i>
                         </button>
 
-                        <button class="btn btn-link p-0 text-decoration-none" id="btnLikeComentario"
+                        <button class="btn btn-link p-0 text-decoration-none btnLikeComentario" id="btnLikeComentario"
                         data-id-comentario="<?= $comentario['id'] ?>"
                         data-usuario-like="<?= $usuarioDioMg ? '1' : '0' ?>">
                             <i class="bi bi-hand-thumbs-up<?= $usuarioDioMg ? '-fill' : '' ?> text-primary"></i>
                         </button>
-                        <span class="text-muted small"><?= "(" . (Comentario::crearInstancia($comentario['id'])->totalMeGusta()>0 ? Comentario::crearInstancia($comentario['id'])->totalMeGusta() : '0') . ")" ?></span>
+                        <span class="text-muted small contadorMg"><?= (Comentario::crearInstancia($comentario['id'])->totalMeGusta()>0 ? Comentario::crearInstancia($comentario['id'])->totalMeGusta() : '0') ?></span>
                     </div>
                 </div>
             </div>

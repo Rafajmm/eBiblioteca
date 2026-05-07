@@ -64,8 +64,9 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 
-// Seguir/dejar de seguir
+
 document.addEventListener('DOMContentLoaded',function(){
+    // Seguir/dejar de seguir
     document.body.addEventListener('click',async function(e){
         const btnSeguir=e.target.closest('[data-action="seguir"]');
         if(btnSeguir){
@@ -84,7 +85,7 @@ document.addEventListener('DOMContentLoaded',function(){
                     contador.textContent=parseInt(contador.textContent)+1;
                 }
 
-                mostrarNotificacion('Ahora sigues a este usuario', 'success');
+                mostrarNotificacion('Ahora sigues a ese usuario', 'success');
             } catch(error){
                 mostrarNotificacion(error.message, 'danger');
             }
@@ -108,10 +109,29 @@ document.addEventListener('DOMContentLoaded',function(){
                     contador.textContent=parseInt(contador.textContent)-1;
                 }
 
-                mostrarNotificacion('Dejaste de seguir a este usuario', 'info');
+                mostrarNotificacion('Dejaste de seguir a ese usuario', 'success');
             } catch(error){
                 mostrarNotificacion(error.message, 'danger');
             }
+        }
+    });
+
+    // Eliminar seguidor
+    document.body.addEventListener('click',async function(e){
+        const btnEliminarS=e.target.closest('[data-action="eliminar-seguidor"]');
+        if(!btnEliminarS) return;
+        e.preventDefault();
+        const idSeguidor=btnEliminarS.dataset.idSeguidor;
+        try{
+            await peticion(`/usuario/${idSeguidor}/eliminar-seguidor`);
+            const tarjetaS=btnEliminarS.closest('.col');
+            if(tarjetaS) tarjetaS.remove();
+            mostrarNotificacion('Seguidor eliminado','success');
+            const contador = document.getElementById('contadorSeguidores');
+            if(contador) contador.textContent = parseInt(contador.textContent) - 1;
+        }
+        catch(error){
+            mostrarNotificacion(error.message,'danger');
         }
     });
 });

@@ -11,8 +11,12 @@
             <p class="lead text-secondary" style="max-width: 700px;">
                 <?= !empty($lista->getDescripcion()) ? htmlspecialchars($lista->getDescripcion()) : '' ?>
             </p>
-            <div class="d-flex align-items-center mb-3">                        
-                <span class="small">Creada por <strong><?= $idCreador==10 ? 'Equipo eBiblioteca' : $instanciaCreador->getNombre() ?></strong></span>
+            <div class="d-flex align-items-center mb-3">
+                <?php if($idCreador==10) : ?>                        
+                    <span class="small fw-bold">Creada por Equipo eBiblioteca</strong></span>
+                <?php else: ?>
+                    <span class="small fw-bold">Creada por <a href="/usuario/<?=$instanciaCreador->getId()?>" class="text-decoration-none">@<?=$instanciaCreador->getNombreUsuario()?></a></span>
+                <?php endif ?>
             </div>
             <div class="d-flex align-items-center gap-3">
                 <?php if($esPropietario): ?>
@@ -27,16 +31,25 @@
                     </button>
                 <?php else: ?>
                     <?php if($meGusta): ?>
-                        <button class="btn btn-primary btn-sm rounded-pill px-3">
+                        <button class="btn btn-primary btn-sm rounded-pill px-3"
+                        data-action="seguir-lista"
+                        data-id-lista="<?= $lista->getId()?>"
+                        data-seguida="1">
                             <i class="bi bi-check-lg me-1"></i> Seguido
                         </button>
                     <?php else: ?>
-                        <button class="btn btn-primary btn-sm rounded-pill px-3">
+                        <button class="btn btn-primary btn-sm rounded-pill px-3"
+                        data-action="seguir-lista"
+                        data-id-lista="<?= $lista->getId() ?>"
+                        data-seguida="0">
                             <i class="bi bi-plus-lg me-1"></i> Seguir
                         </button>
                     <?php endif; ?>
                     <?php if(!$estaCopiada): ?>
-                        <button class="btn btn-primary btn-sm rounded-pill px-3">
+                        <button class="btn btn-primary btn-sm rounded-pill px-3"
+                        data-action="guardar-lista"
+                        data-id-lista="<?= $lista->getId() ?>"
+                        data-copiada="0">
                             <i class="bi bi-bookmark"></i> Guardar
                         </button>
                     <?php else: ?>

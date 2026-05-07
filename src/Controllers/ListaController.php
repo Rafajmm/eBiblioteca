@@ -144,17 +144,36 @@ class ListaController {
         echo json_encode(['ok'=>true]);
     }
 
-    public function meGusta($id){
+    public function seguir($id){
         $lista=Lista::crearInstancia($id);
         if(!$lista){
             http_response_code(404);
             header('Content-Type: application/json');
-            echo json_encode(['error'=>'Lista no encontrada']);
-            return;
+            ob_start();
+            include __DIR__ . '/../Views/404.php';
+            $contenido=ob_get_clean();
+            require_once __DIR__ . '/../Views/layout.php';
         }
 
-        $lista->meGusta();
+        $lista->meGusta($_SESSION['id_usuario']);
         
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
+    }
+
+    public function dejarDeSeguir($id){
+        $lista=Lista::crearInstancia($id);
+        if(!$lista){
+            http_response_code(404);
+            header('Content-Type: application/json');
+            ob_start();
+            include __DIR__ . '/../Views/404.php';
+            $contenido=ob_get_clean();
+            require_once __DIR__ . '/../Views/layout.php';
+        }
+
+        $lista->quitarMeGusta($_SESSION['id_usuario']);
+
         header('Content-Type: application/json');
         echo json_encode(['ok'=>true]);
     }

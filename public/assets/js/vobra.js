@@ -376,19 +376,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Me gusta y reportar comentario
 document.body.addEventListener('click',async function(e){
-    const btnLike=e.target.closest("#btnLikeComentario");
+    const btnLike=e.target.closest(".btnLikeComentario");
     if(btnLike){
         e.preventDefault();
         const idComentario=btnLike.dataset.idComentario;
         const dioLike=btnLike.dataset.usuarioLike==='1';
         const icono=btnLike.querySelector('i');
+        const contComentario=btnLike.closest('.contComentario');
+        const contadorMG=contComentario.querySelector(".contadorMg");
         
         try{
             if(dioLike){
                 await peticion(`/comentario/${idComentario}/quitar-megusta`,{body:{idComentario}});
                 icono.classList.remove('bi-hand-thumbs-up-fill');
                 icono.classList.add('bi-hand-thumbs-up');
-                btnLike.dataset.usuarioLike='0';
+                btnLike.dataset.usuarioLike='0';                
+                contadorMG.innerHTML=parseInt(contadorMG.textContent)-1;
                 mostrarNotificacion('Me gusta quitado','success');
             }
             else{
@@ -396,6 +399,7 @@ document.body.addEventListener('click',async function(e){
                 icono.classList.remove('bi-hand-thumbs-up');
                 icono.classList.add('bi-hand-thumbs-up-fill');
                 btnLike.dataset.usuarioLike='1';
+                contadorMG.innerHTML=parseInt(contadorMG.textContent)+1;
                 mostrarNotificacion('Me gusta añadido','success');
             }
         }
@@ -405,7 +409,7 @@ document.body.addEventListener('click',async function(e){
         return;
     }
 
-    const btnReportar=e.target.closest("#btnReportarComentario");
+    const btnReportar=e.target.closest(".btnReportarComentario");
     if(btnReportar) {
         e.preventDefault();
         const idComentario = btnReportar.dataset.idComentario;

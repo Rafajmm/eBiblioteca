@@ -87,4 +87,43 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    document.body.addEventListener('click',async function(e){
+        const btnSeguir=e.target.closest('[data-action="seguir-lista"]');
+        if(btnSeguir){
+            const idLista=btnSeguir.dataset.idLista;
+            const seguida=btnSeguir.dataset.seguida==='1';
+            try{
+                if(seguida){
+                    await peticion(`/lista/${idLista}/dejar-seguir`,{body:{idLista}});
+                    btnSeguir.dataset.seguida = '0';
+                    btnSeguir.innerHTML = '<i class="bi bi-plus-lg me-1"></i> Seguir';
+                    mostrarNotificacion('Has dejado de seguir la lista','success');
+                }
+                else{
+                    await peticion(`/lista/${idLista}/seguir`,{body:{idLista}});
+                    btnSeguir.dataset.seguida=1;
+                    btnSeguir.innerHTML='<i class="bi bi-check-lg me-1"></i> Seguir';
+                    mostrarNotificacion('Ahora sigues la lista','success');
+                }
+            }
+            catch(error){
+                mostrarNotificacion(error.message,'danger');
+            }
+        }
+
+        const btnGuardar=e.target.closest('[data-action="guardar-lista"]');
+        if(btnGuardar){
+            const idLista=btnGuardar.dataset.idLista;
+            try{
+                await peticion(`/lista/${idLista}/copiar`,{body:{idLista}});
+                btnGuardar.dataset.copiada=1;
+                btnGuardar.innerHTML='<i class="bi bi-bookmark-fill"></i> Guardada';
+                mostrarNotificacion('Lista guardada','success');
+            }
+            catch(error){
+                mostrarNotificacion(error.message,'danger');
+            }
+        }
+    });
 });

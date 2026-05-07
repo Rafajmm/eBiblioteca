@@ -45,7 +45,7 @@
             <h3 class="h5 mb-1 text-muted">Colecciones</h3>
             <p class="display-6 fw-bold mb-0"><?php echo $totalColecciones; ?> colecciones</p>
           </div>
-          <i class="bi bi-bookmark fs-1 text-primary opacity-25"></i>
+          <i class="bi bi-journals fs-1 text-primary opacity-25"></i>
         </div>
       </div>
     </div>
@@ -106,4 +106,3 @@
     </div>
   </div>
 </section>
-
