@@ -80,9 +80,19 @@ document.addEventListener('DOMContentLoaded',function(){
                 btnSeguir.classList.replace('btn-primary','btn-outline-primary');
                 btnSeguir.dataset.action='dejar-seguir';
                 
-                const contador=document.getElementById('contadorSeguidores');
-                if(contador){
-                    contador.textContent=parseInt(contador.textContent)+1;
+                const perfil = document.querySelector('[data-id-perfil]');
+                if(perfil){
+                    const idPerfil = perfil.dataset.idPerfil;
+                    const idSesion = perfil.dataset.idSesion;
+                    
+                    if(idUsuario === idPerfil){
+                        const cSeguidores = document.getElementById('contadorSeguidores');
+                        if(cSeguidores) cSeguidores.textContent = parseInt(cSeguidores.textContent) + 1;
+                    }
+                    if(idSesion === idPerfil){
+                        const cSeguidos = document.getElementById('contadorSeguidos');
+                        if(cSeguidos) cSeguidos.textContent = parseInt(cSeguidos.textContent) + 1;
+                    }
                 }
 
                 mostrarNotificacion('Ahora sigues a ese usuario', 'success');
@@ -104,9 +114,19 @@ document.addEventListener('DOMContentLoaded',function(){
                 botonDejar.classList.replace('btn-outline-primary','btn-primary');
                 botonDejar.dataset.action='seguir';
                 
-                const contador=document.getElementById('contadorSeguidores');
-                if(contador){
-                    contador.textContent=parseInt(contador.textContent)-1;
+                const perfil = document.querySelector('[data-id-perfil]');
+                if(perfil){
+                    const idPerfil = perfil.dataset.idPerfil;
+                    const idSesion = perfil.dataset.idSesion;
+                    
+                    if(idUsuario === idPerfil){
+                        const cSeguidores = document.getElementById('contadorSeguidores');
+                        if(cSeguidores) cSeguidores.textContent = parseInt(cSeguidores.textContent) - 1;
+                    }
+                    if(idSesion === idPerfil){
+                        const cSeguidos = document.getElementById('contadorSeguidos');
+                        if(cSeguidos) cSeguidos.textContent = parseInt(cSeguidos.textContent) - 1;
+                    }
                 }
 
                 mostrarNotificacion('Dejaste de seguir a ese usuario', 'success');

@@ -25,6 +25,9 @@ body{
     .botonesNav .btn { width: 100%; }
 }
 
+.letraP{
+    font-size: 0.75rem;
+}
 
 /* estilos para VistaObra */
 .contenedorPortada {
@@ -135,9 +138,33 @@ body{
     vertical-align: middle;
     margin-left: 0.5rem;
 }
-#tituloListasView {
-    cursor: default;
+#tituloListas {
+    cursor: pointer;
 }
+
+.tarjetaListaPerfil {
+    max-height: 460px !important;
+    overflow:hidden;
+    /* .imagenPortadaLista {
+        height: 350px;
+    } */
+}
+
+.imgPerfil {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}
+.imgperfilS {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+#imgPrevia{
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+} 
 
 /* estilos para VistaColecciones */
 .contenedorColeccion {
@@ -208,21 +235,6 @@ body{
     transition: all 0.2s ease-in-out;
 }
 
-/* Estilos para foto de perfil */
-.imgPerfil {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-}
-
-.tarjetaListaPerfil {
-    max-height: 460px !important;
-    overflow:hidden;
-    /* .imagenPortadaLista {
-        height: 350px;
-    } */
-} 
-
 /* Estilos para comentarios */
 .pComentario {
     white-space: pre-wrap;
@@ -240,10 +252,4 @@ body{
 
 .estrellas i:hover {
     transform: scale(1.2);
-}
-
-.imgperfilS {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
 }

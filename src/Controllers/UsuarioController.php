@@ -160,7 +160,7 @@ class UsuarioController {
 
         if(!empty($bio)) $usuario->setBio($bio);
         if(!empty($rutaFoto)) $usuario->setRutaFoto($rutaFoto);
-        if(!empty($passNueva) && !empty($passRepite) && $passNueva === $passRepite) $usuario->setPass(password_hash($passNueva, PASSWORD_BCRYPT));
+        if(!empty($passNueva) && !empty($passRepite) && $passNueva === $passRepite) $usuario->setPass($passNueva);
 
         $usuario->actualizar();
         

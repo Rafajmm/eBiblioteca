@@ -30,19 +30,88 @@ document.addEventListener('DOMContentLoaded', function() {
         cambiarSeccion('seguidos');
     });
 
+    // Buscar entre seguidos/seguidores
+    const inputSeguidos=document.getElementById('buscarSeguidos');
+    const inputSeguidores=document.getElementById('buscarSeguidores')
+    if(inputSeguidos){
+        inputSeguidos.addEventListener('input',function(){
+            const filtro=this.value.toLowerCase().trim();
+            const tarjetas=this.closest('section').querySelectorAll('.col');
+            tarjetas.forEach(tarjeta=>{
+                const nombre=tarjeta.querySelector('h6').textContent.toLowerCase();
+                const nombreUsuario=tarjeta.querySelector('small').textContent.toLowerCase().replace('@', '');
+                tarjeta.classList.toggle('d-none', !(!filtro || nombre.includes(filtro) || nombreUsuario.includes(filtro)));
+            })
+        });
+    }
+    if(inputSeguidores){
+        inputSeguidores.addEventListener('input',function(){
+            const filtro=this.value.toLowerCase().trim();
+            const tarjetas=this.closest('section').querySelectorAll('.col');
+            tarjetas.forEach(tarjeta=>{
+                const nombre=tarjeta.querySelector('h6').textContent.toLowerCase();
+                const nombreUsuario=tarjeta.querySelector('small').textContent.toLowerCase().replace('@', '');
+                tarjeta.classList.toggle('d-none', !(!filtro || nombre.includes(filtro) || nombreUsuario.includes(filtro)));
+            })
+        });
+    }
+
+    // Cambio de vista entre listas del usuario y listas seguidas
+    const dropdownItems = document.querySelectorAll('[data-view]');
+    const contenedorPropias = document.getElementById('listasPropias');
+    const contenedorSeguidas = document.getElementById('listasSeguidas');
+    const tituloView = document.getElementById('tituloListasView');
+
+    if (!dropdownItems.length) return;
+
+    function cambiarVistaListas(view) {
+        if (view === 'propias') {
+            contenedorPropias.classList.remove('d-none');
+            contenedorSeguidas.classList.add('d-none');
+            if (tituloView) tituloView.textContent = 'Tus listas';
+        } else if (view === 'seguidas') {
+            contenedorPropias.classList.add('d-none');
+            contenedorSeguidas.classList.remove('d-none');
+            if (tituloView) tituloView.textContent = 'Listas seguidas';
+        }
+    }
+
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const view = this.dataset.view;
+            cambiarVistaListas(view);
+        });
+    });
+
     // Crear lista
-    document.body.addEventListener('click',async function (e){
-        const btnNL=e.target.closest('[data-action=crear-lista]');
-        if(btnNL){
-            const nombre = prompt('Nombre de la nueva lista:');
-            if(!nombre || !nombre.trim()) return;
+    const modalCrearLista = document.getElementById('modalCrearLista');
+    if(modalCrearLista){
+        const inputNombre = document.getElementById('nombreNuevaLista');
+        const inputDesc = document.getElementById('descNuevaLista');
+        const btnCrear = document.getElementById('btnCrearLista');
+
+        modalCrearLista.addEventListener('show.bs.modal', function(){
+            inputNombre.value = '';
+            inputDesc.value = '';
+        });
+
+        btnCrear.addEventListener('click', async function(){
+            const nombre = inputNombre.value.trim();
+            if(!nombre){
+                mostrarNotificacion('El nombre es obligatorio', 'warning');
+                return;
+            }
+            btnCrear.disabled = true;
             try {
-                await peticion('/lista/crear', {body:{nombre: nombre.trim(), descripcion: ''}});
+                await peticion('/lista/crear', {body:{nombre, descripcion: inputDesc.value.trim()}});
                 mostrarNotificacion('Lista creada', 'success');
+                bootstrap.Modal.getInstance(modalCrearLista).hide();
                 location.reload();
             } catch(error) { mostrarNotificacion(error.message, 'danger'); }
-        }
-    });
+            finally { btnCrear.disabled = false; }
+        });
+    }
 
     // Editar perfil
     const formPerfil = document.querySelector('#formPerfil');
@@ -80,34 +149,4 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch(error) { mostrarNotificacion(error.message, 'danger'); }
         });
     }
-});
-
-// Cambio de vista entre listas del usuario y listas seguidas
-document.addEventListener('DOMContentLoaded', function() {
-    const dropdownItems = document.querySelectorAll('[data-view]');
-    const contenedorPropias = document.getElementById('listasPropias');
-    const contenedorSeguidas = document.getElementById('listasSeguidas');
-    const tituloView = document.getElementById('tituloListasView');
-
-    if (!dropdownItems.length) return;
-
-    function cambiarVistaListas(view) {
-        if (view === 'propias') {
-            contenedorPropias.classList.remove('d-none');
-            contenedorSeguidas.classList.add('d-none');
-            if (tituloView) tituloView.textContent = 'Tus listas';
-        } else if (view === 'seguidas') {
-            contenedorPropias.classList.add('d-none');
-            contenedorSeguidas.classList.remove('d-none');
-            if (tituloView) tituloView.textContent = 'Listas seguidas';
-        }
-    }
-
-    dropdownItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const view = this.dataset.view;
-            cambiarVistaListas(view);
-        });
-    });
 });

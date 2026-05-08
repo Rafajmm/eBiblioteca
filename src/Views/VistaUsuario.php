@@ -1,4 +1,4 @@
-<section class="card border-0 shadow-sm mb-5">
+<section class="card border-0 shadow-sm mb-5" data-id-perfil="<?= $usuario->getId() ?>" data-id-sesion="<?= $_SESSION['id_usuario'] ?>">
     <div class="card-body p-4">
         <div class="row align-items-center">
             <div class="col-12 col-md-auto text-center mb-3 mb-md-0">
@@ -119,7 +119,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="h4 fw-bold mb-0">Seguidos</h3>
         <div class="input-group input-group-sm" style="max-width: 250px;">
-            <input type="text" class="form-control" placeholder="Buscar entre tus seguidos...">
+            <input type="text" class="form-control" id="buscarSeguidos" placeholder="Buscar seguidos...">
             <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
         </div>
     </div>
@@ -152,23 +152,23 @@
                                 </div>
                             </div>
                         </a>
-                        <?php if($soyYo) : ?>
-                            <span class="badge badge-secondary rounded-pill px-3">Tú</span>
+                        <?php if($soyYo): ?>
+                            <span class="badge bg-secondary rounded-pill px-3">Tú</span>
                         <?php elseif(!$id_sesion) :?>
-                            <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;"
+                            <button class="btn btn-primary btn-sm rounded-pill px-3 letraP" 
                             data-action="seguir"
                             data-id-usuario="<?= $seguido->getId() ?>">Seguir</button>
                         <?php elseif($esPerfilUsuario) : ?>
-                            <button class="btn btn-sm btn-outline-danger border-0"
+                            <button class="btn btn-sm btn-outline-primary rounded-pill px-3 letraP" 
                             data-action="dejar-seguir"
-                            data-id-usuario="<?= $seguido->getId() ?>"><i class="bi bi-person-x-fill"></i></button>
+                            data-id-usuario="<?= $seguido->getId() ?>">Siguiendo</button>
                         <?php else: ?>
                             <?php if($loSigo): ?>
-                                <button class="btn btn-sm btn-outline-primary rounded-pill px-3" style="font-size: 0.75rem;"
+                                <button class="btn btn-sm btn-outline-primary rounded-pill px-3 letraP" 
                                 data-action="dejar-seguir"
                                 data-id-usuario="<?= $seguido->getId() ?>">Siguiendo</button>
                             <?php else: ?>
-                                <button class="btn btn-sm btn-primary rounded-pill px-3" style="font-size: 0.75rem;"
+                                <button class="btn btn-sm btn-primary rounded-pill px-3 letraP" 
                                 data-action="seguir"
                                 data-id-usuario="<?= $seguido->getId() ?>">Seguir</button>
                             <?php endif; ?>
@@ -189,7 +189,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="h4 fw-bold mb-0">Seguidores</h3>
         <div class="input-group input-group-sm" style="max-width: 250px;">
-            <input type="text" class="form-control" placeholder="Buscar entre tus seguidores...">
+            <input type="text" class="form-control" id="buscarSeguidores" placeholder="Buscar seguidores...">
             <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
         </div>
     </div>
@@ -227,16 +227,16 @@
                         <?php if($soyYo): ?>
                             <span class="badge bg-secondary rounded-pill px-3">Tú</span>
                         <?php elseif(!$id_sesion): ?>
-                            <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;"
+                            <button class="btn btn-primary btn-sm rounded-pill px-3 letraP" 
                             data-action="seguir"
                             data-id-usuario="<?= $seguidor->getId() ?>">Seguir</button>
                         <?php elseif($esPerfilUsuario): ?>
                             <?php if($loSigo): ?>
-                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;"
+                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3 letraP" 
                                 data-action="dejar-seguir"
                                 data-id-usuario="<?= $seguidor->getId() ?>">Siguiendo</button>
                             <?php else: ?>
-                                <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;"
+                                <button class="btn btn-primary btn-sm rounded-pill px-3 letraP" 
                                 data-action="seguir"
                                 data-id-usuario="<?= $seguidor->getId() ?>">Seguir</button>
                             <?php endif; ?>
@@ -246,11 +246,11 @@
                         
                         <?php else: ?>
                             <?php if($loSigo): ?>
-                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;"
+                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3 letraP" 
                                 data-action="dejar-seguir"
                                 data-id-usuario="<?= $seguidor->getId() ?>">Siguiendo</button>
                             <?php else: ?>
-                                <button class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.75rem;"
+                                <button class="btn btn-primary btn-sm rounded-pill px-3 letraP" 
                                 data-action="seguir"
                                 data-id-usuario="<?= $seguidor->getId() ?>">Seguir</button>
                             <?php endif; ?>
@@ -270,12 +270,12 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <?php if($esPerfilUsuario) : ?>
             <div class="d-flex align-items-center gap-2">
-                <h3 class="h4 fw-bold mb-0" id="tituloListasView">Tus listas</h3>
                 <div class="dropdown">
-                    <button class="btn btn-link text-decoration-none text-dark dropdown-toggle p-0" 
+                    <button class="btn btn-link text-decoration-none text-dark dropdown-toggle p-0 d-flex align-items-center" 
                             type="button" 
                             data-bs-toggle="dropdown" 
-                            aria-expanded="false">
+                            aria-expanded="false"
+                            id="desplegableListas"><h3 class="h4 fw-bold mb-0" id="tituloListas">Tus listas</h3>
                     </button>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" data-view="propias" href="#">Tus listas</a></li>
@@ -283,7 +283,10 @@
                     </ul>
                 </div>
             </div>
-            <button class="btn btn-dark rounded-pill px-4" data-action="crear-lista">
+            <button class="btn btn-dark rounded-pill px-4"
+            data-action="crear-lista"
+            data-bs-toggle="modal"
+            data-bs-target="#modalCrearLista">
                 <i class="bi bi-plus-lg me-2"></i>Nueva Lista
             </button>
         <?php else: ?>
@@ -390,7 +393,7 @@
                             <h3 class="h5 fw-bold mb-4">Información Pública</h3>
                             
                             <div class="d-flex align-items-center gap-4 mb-4">
-                                <img src="/<?= $usuario->getRutaFoto() ?>" class="rounded-circle border" width="80" id="imgPrevia">
+                                <img src="/<?= $usuario->getRutaFoto() ?>" class="rounded-circle border" id="imgPrevia">
                                 <div>
                                     <label class="form-label small fw-bold">Foto de perfil</label>
                                     <input type="file" class="form-control form-control-sm" name="avatar" accept="image/*">
@@ -449,5 +452,32 @@
         </div>
     </section>
 <?php endif; ?>
+
+<div class="modal fade" id="modalCrearLista" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title fw-bold">Nueva lista</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label for="nombreNuevaLista" class="form-label fw-semibold">Nombre</label>
+                    <input type="text" class="form-control" id="nombreNuevaLista" name="nombre" required placeholder="Ej: Mis favoritas de 2026">
+                </div>
+                <div class="mb-3">
+                    <label for="descNuevaLista" class="form-label fw-semibold">Descripción <span class="text-muted fw-normal">(opcional)</span></label>
+                    <textarea class="form-control" id="descNuevaLista" name="descripcion" rows="3" placeholder="¿De qué trata esta lista?"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 bg-light">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnCrearLista">
+                    <i class="bi bi-plus-lg me-1"></i>Crear lista
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script type="module" src="/assets/js/vusuario.js"></script>

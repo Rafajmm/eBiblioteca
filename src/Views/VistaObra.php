@@ -154,7 +154,7 @@
                 </div>
                 <p class="small text-secondary mb-2 w-100 pComentario"><?= nl2br(htmlspecialchars($comentario['contenido'])) ?></p>
                 <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted fecha" data-fecha="<?= $comentario['fecha_comentario'] ?>" style="font-size: 0.75rem;"></span>
+                    <span class="text-muted fecha letraP" data-fecha="<?= $comentario['fecha_comentario'] ?>"></span>
                     <div>                        
                         <button class="btn btn-link p-0 text-decoration-none btnReportarComentario" id="btnReportarComentario"
                         data-id-comentario="<?= $comentario['id'] ?>"
