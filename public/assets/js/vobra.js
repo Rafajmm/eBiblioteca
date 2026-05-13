@@ -1,4 +1,63 @@
 import {peticion,mostrarNotificacion} from './utilidades.js';
+let libro=null;
+let visor=null;
+
+function aplicarFuente(rendition,escala){
+    if(!rendition) return;
+    rendition.themes.fontSize(escala*100+'%');
+}
+
+function aplicarTema(rendition, modo) {
+    if (!rendition) return;
+
+    const modal = document.getElementById('lectorEPUB');
+    const modalContent = document.querySelector('#lectorEPUB .modal-content');
+    const modalHeader = document.querySelector('#lectorEPUB .modal-header');
+    const modalBody = document.querySelector('#lectorEPUB .modal-body');
+
+    if (modo === 'dark') {
+        rendition.themes.override('color', '#e9ecef');
+        rendition.themes.override('background', '#121212');
+
+        if (modal) modal.classList.add('epub-dark-mode');
+        if (modalContent) modalContent.classList.add('epub-dark-mode');
+        if (modalHeader) {
+            modalHeader.classList.remove('bg-white');
+            modalHeader.classList.add('bg-dark', 'text-white');
+        }
+        if (modalBody) {
+            modalBody.classList.remove('bg-light');
+            modalBody.classList.add('bg-dark');
+        }
+    } else {
+        rendition.themes.override('color', '#212529');
+        rendition.themes.override('background', '#F8F9FA');
+
+        if (modal) modal.classList.remove('epub-dark-mode');
+        if (modalContent) modalContent.classList.remove('epub-dark-mode');
+        if (modalHeader) {
+            modalHeader.classList.remove('bg-dark', 'text-white');
+            modalHeader.classList.add('bg-white');
+        }
+        if (modalBody) {
+            modalBody.classList.remove('bg-dark');
+            modalBody.classList.add('bg-light');
+        }
+    }
+}
+
+function actualizarBotonTema(modo) {
+    const btnModo = document.getElementById('theme-toggle');
+    if (!btnModo) return;
+
+    if (modo === 'dark') {
+        btnModo.innerHTML = '<i class="bi bi-sun-fill"></i>';
+        btnModo.title = 'Modo claro';
+    } else {
+        btnModo.innerHTML = '<i class="bi bi-moon-fill"></i>';
+        btnModo.title = 'Modo oscuro';
+    }
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     const lectorPDF = document.getElementById('lectorPDF');
@@ -10,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const pdfUrl = button.getAttribute('data-pdf-url');
             const bookTitle = button.getAttribute('data-book-title');
-            
+            console.log(pdfUrl);
             const modalTitle = lectorPDF.querySelector('#readerTitle');
             const iframe = lectorPDF.querySelector('#pdfIframe');
             
@@ -28,34 +87,47 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if(lectorEPUB){
-        let libro=null;
-        let visor=null;
+    if (lectorEPUB) {
+        lectorEPUB.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const epubUrl = button.getAttribute('data-epub-url');
+            const titulo = button.getAttribute('data-book-title');
 
-        lectorEPUB.addEventListener('show.bs.modal',function(event){
-            const button=event.relatedTarget;
-            const epubUrl=button.getAttribute('data-epub-url');
-            const titulo=button.getAttribute('data-book-title');
+            document.getElementById('tituloLibro').textContent = titulo;
 
-            document.getElementById('tituloLibro').textContent=titulo;
+            const viewer = document.getElementById("viewer");
 
-            if(libro) {
+            if (libro) {
                 libro.destroy();
-                document.getElementById("viewer").innerHTML = "";
+                libro = null;
+                visor = null;
+                viewer.innerHTML = "";
             }
-            
-            libro=ePub(epubUrl);
 
-            visor=libro.renderTo("viewer",{
-                width:"100%",
-                height:"100%",
-                flow:"scrolled",
-                manager:"default"
+            libro = ePub(epubUrl);
+
+            visor = libro.renderTo("viewer", {
+                width: "100%",
+                height: "100%",
+                flow: "scrolled-doc",
+                manager: "continuous",
+                spread: "none"
             });
 
             visor.display().then(function() {
-                console.log("Renderizado completo");
-                setTimeout(()=>{visor.resize();},500);
+                const escalaGuardada = localStorage.getItem('epub_font_scale');
+                const temaGuardado = localStorage.getItem('epub_theme') || 'light';
+
+                aplicarFuente(visor, escalaGuardada ? parseFloat(escalaGuardada) : 1.0);
+                aplicarTema(visor, temaGuardado);
+                actualizarBotonTema(temaGuardado);
+
+                setTimeout(() => {
+                    visor.resize();
+                }, 300);
+            }).catch(function(error) {
+                console.error('Error al cargar EPUB:', error);
+                mostrarNotificacion('No se pudo cargar el libro EPUB', 'danger');
             });
         });
 
@@ -65,24 +137,57 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        document.getElementById("next").addEventListener("click",function(e){
-            if(visor) visor.next();
-            e.preventDefault();
-        });
-
-        document.getElementById("prev").addEventListener("click",function(e){
-            if(visor) visor.prev();
-            e.preventDefault();
-        });
-
-        lectorEPUB.addEventListener('hidden.bs.modal',function(){
-            if(libro){
+        lectorEPUB.addEventListener('hidden.bs.modal', function() {
+            if (libro) {
                 libro.destroy();
-                libro=null;
+                libro = null;
+                visor = null;
             }
 
-            document.getElementById("viewer").innerHTML="";
+            const viewer = document.getElementById("viewer");
+            if (viewer) viewer.innerHTML = "";
         });
+
+        const aumentar = document.getElementById('increase-font');
+        const reducir = document.getElementById('decrease-font');
+        const btnModo = document.getElementById('theme-toggle');
+
+        if (aumentar) {
+            aumentar.addEventListener('click', function() {
+                if (!visor) return;
+
+                let escala = parseFloat(localStorage.getItem('epub_font_scale') || '1.0');
+                escala = Math.min(escala + 0.1, 2.5);
+
+                localStorage.setItem('epub_font_scale', escala);
+                aplicarFuente(visor, escala);
+            });
+        }
+
+        if (reducir) {
+            reducir.addEventListener('click', function() {
+                if (!visor) return;
+
+                let escala = parseFloat(localStorage.getItem('epub_font_scale') || '1.0');
+                escala = Math.max(escala - 0.1, 0.5);
+
+                localStorage.setItem('epub_font_scale', escala);
+                aplicarFuente(visor, escala);
+            });
+        }
+
+        if (btnModo) {
+            btnModo.addEventListener('click', function() {
+                if (!visor) return;
+
+                const temaActual = localStorage.getItem('epub_theme') || 'light';
+                const nuevoTema = temaActual === 'light' ? 'dark' : 'light';
+
+                localStorage.setItem('epub_theme', nuevoTema);
+                aplicarTema(visor, nuevoTema);
+                actualizarBotonTema(nuevoTema);
+            });
+        }
     }    
 });
 

@@ -31,10 +31,10 @@ class Obra {
 
     public static function guardar($titulo, $sinopsis, $paginas, $anio_publicacion, $genero, $ruta_pdf=null, $ruta_epub=null,$portada=null) {
         if($ruta_pdf === null) {
-            $ruta_pdf='/obras/recursosPDF/'.implode('_',explode(' ',$titulo)).'.pdf';
+            $ruta_pdf='obras/recursosPDF/'.implode('_',explode(' ',$titulo)).'.pdf';
         }
         if($ruta_epub === null) {
-            $ruta_epub='/obras/recursosEpub/'.implode('_',explode(' ',$titulo)).'.epub';
+            $ruta_epub='obras/recursosEPUB/'.implode('_',explode(' ',$titulo)).'.epub';
         }
         if($portada === null) {
             $portada= self::obtenerPortada($titulo) ?? null;
@@ -208,7 +208,8 @@ class Obra {
             on obras.id=obra_etiquetas.id_obra 
         LEFT JOIN etiquetas 
             on obra_etiquetas.id_etiqueta=etiquetas.id 
-        WHERE titulo LIKE ? 
+        WHERE obras.fecha_borrado IS NULL
+        AND ( titulo LIKE ? 
         OR sinopsis LIKE ? 
         OR genero LIKE ? 
         OR autores.nombre LIKE ? 
@@ -220,7 +221,7 @@ class Obra {
             $consulta.=" OR anio_publicacion=?";
             $parametros[]=(int)$parametro;
         }
-        $consulta.=" AND obras.fecha_borrado IS NULL GROUP BY obras.id";
+        $consulta.=") GROUP BY obras.id";
         $stmt=$db->prepare($consulta);
         $stmt->execute($parametros);
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -64,7 +64,7 @@
                                 data-bs-toggle="modal" 
                                 data-bs-target="#lectorPDF"
                                 data-pdf-url="/<?= $obra->getRutaPdf() ?>"
-                                data-book-title="Claros del bosque">
+                                data-book-title="<?= $obra->getTitulo() ?>">
                                 <i class="bi bi-book me-2"></i>Leer PDF
                             </button>
 
@@ -73,7 +73,7 @@
                                 data-bs-toggle="modal" 
                                 data-bs-target="#lectorEPUB"
                                 data-epub-url="/<?= $obra->getRutaEpub() ?>"                                        
-                                data-book-title="Claros del bosque">
+                                data-book-title="<?= $obra->getTitulo() ?>">
                                 <i class="bi bi-book me-2"></i>Leer EPUB
                             </button>                                    
 
@@ -190,7 +190,7 @@
             <div class="d-flex align-items-center">
                 <button type="button" class="btn-close btn-close-white me-3" data-bs-dismiss="modal" aria-label="Close"></button>
                 <div class="overflow-hidden">
-                    <h6 class="mb-0 fw-bold text-truncate" id="readerTitle">Claros del bosque</h6>
+                    <h6 class="mb-0 fw-bold text-truncate" id="readerTitle"><?= $obra->getTitulo() ?></h6>
                     <small class="opacity-75">Visualizador eBiblioteca</small>
                 </div>
             </div>
@@ -200,7 +200,7 @@
         </div>
         
         <div class="modal-body p-0 m-0 overflow-hidden bg-secondary">
-            <div id="pdfViewerContainer" style="width: 100%; height: 100%;">
+            <div id="visorPdf">
                 <iframe 
                     id="pdfIframe"
                     src="" 
@@ -215,27 +215,36 @@
 </div>
 
 <div class="modal fade" id="lectorEPUB" tabindex="-1" aria-hidden="true">
-<div class="modal-dialog modal-fullscreen">
-    <div class="modal-content border-0">
-        <div class="modal-header border-bottom py-2 px-4 bg-white sticky-top d-flex justify-content-between">
-            <div class="d-flex align-items-center">
-                <button type="button" class="btn-close me-3" data-bs-dismiss="modal" aria-label="Close"></button>
-                <div>
-                    <h6 class="mb-0 fw-bold" id="tituloLibro">Cargando...</h6>
-                    <small class="text-muted text-uppercase" style="font-size: 0.6rem;">Lector ePub</small>
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content border-0">
+            <div class="modal-header border-bottom py-2 px-4 bg-white sticky-top d-flex justify-content-between">
+                <div class="d-flex align-items-center">
+                    <button type="button" class="btn-close me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div>
+                        <h6 class="mb-0 fw-bold" id="tituloLibro">Cargando...</h6>
+                        <small class="text-muted text-uppercase" style="font-size: 0.6rem;">Lector ePub</small>
+                    </div>
+                </div>
+                <div class="navigation-controls d-flex gap-2">
+                    <button class="btn btn-outline-secondary btn-sm" id="decrease-font" title="Reducir fuente">
+                        A-
+                    </button>
+
+                    <button class="btn btn-outline-secondary btn-sm" id="increase-font" title="Aumentar fuente">
+                        A+
+                    </button>
+
+                    <button class="btn btn-outline-secondary btn-sm" id="theme-toggle" title="Modo oscuro">
+                        <i class="bi bi-moon-fill"></i>
+                    </button>
                 </div>
             </div>
-            <div class="navigation-controls">
-                <button class="btn btn-outline-primary btn-sm" id="prev">⬅️ Anterior</button>
-                <button class="btn btn-outline-primary btn-sm" id="next">Siguiente ➡️</button>
+            
+            <div class="modal-body p-0 bg-light">
+                <div id="viewer"></div>
             </div>
         </div>
-        
-        <div class="modal-body p-0 bg-light">
-            <div id="viewer" style="min-height: 85vh; width: 100%; background: white;"></div>
-        </div>
     </div>
-</div>
 </div>
 
 <div class="modal fade" id="modalAgregarObra" tabindex="-1" aria-hidden="true">

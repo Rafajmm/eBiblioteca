@@ -113,6 +113,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Eliminar lista
+    document.body.addEventListener('click',async function(e){
+        const btnEliminarLista=e.target.closest('[data-action="eliminar-lista"]');
+        if(!btnEliminarLista) return;
+        e.preventDefault();
+        e.stopPropagation();
+
+        if(!confirm('¿Estás seguro de que quieres eliminar esta lista?')) return;
+
+        const idLista=btnEliminarLista.dataset.idLista;
+
+        try{
+            await peticion(`/lista/${idLista}/eliminar`,{body:{idLista}});
+            const tarjeta=btnEliminarLista.closest('.col-12');
+            if(tarjeta) tarjeta.remove();
+
+            mostrarNotificacion('Lista eliminada','success');
+        }
+        catch(error){
+            mostrarNotificacion(error.message,'danger');
+        }
+    });
+
     // Editar perfil
     const formPerfil = document.querySelector('#formPerfil');
     if(formPerfil){

@@ -283,14 +283,19 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             
             const formData = new FormData(this);
-            const datos = Object.fromEntries(formData.entries());
+            const autores = formData.getAll('autores[]');
+            const etiquetas = formData.getAll('etiquetas[]');
+            formData.delete('autores[]');
+            formData.delete('etiquetas[]');
+            formData.append('autores', JSON.stringify(autores));
+            formData.append('etiquetas', JSON.stringify(etiquetas));
 
             const btn = this.querySelector('button[type="submit"]') || document.querySelector('button[form="formObraNueva"]');
             btn.disabled = true;
             btn.innerHTML = 'Creando...';
             
             try {
-                const resp = await peticion('/admin/obra/crear', { body: datos });
+                const resp = await peticion('/admin/obra/crear', { body: formData });
                 
                 const modal = bootstrap.Modal.getInstance(
                     document.getElementById('modalObraNueva')
@@ -317,15 +322,20 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
 
             const formData=new FormData(this);
-            const datos=Object.fromEntries(formData.entries());
-            delete datos['autores_actualizar[]'];
-            delete datos['etiquetas_actualizar[]'];
-
-            datos.autores_actualizar=JSON.stringify(formData.getAll('autores_actualizar[]'));
-            datos.etiquetas_actualizar=JSON.stringify(formData.getAll('etiquetas_actualizar[]'));
+            
+            // Manejar arrays de autores y etiquetas
+            const autores = formData.getAll('autores_actualizar[]');
+            const etiquetas = formData.getAll('etiquetas_actualizar[]');
+            
+            formData.delete('autores_actualizar[]');
+            formData.delete('etiquetas_actualizar[]');
+            
+            formData.append('autores_actualizar', JSON.stringify(autores));
+            formData.append('etiquetas_actualizar', JSON.stringify(etiquetas));
 
             try{
-                await peticion(`/admin/obra/${datos.idObra}/editar`,{body:datos});
+                const idObra = formData.get('idObra');
+                await peticion(`/admin/obra/${idObra}/editar`,{body:formData});
 
                 const modal=bootstrap.Modal.getInstance(
                     document.getElementById('modalEditarObra')
@@ -334,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 mostrarNotificacion('Obra editada correctamente', 'success');
                 
-                setTimeout(() => location.reload(), 1000);
+                setTimeout(() => location.reload(), 10000);
             } catch (error) {
                 mostrarNotificacion(error.message, 'danger');
             }
@@ -566,10 +576,11 @@ document.addEventListener('DOMContentLoaded', function() {
         fEdUsuario.addEventListener('submit',async function(e){
             e.preventDefault();
             const datos=Object.fromEntries(new FormData(this).entries());
-            const id=datos.edIdUsuario;            
+            const id=datos.edIdUsuario;
+            const datosFiltrados=Object.fromEntries(Object.entries(datos).filter(([_,v]) => v !== ''));            
 
             const fila = document.querySelector(`tr[data-id-usuarioT="${id}"]`);
-            if (fila) {
+            if (fila && datos.edNombreUsuario) {
                 const celda = fila.querySelector('[data-nombre-usuarioT]');
                 if (celda) celda.textContent = datos.edNombreUsuario;
             }

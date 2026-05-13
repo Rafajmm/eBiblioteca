@@ -1,4 +1,4 @@
-<section class="card border-0 shadow-sm mb-5" data-id-perfil="<?= $usuario->getId() ?>" data-id-sesion="<?= $_SESSION['id_usuario'] ?>">
+<section class="card border-0 shadow-sm mb-5" data-id-perfil="<?= $usuario->getId() ?>" data-id-sesion="<?= !empty($_SESSION['id_usuario']) ? $_SESSION['id_usuario'] : '' ?>">
     <div class="card-body p-4">
         <div class="row align-items-center">
             <div class="col-12 col-md-auto text-center mb-3 mb-md-0">
@@ -298,8 +298,17 @@
         <?php if(!empty($listas)): ?>
             <?php foreach($listas as $lista): ?>
                 <div class="col-12 col-md-4 col-xl-3">
-                    <a href="/lista/<?= $lista['id'] ?>" class="text-decoration-none">
-                        <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden tarjetaListaPerfil">
+                    <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden tarjetaListaPerfil">
+                        <?php if($esPerfilUsuario): ?>
+                            <button class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2 border-0 z-1"
+                                    data-action="eliminar-lista"
+                                    data-id-lista="<?= $lista['id'] ?>"
+                                    title="Eliminar lista">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        <?php endif; ?>
+                        <a href="/lista/<?= $lista['id'] ?>" class="text-decoration-none text-dark">
+                        
                             <div class="card-body">
                                 <h6 class="fw-bold mb-0"><?= htmlspecialchars($lista['nombre']) ?></h6>
                                 <small class="text-muted">
@@ -326,8 +335,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>

@@ -4,13 +4,15 @@ import os
 import time
 
 lista_titulos = [
-    "Don Quijote de la Mancha", "Fortunata y Jacinta", "Marianela", "Los pazos de Ulloa",
-    "La Regenta", "Rimas", "Cantares gallegos", "Don Juan Tenorio", "La Celestina",
-    "Fuenteovejuna", "La vida es sueño", "El burlador de Sevilla", "Vuelva usted mañana",
-    "Martín Fierro", "María", "Cuentos de amor de locura y de muerte", "Cuentos de la selva",
-    "Azul...", "Versos sencillos", "Aves sin nido", "Facundo", "Ariel", "Nocturno",
-    "Los heraldos negros", "Viaje maravilloso del señor Nic-Nac al planeta Marte",
-    "Primero sueño", "Nuestra América", "Prosas profanas", "La vorágine", "Tradiciones peruanas"
+    "Frankenstein", "Orgullo y prejuicio", "Cumbres borrascosas", "La llamada de lo salvaje",
+    "La metamorfosis", "Niebla", "El corazón de las tinieblas", "La casa de la alegría",
+    "Vindicación de los derechos de la mujer", "Sobre la libertad", "Desobediencia civil",
+    "El alma del hombre bajo el socialismo", "Defensa de las mujeres", "Una habitación propia",
+    "Hojas de hierba", "Poemas de Emily Dickinson", "Campos de Castilla", "El dulce daño",
+    "Los cálices vacíos", "Casa de muñecas", "La importancia de llamarse Ernesto",
+    "El jardín de los cerezos", "Bodas de sangre", "Yerma",
+    "Alicia en el país de las maravillas", "El maravilloso mago de Oz", "El libro de la selva",
+    "Heidi", "Las aventuras de Pinocho"
 ]
 
 def normalizar(texto):

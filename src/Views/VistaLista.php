@@ -26,7 +26,7 @@
                     data-id-lista="<?= $lista->getId() ?>"
                     data-id-usuario="<?= $idUsuario ?>"
                     data-nombre="<?= htmlspecialchars($lista->getNombre()) ?>"
-                    data-descripcion="<?= htmlspecialchars($lista->getDescripcion()) ?>">
+                    data-descripcion="<?= !empty($lista->getDescripcion()) ? htmlspecialchars($lista->getDescripcion()) : '' ?>">
                         <i class="bi bi-pencil me-1"></i> Editar
                     </button>
                 <?php else: ?>

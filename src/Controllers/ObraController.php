@@ -141,16 +141,18 @@ class ObraController {
 
         $id=Obra::guardar($titulo, $sinopsis, $paginas, $anio, $genero);
 
-        if(isset($_POST['autores']) && is_array($_POST['autores'])) {
+        $autores=json_decode($_POST['autores'] ?? '[]', true);
+        if(is_array($autores) && count($autores) > 0) {
             $obra=Obra::crearInstancia($id);
-            foreach($_POST['autores'] as $idAutor) {
+            foreach($autores as $idAutor) {
                 $obra->addAutor((int)$idAutor);
             }
         }
 
-        if(isset($_POST['etiquetas']) && is_array($_POST['etiquetas'])) {
+        $etiquetas=json_decode($_POST['etiquetas'] ?? '[]', true);
+        if(is_array($etiquetas) && count($etiquetas) > 0) {
             $obra=Obra::crearInstancia($id);
-            foreach($_POST['etiquetas'] as $idEtiqueta) {
+            foreach($etiquetas as $idEtiqueta) {
                 $obra->addEtiqueta((int)$idEtiqueta);
             }
         }
@@ -159,9 +161,15 @@ class ObraController {
         foreach($formatos as $formato=>$nombreInput){
             if(isset($_FILES[$nombreInput]) && $_FILES[$nombreInput]['error']===UPLOAD_ERR_OK){
                 $nombreArchivo=str_replace(' ','_',$titulo).".".$formato;
-                $rutaDestino='/obras/recursos'.strtoupper($formato).'/'.$nombreArchivo;
+                $rutaDestino='obras/recursos'.strtoupper($formato).'/'.$nombreArchivo;
 
                 move_uploaded_file($_FILES[$nombreInput]['tmp_name'], $rutaDestino);
+
+                if ($formato === 'pdf') {
+                    $obra->setRutaPdf($rutaDestino);
+                } elseif ($formato === 'epub') {
+                    $obra->setRutaEpub($rutaDestino);
+                }
             }
         }
         
@@ -207,29 +215,23 @@ class ObraController {
                 $obra->addEtiqueta($etiqueta);
             }
         }
-        
-        header('Content-Type: application/json');
-        echo json_encode(['ok'=>true]);
-    }
 
-    public function eliminarObra(){
-        $id=(int)($_POST['idObra']);
-        if(!$id){
-            http_response_code(400);
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'ID de obra requerido']);
-            return;
-        }
+        $formatos=['pdf'=>'archivo_pdf','epub'=>'archivo_epub'];
+        foreach($formatos as $formato=>$nombreInput){
+            if(isset($_FILES[$nombreInput]) && $_FILES[$nombreInput]['error']===UPLOAD_ERR_OK){
+                $nombreArchivo=str_replace(' ','_',$obra->getTitulo()).".".$formato;
+                $rutaDestino='obras/recursos'.strtoupper($formato).'/'.$nombreArchivo;
 
-        $obra=Obra::crearInstancia($id);
-        if(!$obra){
-            http_response_code(404);
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'Obra no encontrada']);
-            return;
+                move_uploaded_file($_FILES[$nombreInput]['tmp_name'], $rutaDestino);
+
+                if ($formato === 'pdf') {
+                    $obra->setRutaPdf($rutaDestino);
+                } elseif ($formato === 'epub') {
+                    $obra->setRutaEpub($rutaDestino);
+                }
+            }
         }
         
-        $obra->eliminar();
         header('Content-Type: application/json');
         echo json_encode(['ok'=>true]);
     }

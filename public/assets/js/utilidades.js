@@ -9,7 +9,15 @@ export async function peticion(url,opciones={}){
     };
 
     if(opciones.body && typeof opciones.body==='object'){
-        config.body=new URLSearchParams(opciones.body).toString();
+        // Si es FormData, enviarlo directamente (para archivos)
+        if(opciones.body instanceof FormData){
+            config.body=opciones.body;
+            // No establecer Content-Type, el navegador lo hará automáticamente con boundary
+            delete config.headers['Content-Type'];
+        } else {
+            // Para objetos normales, convertir a URLSearchParams
+            config.body=new URLSearchParams(opciones.body).toString();
+        }
     }
 
     try{

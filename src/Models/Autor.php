@@ -57,7 +57,7 @@ class Autor {
 
     public static function busquedaAvanzada($nombre){
         $db=Database::conectar();
-        $stmt=$db->prepare("SELECT * FROM autores WHERE nombre LIKE ?");
+        $stmt=$db->prepare("SELECT * FROM autores WHERE nombre LIKE ? AND fecha_borrado IS NULL");
         $stmt->execute(["%$nombre%"]);
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
         return $datos;
@@ -194,7 +194,7 @@ class Autor {
 
     public function mostrarObras() {
         $db=Database::conectar();
-        $stmt=$db->prepare("SELECT * FROM obras join obra_autores on obras.id=obra_autores.id_obra WHERE obra_autores.id_autor=?");
+        $stmt=$db->prepare("SELECT * FROM obras join obra_autores on obras.id=obra_autores.id_obra WHERE obra_autores.id_autor=? AND obras.fecha_borrado IS NULL");
         $stmt->execute([$this->id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
