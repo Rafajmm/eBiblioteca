@@ -16,7 +16,7 @@ class ListaController {
                 $datosColecciones[$coleccion['id']]=[
                     'id'=>$coleccion['id'],
                     'nombre'=>$coleccion['nombre'],
-                    'descipcion'=>$coleccion['descripcion'],
+                    'descripcion'=>$coleccion['descripcion'],
                     'total'=>count($obras),
                     'obras'=>array_slice($obras, 0, 3)
                 ];

@@ -32,9 +32,9 @@ class AdminController {
         $controlador->editarObra($id);
     }
 
-    public function eliminarObra(){
+    public function eliminarObra($id){
         $controlador=new ObraController();
-        $controlador->eliminarObra();
+        $controlador->eliminarObra($id);
     }
 
     public function activarObra($id){

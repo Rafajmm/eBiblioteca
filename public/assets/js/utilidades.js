@@ -1,5 +1,6 @@
 // Función reutilizable para las interacciones AJAX
 export async function peticion(url,opciones={}){
+    const csrfToken=document.querySelector('meta[name="csrf-token"]')?.content || '';
     const config={
         method: opciones.method || 'POST',
         headers:{
@@ -7,6 +8,9 @@ export async function peticion(url,opciones={}){
             'Accept': 'application/json'
         },
     };
+    if(csrfToken && config.method!=='GET'){
+        config.headers['X-CSRF-TOKEN']=csrfToken;
+    }
 
     if(opciones.body && typeof opciones.body==='object'){
         // Si es FormData, enviarlo directamente (para archivos)

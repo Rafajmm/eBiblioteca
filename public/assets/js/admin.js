@@ -344,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 mostrarNotificacion('Obra editada correctamente', 'success');
                 
-                setTimeout(() => location.reload(), 10000);
+                setTimeout(() => location.reload(), 1000);
             } catch (error) {
                 mostrarNotificacion(error.message, 'danger');
             }
@@ -357,8 +357,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!btn) return;
         
         e.preventDefault();
-        
-        if (!confirm('¿Estás seguro de que quieres eliminar esta obra?')) return;
         
         const idObra = btn.dataset.idObra;
         
@@ -385,8 +383,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!btn) return;
         
         e.preventDefault();
-        
-        if (!confirm('¿Estás seguro de que quieres activar esta obra?')) return;
         
         const idObra = btn.dataset.idObra;
         
@@ -428,6 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const modal=bootstrap.Modal.getInstance(document.getElementById('modalAutorNuevo'));
                 modal.hide();
                 mostrarNotificacion('Autor creado correctamente','success');
+                setTimeout(()=> location.reload(),1000)
             } catch (error) {
                 mostrarNotificacion(error.message, 'danger');
             } finally {
@@ -458,6 +455,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 modal.hide();
                                 
                 mostrarNotificacion('Autor editado correctamente','success');
+                setTimeout(()=>location.reload(),1000);
             } catch (error) {
                 mostrarNotificacion(error.message, 'danger');
             }
@@ -469,8 +467,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const btn=e.target.closest('[data-action="eliminar-autor"]');
         if(!btn) return;
         e.preventDefault();
-
-        if(!confirm('¿Estás seguro de eliminar este autor?')) return;
 
         const idAutor=btn.dataset.idAutor;
         try{
@@ -492,8 +488,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const btn=e.target.closest('[data-action="activar-autor"]');
         if(!btn) return;
         e.preventDefault();
-
-        if(!confirm('¿Estás seguro de activar este autor?')) return;
 
         const idAutor=btn.dataset.idAutor;
         try{
@@ -522,9 +516,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const activo = btn.dataset.activo === '1';
 
         const accion = activo ? 'banear' : 'activar';
-        const confirmMsg = activo ? '¿Banear este usuario?' : '¿Activar este usuario?';
-
-        if (!confirm(confirmMsg)) return;
 
         try {
             await peticion(`/admin/usuario/${idUsuario}/${accion}`, {

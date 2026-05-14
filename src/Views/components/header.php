@@ -21,11 +21,12 @@
         <?php if(isset($_SESSION['id_usuario'])): ?>
           <div class="d-flex flex-column flex-lg-row gap-2">
             <a href="/usuario/<?=$_SESSION['id_usuario']?>" class="btn btn-outline-primary btn-sm">
-              <i class="bi bi-person"></i><?=htmlspecialchars($_SESSION['nombre_usuario'])?>
+              <?=htmlspecialchars($_SESSION['nombre_usuario'], ENT_QUOTES, 'UTF-8')?>
             </a>
-            <a href="/logout" class="btn btn-outline-danger btn-sm">
-              <i class="bi bi-box-arrow-right"></i>Salir
-            </a>
+            <form action="/logout" method="POST" class="d-inline">
+              <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+              <button type="submit" class="btn btn-outline-danger btn-sm">Cerrar sesión</button>
+            </form>
           </div>
 
         <?php else: ?>

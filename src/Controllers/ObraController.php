@@ -236,6 +236,27 @@ class ObraController {
         echo json_encode(['ok'=>true]);
     }
 
+    public function eliminarObra($id){
+        if((int)$id !== (int)$_POST['idObra']){
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Error al eliminar la obra']);
+            return;
+        }
+        $obra=Obra::crearInstancia($id);
+        if(!$obra){
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Obra no encontrada']);
+            return;
+        }
+        
+        $obra->eliminar();
+        
+        header('Content-Type: application/json');
+        echo json_encode(['ok'=>true]);
+    }
+
     public function activarObra($id){
         if($id!=$_POST['idObra']){
             http_response_code(400);

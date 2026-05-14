@@ -91,7 +91,7 @@ body{
 
 #lectorEPUB.epub-dark-mode .modal-content {
     background: #121212;
-    color: #F8F9FA;
+    color: #e9ecef;
 }
 
 #lectorEPUB.epub-dark-mode .modal-header {
@@ -100,6 +100,15 @@ body{
 
 #lectorEPUB.epub-dark-mode .text-muted {
     color: #adb5bd !important;
+}
+#lectorEPUB.epub-dark-mode .modal-header .btnModo {
+    border-color: #6c757d;
+    color: #f8f9fa;
+}
+
+#lectorEPUB.epub-dark-mode .modal-header .btnModo:hover {
+    background: #343a40;
+    color: #ffffff;
 }
 
 /* tarjetas libros  VistaCatalogo VistaPerfilAutor VistaUsuario */

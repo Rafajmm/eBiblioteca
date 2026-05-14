@@ -152,7 +152,7 @@ class Comentario {
         $stmt=$db->prepare("SELECT COUNT(*) as count FROM reporte_comentarios WHERE id_comentario=?");
         $stmt->execute([$this->id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['count'] > 0;
+        return ($result['count'] > 0) ? (int)$result['count'] : 0;
     }
 
     public function meGusta($id_usuario) {
@@ -179,7 +179,7 @@ class Comentario {
         $stmt=$db->prepare("SELECT COUNT(*) as count FROM megusta_comentario WHERE id_comentario=?");
         $stmt->execute([$this->id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['count'] > 0;
+        return ($result['count'] > 0) ? (int)$result['count'] : 0;
     }
 
     public function revisar(){

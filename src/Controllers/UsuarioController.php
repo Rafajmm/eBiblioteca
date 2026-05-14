@@ -76,7 +76,7 @@ class UsuarioController {
         $datosActualizados['nombre'] ? $usuario->setNombre($datosActualizados['nombre']) : null;
         $datosActualizados['nombre_usuario'] ? $usuario->setNombreUsuario($datosActualizados['nombre_usuario']) : null;
         $datosActualizados['correo'] ? $usuario->setCorreo($datosActualizados['correo']) : null;
-        $datosActualizados['pass'] ? $usuario->setPass(password_hash($datosActualizados['pass'], PASSWORD_BCRYPT)) : null;
+        $datosActualizados['pass'] ? $usuario->setPass($datosActualizados['pass']) : null;
         $datosActualizados['bio'] ? $usuario->setBio($datosActualizados['bio']) : null;
         $datosActualizados['ruta_foto'] ? $usuario->setRutaFoto($datosActualizados['ruta_foto']) : null;
 
@@ -169,24 +169,74 @@ class UsuarioController {
     }
 
     public function subirFoto($id){
+        $id=(int)$id;
+
+        if(!isset($_SESSION['id_usuario']) || $id !== (int)$_SESSION['id_usuario']){
+            http_response_code(403);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'No puedes modificar la foto de otro usuario']);
+            return;
+        }
+
         if(!isset($_FILES['avatar']) || $_FILES['avatar']['error'] !== UPLOAD_ERR_OK){
             http_response_code(400);
+            header('Content-Type: application/json');
             echo json_encode(['error' => 'Error al subir la foto']);
             return;
         }
-        
+
+        if($_FILES['avatar']['size'] > 2 * 1024 * 1024){
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'La imagen no puede superar 2MB']);
+            return;
+        }
+
+        $ext=strtolower(pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION));
+        $extensionesPermitidas=['jpg','jpeg','png','webp'];
+
+        if(!in_array($ext,$extensionesPermitidas,true)){
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Formato de imagen no permitido']);
+            return;
+        }
+
+        $finfo=new finfo(FILEINFO_MIME_TYPE);
+        $mime=$finfo->file($_FILES['avatar']['tmp_name']);
+        $mimesPermitidos=['image/jpeg','image/png','image/webp'];
+
+        if(!in_array($mime,$mimesPermitidos,true)){
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Tipo de archivo no válido']);
+            return;
+        }
+
+        $datos=Usuario::buscarPorId($id);
+        if(!$datos){
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Usuario no encontrado']);
+            return;
+        }
+
         $dir=__DIR__ . '/../../public/assets/img/imgperfil/';
         if(!is_dir($dir)) mkdir($dir,0755,true);
-        
-        $ext=pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION);
-        $nombre='usuario_'.$id.'_'.time().'.'.$ext;
-        move_uploaded_file($_FILES['avatar']['tmp_name'], $dir.$nombre);
+
+        $nombre='usuario_'.$id.'_'.bin2hex(random_bytes(8)).'.'.$ext;
+
+        if(!move_uploaded_file($_FILES['avatar']['tmp_name'], $dir.$nombre)){
+            http_response_code(500);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'No se pudo guardar la imagen']);
+            return;
+        }
 
         $ruta='assets/img/imgperfil/'.$nombre;
-        $datos=Usuario::buscarPorId($id);
         $usuario=Usuario::crearInstancia($datos['nombre_usuario']);
         $usuario->setRutaFoto($ruta);
-        
+
         header('Content-Type: application/json');
         echo json_encode(['ok'=>true, 'ruta'=>$ruta]);
     }
@@ -315,12 +365,12 @@ class UsuarioController {
             return;
         }
         
-        $nombre=$_POST['edNombre'];
-        $nombre_usuario=$_POST['edNombreUsuario'];
-        $correo=$_POST['edCorreo'];
-        $bio=$_POST['edBio'];
-        $ruta_foto=$_POST['edRutaFoto'];
-        $pass=$_POST['edPass'];
+        $nombre=trim($_POST['edNombre'] ?? '');
+        $nombre_usuario=trim($_POST['edNombreUsuario'] ?? '');
+        $correo=trim($_POST['edCorreo'] ?? '');
+        $bio=trim($_POST['edBio'] ?? '');
+        $ruta_foto=trim($_POST['edRutaFoto'] ?? '');
+        $pass=trim($_POST['edPass'] ?? '');
         
         if(!empty($nombre)) $usuario->setNombre($nombre);
         if(!empty($nombre_usuario)) $usuario->setNombreUsuario($nombre_usuario);

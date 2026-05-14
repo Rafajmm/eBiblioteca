@@ -4,7 +4,7 @@ Class Middleware {
         if(!isset($_SESSION['id_usuario'])){
             $esAjax=!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 
-            $esFetch=isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'],'aplication/json') !==false;
+            $esFetch=isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'],'application/json') !==false;
 
             if($esAjax || $esFetch || $_SERVER['REQUEST_METHOD']!=='GET'){
                 http_response_code(401);
@@ -29,6 +29,21 @@ Class Middleware {
         if(!($_SESSION['es_admin'] ?? false)){
             $_SESSION['error_login']='No tienes permisos para acceder a esta sección';
             Router::redirect('/');
+            return false;
+        }
+        return true;
+    }
+
+    public static function csrf(){
+        if($_SERVER['REQUEST_METHOD']==='GET'){
+            return true;
+        }
+        $token=$_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+        
+        if(empty($_SESSION['csrf_token']) || empty($token) || !hash_equals($_SESSION['csrf_token'], $token)){
+            http_response_code(403);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Token CSRF inválido']);
             return false;
         }
         return true;

@@ -219,7 +219,7 @@
         <div class="modal-content border-0">
             <div class="modal-header border-bottom py-2 px-4 bg-white sticky-top d-flex justify-content-between">
                 <div class="d-flex align-items-center">
-                    <button type="button" class="btn-close me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close me-3 btnModo" data-bs-dismiss="modal" aria-label="Close"></button>
                     <div>
                         <h6 class="mb-0 fw-bold" id="tituloLibro">Cargando...</h6>
                         <small class="text-muted text-uppercase" style="font-size: 0.6rem;">Lector ePub</small>

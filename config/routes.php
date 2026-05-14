@@ -73,21 +73,21 @@ $router->post('/login', function() {
     require_once __DIR__ . '/../src/Controllers/AuthController.php';
     $controller = new AuthController();
     $controller->login();
-});
+},[['Middleware','csrf']]);
 
 // Registro de nuevo usuario
 $router->post('/registro', function() {
     require_once __DIR__ . '/../src/Controllers/AuthController.php';
     $controller = new AuthController();
     $controller->registro();
-});
+},[['Middleware','csrf']]);
 
 // Cierre de sesión
-$router->get('/logout', function() {
+$router->post('/logout', function() {
     require_once __DIR__ . '/../src/Controllers/AuthController.php';
     $controller = new AuthController();
     $controller->logout();
-});
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // RUTAS PROTEGIDAS (Requieren autenticación)
 // Perfil de usuario (listas y actividad)
@@ -102,35 +102,35 @@ $router->post('/usuario/{id}/editar', function($id) {
     require_once __DIR__ . '/../src/Controllers/UsuarioController.php';
     $controller = new UsuarioController();
     $controller->editarPerfil();
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Subir foto
 $router->post('/usuario/{id}/subir-foto', function($id) {
     require_once __DIR__ . '/../src/Controllers/UsuarioController.php';
     $controller = new UsuarioController();
     $controller->subirFoto($id);
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Seguir a un usuario
 $router->post('/usuario/{id}/seguir', function($id) {
     require_once __DIR__ . '/../src/Controllers/UsuarioController.php';
     $controller = new UsuarioController();
     $controller->seguir($id);
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Dejar de seguir a un usuario
 $router->post('/usuario/{id}/dejar-seguir', function($id) {
     require_once __DIR__ . '/../src/Controllers/UsuarioController.php';
     $controller = new UsuarioController();
     $controller->dejarSeguir($id);
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Eliminar seguidor
 $router->post('/usuario/{id}/eliminar-seguidor', function($id) {
     require_once __DIR__ . '/../src/Controllers/UsuarioController.php';
     $controller = new UsuarioController();
     $controller->eliminarSeguidor($id);
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Obtener listas de un usuario
 $router->get('/usuario/{id}/listas',function($id){
@@ -144,91 +144,91 @@ $router->post('/lista/crear', function() {
     require_once __DIR__ . '/../src/Controllers/ListaController.php';
     $controller = new ListaController();
     $controller->crear();
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Agregar obra a una lista
 $router->post('/lista/{id}/agregar-obra', function($id) {
     require_once __DIR__ . '/../src/Controllers/ListaController.php';
     $controller = new ListaController();
     $controller->agregarObra($id);
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Quitar obra de una lista
 $router->post('/lista/{id}/eliminar-obra', function($id) {
     require_once __DIR__ . '/../src/Controllers/ListaController.php';
     $controller = new ListaController();
     $controller->eliminarObra($id);
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Dar me gusta a una lista (seguir lista)
 $router->post('/lista/{id}/seguir', function($id) {
     require_once __DIR__ . '/../src/Controllers/ListaController.php';
     $controller = new ListaController();
     $controller->seguir($id);
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Quitar me gusta a una lista (dejar de seguir)
 $router->post('/lista/{id}/dejar-seguir',function($id){
     require_once __DIR__ . '/../src/Controllers/ListaController.php';
     $controller = new ListaController();
     $controller->dejarDeSeguir($id);
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Copiar lista de otro usuario al perfil propio
 $router->post('/lista/{id}/copiar', function($id) {
     require_once __DIR__ . '/../src/Controllers/ListaController.php';
     $controller = new ListaController();
     $controller->copiar($id);
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Eliminar lista propia
 $router->post('/lista/{id}/eliminar', function($id) {
     require_once __DIR__ . '/../src/Controllers/ListaController.php';
     $controller = new ListaController();
     $controller->eliminar($id);
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Editar lista
 $router->post('/lista/{id}/editar', function($id) {
     require_once __DIR__ . '/../src/Controllers/ListaController.php';
     $controller = new ListaController();
     $controller->editarLista($id);
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Comentar en una obra
 $router->post('/comentario/crear', function() {
     require_once __DIR__ . '/../src/Controllers/ComentarioController.php';
     $controller = new ComentarioController();
     $controller->crear();
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Reportar comentario
 $router->post('/comentario/{id}/reportar', function($id) {
     require_once __DIR__ . '/../src/Controllers/ComentarioController.php';
     $controller = new ComentarioController();
     $controller->reportar($id);
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Dar me gusta a un comentario
 $router->post('/comentario/{id}/megusta', function($id) {
     require_once __DIR__ . '/../src/Controllers/ComentarioController.php';
     $controller = new ComentarioController();
     $controller->meGusta($id);
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Quitar me gusta de un comentario
 $router->post('/comentario/{id}/quitar-megusta', function($id) {
     require_once __DIR__ . '/../src/Controllers/ComentarioController.php';
     $controller = new ComentarioController();
     $controller->quitarMeGusta($id);
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // Puntuar obra (1-5)
 $router->post('/puntuacion/crear', function() {
     require_once __DIR__ . '/../src/Controllers/PuntuacionController.php';
     $controller = new PuntuacionController();
     $controller->puntuar();
-},[['Middleware','autenticado']]);
+},[['Middleware','autenticado'],['Middleware','csrf']]);
 
 // RUTAS DE ADMINISTRACIÓN (Requieren rol admin)
 // Panel de administración
@@ -243,98 +243,98 @@ $router->post('/admin/obra/crear', function() {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
     $controller->crearObra();
-},[['Middleware','admin']]);
+},[['Middleware','admin'],['Middleware','csrf']]);
 
 // Editar obra
 $router->post('/admin/obra/{id}/editar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
     $controller->editarObra($id);
-},[['Middleware','admin']]);
+},[['Middleware','admin'],['Middleware','csrf']]);
 
 // Eliminar obra (soft delete)
 $router->post('/admin/obra/{id}/eliminar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
     $controller->eliminarObra($id);
-},[['Middleware','admin']]);
+},[['Middleware','admin'],['Middleware','csrf']]);
 
 //Activar obra
 $router->post('/admin/obra/{id}/activar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
     $controller->activarObra($id);
-},[['Middleware','admin']]);
+},[['Middleware','admin'],['Middleware','csrf']]);
 
 // Crear autor
 $router->post('/admin/autor/crear', function() {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
     $controller->crearAutor();
-},[['Middleware','admin']]);
+},[['Middleware','admin'],['Middleware','csrf']]);
 
 // Editar autor existente
 $router->post('/admin/autor/{id}/editar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
     $controller->editarAutor($id);
-},[['Middleware','admin']]);
+},[['Middleware','admin'],['Middleware','csrf']]);
 
 // Eliminar autor (soft delete)
 $router->post('/admin/autor/{id}/eliminar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
     $controller->eliminarAutor($id);
-},[['Middleware','admin']]);
+},[['Middleware','admin'],['Middleware','csrf']]);
 
 //Activar autor
 $router->post('/admin/autor/{id}/activar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
     $controller->activarAutor($id);
-},[['Middleware','admin']]);
+},[['Middleware','admin'],['Middleware','csrf']]);
 
 // Banear usuario
 $router->post('/admin/usuario/{id}/banear', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
     $controller->banearUsuario($id);
-},[['Middleware','admin']]);
+},[['Middleware','admin'],['Middleware','csrf']]);
 
 // Activar usuario
 $router->post('/admin/usuario/{id}/activar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
     $controller->activarUsuario($id);
-},[['Middleware','admin']]);
+},[['Middleware','admin'],['Middleware','csrf']]);
 
 // Editar usuario
 $router->post('/admin/usuario/{id}/editar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
     $controller->editarUsuario($id);
-},[['Middleware','admin']]);
+},[['Middleware','admin'],['Middleware','csrf']]);
 
 // Revisar comentario
 $router->post('/admin/comentario/{id}/revisar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
     $controller->revisarComentario($id);
-},[['Middleware','admin']]);
+},[['Middleware','admin'],['Middleware','csrf']]);
 
 // Eliminar comentario
 $router->post('/admin/comentario/{id}/eliminar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
     $controller->eliminarComentario($id);
-},[['Middleware','admin']]);
+},[['Middleware','admin'],['Middleware','csrf']]);
 
 // Aprobar comentario
 $router->post('/admin/comentario/{id}/aprobar', function($id) {
     require_once __DIR__ . '/../src/Controllers/AdminController.php';
     $controller = new AdminController();
     $controller->aprobarComentario($id);
-},[['Middleware','admin']]);
+},[['Middleware','admin'],['Middleware','csrf']]);
 
 // Despachar la petición actual
 $router->dispatch();

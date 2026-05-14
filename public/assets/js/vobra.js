@@ -69,7 +69,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const pdfUrl = button.getAttribute('data-pdf-url');
             const bookTitle = button.getAttribute('data-book-title');
-            console.log(pdfUrl);
             const modalTitle = lectorPDF.querySelector('#readerTitle');
             const iframe = lectorPDF.querySelector('#pdfIframe');
             
@@ -126,7 +125,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     visor.resize();
                 }, 300);
             }).catch(function(error) {
-                console.error('Error al cargar EPUB:', error);
                 mostrarNotificacion('No se pudo cargar el libro EPUB', 'danger');
             });
         });
@@ -227,9 +225,9 @@ document.addEventListener('DOMContentLoaded',function(){
                 nuevo.className='bg-white p-3 rounded shadow-sm border';
                 nuevo.innerHTML=`
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="fw-bold small">@${data.nombreUsuario}</span>
+                        <span class="fw-bold small">@${scapeHtml(data.nombreUsuario)}</span>
                     </div>    
-                    <p class="small text-secondary mb-2 w-100 pComentario">${contenido}</p>
+                    <p class="small text-secondary mb-2 w-100 pComentario">${scapeHtml(contenido)}</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="text-muted fecha" data-fecha="${data.fecha}" style="font-size: 0.75rem;">${data.fecha}</span>
                         <button class="btn btn-link p-0 text-decoration-none">
@@ -372,8 +370,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     data-lista-id="${lista.id}"
                     data-action="agregar-obra-modal">
                 <div class="me-3 text-start">
-                    <h6 class="mb-1 fw-semibold">${lista.nombre}</h6>
-                    <small class="text-muted">${lista.descripcion ? lista.descripcion.substring(0, 50) + '...' : 'Sin descripción'}</small>
+                    <h6 class="mb-1 fw-semibold">${scapeHtml(lista.nombre)}</h6>
+                    <small class="text-muted">${lista.descripcion ? scapeHtml(lista.descripcion.substring(0, 50) + '...') : 'Sin descripción'}</small>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <i class="bi bi-plus-circle text-primary fs-5"></i>

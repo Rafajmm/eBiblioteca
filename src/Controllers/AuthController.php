@@ -18,8 +18,9 @@ class AuthController {
         }
          
         if(empty($identificador) || empty($pass)){            
-            $_SESSION['error_login']='Todos los campos son obligatorios';
-            Router::redirect('/');
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Todos los campos son obligatorios']);
             return;
         }
         
@@ -33,14 +34,16 @@ class AuthController {
         }
         
         if(!$datos || !password_verify($pass, $datos['pass'])){
-            $_SESSION['error_login']='Email o contraseña incorrectos';
-            Router::redirect('/');
+            http_response_code(401);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Email o contraseña incorrectos']);
             return;
         }
 
         if($datos['activo'] == 0){
-            $_SESSION['error_login']='Tu cuenta ha sido desactivada';
-            Router::redirect('/');
+            http_response_code(403);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Tu cuenta ha sido desactivada']);
             return;
         }
         
@@ -50,10 +53,11 @@ class AuthController {
 
         session_regenerate_id(true);
         
-        if($_SESSION['es_admin']) {
-            Router::redirect('/admin');
-        }
-        Router::redirect('/usuario/' . $datos['id']);
+        header('Content-Type: application/json');
+        echo json_encode([
+            'ok'=>true,
+            'redirect'=>$_SESSION['es_admin'] ? '/admin' : '/'
+        ]);
     }
     
     public function logout(){
@@ -78,50 +82,58 @@ class AuthController {
         $passConfirmacion=trim($_POST['pass_confirmacion'] ?? '');
         
         if(empty($nombre) || empty($nombreUsuario) || empty($email) || empty($pass) || empty($passConfirmacion)){
-            $_SESSION['error_registro']='Todos los campos son obligatorios';
-            Router::redirect('/');
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Todos los campos son obligatorios']);
             return;
         }
 
         if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
-            $_SESSION['error_registro']='El formato de correo no es válido';
-            Router::redirect('/');
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'El formato de correo no es válido']);
             return;
         }
 
         if(strlen($pass) < 8){
-            $_SESSION['error_registro']='La contraseña debe tener al menos 8 caracteres';
-            Router::redirect('/');
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'La contraseña debe tener al menos 8 caracteres']);
             return;
         }
         if($pass !== $passConfirmacion){
-            $_SESSION['error_registro']='Las contraseñas no coinciden';
-            Router::redirect('/');
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Las contraseñas no coinciden']);
             return;
         }
         $patron = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/';
-        if (!preg_match($patron, $pass)) {
-            $_SESSION['error_registro'] = 'La contraseña debe contener mayúscula, minúscula, número y símbolo';
-            Router::redirect('/');
+        if(!preg_match($patron, $pass)) {
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'La contraseña debe contener mayúscula, minúscula, número y símbolo']);
             return;
         }
         
         $patron2='/^[a-zA-Z0-9_]{3,30}$/';
         if(!preg_match($patron2, $nombreUsuario)){
-            $_SESSION['error_registro'] = 'El nombre de usuario puede contener sólo letras, números y guiones bajos, entre 3 y 30 caracteres';
-            Router::redirect('/');
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'El nombre de usuario puede contener sólo letras, números y guiones bajos, entre 3 y 30 caracteres']);
             return;
         }
 
         $controladorUsuario=new UsuarioController();
         if($controladorUsuario->buscarPorUsuario($nombreUsuario)){
-            $_SESSION['error_registro']='El nombre de usuario ya está registrado';
-            Router::redirect('/');
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'El nombre de usuario ya está registrado']);
             return;
         }
         if($controladorUsuario->buscarPorCorreo($email)){
-            $_SESSION['error_registro']='El correo ya está registrado';
-            Router::redirect('/');
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'El correo ya está registrado']);
             return;
         }
 
@@ -133,6 +145,10 @@ class AuthController {
 
         session_regenerate_id(true);
 
-        Router::redirect('/usuario/'.$id);
+        header('Content-Type: application/json');
+        echo json_encode([
+            'ok'=>true,
+            'redirect'=>'/usuario/'.$id
+        ]);
     }
 }

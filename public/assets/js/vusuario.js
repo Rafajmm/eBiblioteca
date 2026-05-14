@@ -147,12 +147,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if(fileInput.files.length > 0){
                 const uploadData = new FormData();
                 uploadData.append('avatar', fileInput.files[0]);
-                const uploadResp = await fetch(`/usuario/${formData.get('id_usuario')}/subir-foto`, {
-                    method: 'POST',
-                    body: uploadData
-                });
-                const uploadResult = await uploadResp.json();
-                if(uploadResult.ruta) formData.set('ruta_foto', uploadResult.ruta);
+                try{
+                    const uploadResp = await peticion(`/usuario/${formData.get('id_usuario')}/subir-foto`, { body: uploadData });
+                    if(uploadResp.ruta) formData.set('ruta_foto', uploadResp.ruta);
+                } catch(error) {
+                    mostrarNotificacion(error.message, 'danger');
+                    return;
+                }
             }
             
             const correoCambiado = formData.get('correo')?.trim() !== '';

@@ -172,3 +172,59 @@ document.addEventListener('DOMContentLoaded',function(){
     }
 });
 
+// Iniciar sesión y registro con AJAX
+document.addEventListener('DOMContentLoaded', function(){
+    const formLogin=document.getElementById('formLogin');
+    if(formLogin){
+        formLogin.addEventListener('submit',async function(e){
+            e.preventDefault();
+
+            const boton=formLogin.querySelector('button[type="submit"]');
+            if(boton) boton.disabled = true;
+            
+            try{
+                const datos=Object.fromEntries(new FormData(formLogin).entries());
+                const respuesta=await peticion('/login',{body:datos});
+                
+                if(respuesta.redirect){
+                    window.location.href=respuesta.redirect;
+                    return;
+                }
+                mostrarNotificacion('Sesión iniciada correctamente','success');
+            }
+            catch(error){
+                mostrarNotificacion(error.message,'danger');
+            }
+            finally{
+                if(boton) boton.disabled = false;
+            }
+        });
+    }
+
+    const formRegistro=document.getElementById('formRegistro');
+    if(formRegistro){
+        formRegistro.addEventListener('submit',async function(e){
+            e.preventDefault();
+
+            const boton=formRegistro.querySelector('button[type="submit"]');
+            if(boton) boton.disabled = true;
+
+            try{
+                const datos=Object.fromEntries(new FormData(formRegistro).entries());
+                const respuesta=await peticion('/registro',{body:datos});
+
+                if(respuesta.redirect){
+                    window.location.href=respuesta.redirect;
+                    return;
+                }
+                mostrarNotificacion('Cuenta creada correctamente','success');
+            }            
+            catch(error){
+                mostrarNotificacion(error.message,'danger');
+            }
+            finally{
+                if(boton) boton.disabled = false;
+            }
+        });
+    }
+});
