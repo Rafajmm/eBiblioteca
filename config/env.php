@@ -1,0 +1,9 @@
+<?php
+// return[
+//     'DB_HOST' => 'localhost',
+//     'DB_NAME' => '',
+//     'DB_USER' => '',
+//     'DB_PASS' => '',
+//     'DB_CHARSET' => 'utf8mb4',
+//     'DB_PORT' => 3306
+// ];
