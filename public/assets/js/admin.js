@@ -597,10 +597,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const idComentario=btn.dataset.idComentario;
         
         try{
-            await peticion(`/admin/comentario/${idComentario}/eliminar`,{body:{idComentario}});
+            const respuesta=await peticion(`/admin/comentario/${idComentario}/eliminar`,{body:{idComentario}});
             const comentario=btn.closest('.comentario');
             comentario.remove();
-            mostrarNotificacion('Comentario eliminado correctamente','success');
+            
+            if(respuesta.recomendar_baneo){
+                mostrarNotificacion('Comentario eliminado. Se recomienda baneo por acumular 3 comentarios borrados','warning');
+            }
+            else{
+                mostrarNotificacion('Comentario eliminado correctamente','success');
+            }
         }catch(error){
             mostrarNotificacion(error.message,'danger');
         }

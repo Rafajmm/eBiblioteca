@@ -91,6 +91,17 @@ class Comentario {
         return $stmt->fetch() !==false;
     }
 
+    public static function contarComentBorrados($id_usuario){
+        $db=Database::conectar();
+        $stmt=$db->prepare("SELECT COUNT(*) AS total
+                            FROM comentarios
+                            WHERE id_usuario = ?
+                            AND fecha_borrado IS NOT NULL");
+        $stmt->execute([$id_usuario]);
+        $resultado=$stmt->fetch(PDO::FETCH_ASSOC);
+        return (int)$resultado['total'];
+    }
+
     public function getId() {return $this->id;}
     public function getContenido() {return $this->contenido;}
     public function getFechaComentario() {return $this->fecha_comentario;}

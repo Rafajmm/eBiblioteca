@@ -41,12 +41,20 @@ class ComentarioController {
             echo json_encode(['error'=>'Comentario no encontrado']);
             return;
         }
-        
+        $idUsuario=$comentario->getIdUsuario();
         $comentario->eliminarReporte();
         $comentario->eliminar();
+        $totalBorrados=Comentario::contarComentBorrados($idUsuario);
+
+        $respuesta=[
+            'ok'=>true,
+            'id_usuario'=>$idUsuario,
+            'comentarios_borrados'=>$totalBorrados,
+            'recomendar_baneo'=>$totalBorrados>=3
+        ];
         
         header('Content-Type: application/json');
-        echo json_encode(['ok'=>true]);
+        echo json_encode($respuesta);
     }
 
     public function crear(){
