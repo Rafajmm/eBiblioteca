@@ -80,8 +80,9 @@ class AuthController {
         $email=trim($_POST['correo'] ?? '');
         $pass=trim($_POST['pass'] ?? '');
         $passConfirmacion=trim($_POST['pass_confirmacion'] ?? '');
+        $condiciones=trim($_POST['condiciones'] ?? '');
         
-        if(empty($nombre) || empty($nombreUsuario) || empty($email) || empty($pass) || empty($passConfirmacion)){
+        if(empty($nombre) || empty($nombreUsuario) || empty($email) || empty($pass) || empty($passConfirmacion) || empty($condiciones)){
             http_response_code(400);
             header('Content-Type: application/json');
             echo json_encode(['error'=>'Todos los campos son obligatorios']);

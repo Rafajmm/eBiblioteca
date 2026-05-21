@@ -67,6 +67,15 @@ $router->get('/lista/{id}', function($id) {
     $controller->verLista($id);
 });
 
+// Condiciones de uso
+$router->get('/condiciones', function() {
+    $title = 'Condiciones de uso';
+    ob_start();
+    require_once __DIR__ . '/../src/Views/condiciones.php';
+    $contenido = ob_get_clean();
+    require_once __DIR__ . '/../src/Views/layout.php';
+});
+
 // RUTAS DE AUTENTICACIÓN
 // Inicio de sesión
 $router->post('/login', function() {

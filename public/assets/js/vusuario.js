@@ -62,27 +62,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const contenedorSeguidas = document.getElementById('listasSeguidas');
     const tituloView = document.getElementById('tituloListasView');
 
-    if (!dropdownItems.length) return;
+    function cambiarVistaListas(view){
+        if(!contenedorPropias || !contenedorSeguidas) return;
 
-    function cambiarVistaListas(view) {
-        if (view === 'propias') {
+        if(view === 'propias'){
             contenedorPropias.classList.remove('d-none');
             contenedorSeguidas.classList.add('d-none');
-            if (tituloView) tituloView.textContent = 'Tus listas';
-        } else if (view === 'seguidas') {
+            if(tituloView) tituloView.textContent = 'Tus listas';
+        } 
+        else if(view === 'seguidas'){
             contenedorPropias.classList.add('d-none');
             contenedorSeguidas.classList.remove('d-none');
-            if (tituloView) tituloView.textContent = 'Listas seguidas';
+            if(tituloView) tituloView.textContent = 'Listas seguidas';
         }
     }
 
-    dropdownItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const view = this.dataset.view;
-            cambiarVistaListas(view);
+    if(dropdownItems.length){
+        dropdownItems.forEach(item =>{
+            item.addEventListener('click', function(e){
+                e.preventDefault();
+                const view = this.dataset.view;
+                cambiarVistaListas(view);
+            });
         });
-    });
+    }
 
     // Crear lista
     const modalCrearLista = document.getElementById('modalCrearLista');
@@ -144,6 +147,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(this);
             
             const fileInput = this.querySelector('[name="avatar"]');
+
+            const hayTexto =
+                formData.get('nombre')?.trim() !== '' ||
+                formData.get('nombre_usuario')?.trim() !== '' ||
+                formData.get('correo')?.trim() !== '' ||
+                formData.get('bio')?.trim() !== '' ||
+                formData.get('pass_nueva')?.trim() !== '';
+
+            if(!hayTexto && fileInput.files.length === 0){
+                mostrarNotificacion('No has introducido ningún cambio', 'warning');
+                return;
+            }
+
             if(fileInput.files.length > 0){
                 const uploadData = new FormData();
                 uploadData.append('avatar', fileInput.files[0]);
@@ -169,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 mostrarNotificacion('Perfil actualizado', 'success');
                 setTimeout(() => {
                     location.reload();
-                }, 3000);
+                }, 2000);
             } catch(error) { mostrarNotificacion(error.message, 'danger'); }
         });
     }

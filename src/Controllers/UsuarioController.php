@@ -97,6 +97,8 @@ class UsuarioController {
     }
 
     public function editarPerfil(){
+        header('Content-Type: application/json');
+
         if(!isset($_SESSION['id_usuario'])){
             http_response_code(401);
             echo json_encode(['error' => 'No autenticado']);
@@ -104,7 +106,13 @@ class UsuarioController {
         }
         
         $datos=Usuario::buscarPorId($_SESSION['id_usuario']);
-        $usuario=Usuario::crearInstancia($datos['nombre_usuario']);
+        if(!$datos){
+            http_response_code(404);
+            echo json_encode(['error'=>'Usuario no encontrado']);
+            return;
+        }
+
+        $usuario=Usuario::crearInstanciaId($_SESSION['id_usuario']);
         if(!$usuario){
             http_response_code(404);
             echo json_encode(['error'=>'Usuario no encontrado']);
@@ -120,51 +128,106 @@ class UsuarioController {
         $passRepite=trim($_POST['pass_repite'] ?? '');
         $passConfirmacion=trim($_POST['pass_confirmacion'] ?? '');
 
-        $correoCambiado = (!empty($correo) && $correo !== $usuario->getCorreo());
-        $passCambiado = (!empty($passNueva));
-        
-        if(($correoCambiado || $passCambiado) && empty($passConfirmacion)){
+        $nombreCambiado = ($nombre !== '' && $nombre !== $usuario->getNombre());
+        $nombreUsuarioCambiado = ($nombreUsuario !== '' && $nombreUsuario !== $usuario->getNombreUsuario());
+        $correoCambiado = ($correo !== '' && $correo !== $usuario->getCorreo());
+        $bioCambiada = ($bio !== '' && $bio !== ($usuario->getBio() ?? ''));
+        $fotoCambiada = ($rutaFoto !== '' && $rutaFoto !== $usuario->getRutaFoto());
+        $passCambiada = ($passNueva !== '');
+
+        if(($correoCambiado || $passCambiada) && $passConfirmacion === ''){
             http_response_code(400);
             echo json_encode(['error'=>'Debes confirmar tu contraseña actual para cambios de seguridad']);
             return;
         }
         
-        if(($correoCambiado || $passCambiado) && !password_verify($passConfirmacion, $usuario->getPass())){
+        if(($correoCambiado || $passCambiada) && !password_verify($passConfirmacion, $usuario->getPass())){
             http_response_code(403);
             echo json_encode(['error'=>'Contraseña actual incorrecta']);
             return;
         }
-        
-        if(!empty($nombre)) $usuario->setNombre($nombre);
 
-        if(!empty($nombreUsuario)){
+        if($nombreCambiado){
+            $usuario->setNombre($nombre);
+        }
+
+        if($nombreUsuarioCambiado){
+            $patronUsuario='/^[a-zA-Z0-9_]{3,30}$/';
+
+            if(!preg_match($patronUsuario, $nombreUsuario)){
+                http_response_code(400);
+                echo json_encode(['error'=>'El nombre de usuario puede contener sólo letras, números y guiones bajos, entre 3 y 30 caracteres']);
+                return;
+            }
+
             $existe=Usuario::buscarPorUsuario($nombreUsuario);
-            if($existe){
+
+            if($existe && (int)$existe['id'] !== (int)$usuario->getId()){
                 http_response_code(400);
-                echo json_encode(['error'=>'Nombre de usuario ya existe']);
+                echo json_encode(['error'=>'El nombre de usuario ya está registrado']);
                 return;
             }
+
             $usuario->setNombreUsuario($nombreUsuario);
-            $_SESSION['nombre_usuario'] = $nombreUsuario;
+            $_SESSION['nombre_usuario']=$nombreUsuario;
         }
 
-        if(!empty($correo)){
-            $existe=Usuario::buscarPorCorreo($correo);
-            if($existe){
+        if($correoCambiado){
+            if(!filter_var($correo, FILTER_VALIDATE_EMAIL)){
                 http_response_code(400);
-                echo json_encode(['error'=>'Correo ya existe']);
+                echo json_encode(['error'=>'El formato de correo no es válido']);
                 return;
             }
-            $usuario->setCorreo($correo);            
+
+            $existe=Usuario::buscarPorCorreo($correo);
+
+            if($existe && (int)$existe['id'] !== (int)$usuario->getId()){
+                http_response_code(400);
+                echo json_encode(['error'=>'El correo ya está registrado']);
+                return;
+            }
+
+            $usuario->setCorreo($correo);
         }
 
-        if(!empty($bio)) $usuario->setBio($bio);
-        if(!empty($rutaFoto)) $usuario->setRutaFoto($rutaFoto);
-        if(!empty($passNueva) && !empty($passRepite) && $passNueva === $passRepite) $usuario->setPass($passNueva);
+        if($bioCambiada){
+            $usuario->setBio($bio);
+        }
 
-        $usuario->actualizar();
-        
-        header('Content-Type: application/json');
+        if($fotoCambiada){
+            $usuario->setRutaFoto($rutaFoto);
+        }
+
+        if($passCambiada){
+            if($passRepite === ''){
+                http_response_code(400);
+                echo json_encode(['error'=>'Debes repetir la nueva contraseña']);
+                return;
+            }
+
+            if($passNueva !== $passRepite){
+                http_response_code(400);
+                echo json_encode(['error'=>'Las contraseñas nuevas no coinciden']);
+                return;
+            }
+
+            if(strlen($passNueva) < 8){
+                http_response_code(400);
+                echo json_encode(['error'=>'La contraseña debe tener al menos 8 caracteres']);
+                return;
+            }
+
+            $patronPass='/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/';
+
+            if(!preg_match($patronPass, $passNueva)){
+                http_response_code(400);
+                echo json_encode(['error'=>'La contraseña debe contener mayúscula, minúscula, número y símbolo']);
+                return;
+            }
+
+            $usuario->setPass($passNueva);
+        }
+
         echo json_encode(['ok'=>true]);
     }
 

@@ -19,10 +19,10 @@
                     <label for="passLogin" class="form-label">Contraseña</label>
                     <input id="passLogin" name="pass" type="password" class="form-control" placeholder="••••••••"/>
                 </div>
-                <div class="form-check">
+                <!-- <div class="form-check">
                     <input class="form-check-input" type="checkbox" name="remember" value="1" id="recordarme" />
                     <label class="form-check-label" for="recordarme">Recordarme</label>
-                </div>
+                </div> -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -65,8 +65,10 @@
                         <small class="form-text text-muted">Debe contener mayúscula, minúscula, número y símbolo</small>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="1" id="termsReg" required />
-                        <label class="form-check-label" for="termsReg">Acepto las condiciones</label>
+                        <input class="form-check-input" type="checkbox" name="condiciones" value="1" id="condiciones" required />
+                        <label class="form-check-label" for="condiciones">
+                            Acepto las <a href="/condiciones" target="_blank">condiciones de uso</a>
+                        </label>
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -365,7 +365,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: { idObra: idObra }
             });
             
-            // Eliminar la fila de la tabla
             btn.classList.replace('btn-outline-danger', 'btn-outline-success');
             const icono = btn.querySelector('i');
             icono.className = 'bi bi-arrow-counterclockwise';
@@ -391,7 +390,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: { idObra: idObra }
             });
             
-            // Eliminar la fila de la tabla
             btn.classList.replace('btn-outline-success', 'btn-outline-danger');
             const icono = btn.querySelector('i');
             icono.className = 'bi bi-trash';
@@ -536,14 +534,14 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.classList.add(nuevoActivo ? 'text-warning' : 'text-success');
 
             const icono = btn.querySelector('i');
-            if (icono) {
+            if(icono){
                 icono.className = 'bi bi-' + (nuevoActivo ? 'slash-circle' : 'arrow-counterclockwise');
             }
 
             const fila = btn.closest('tr');
             const badge = fila?.querySelector('.badge');
 
-            if (badge) {
+            if(badge){
                 badge.textContent = nuevoActivo ? 'Activo' : 'Inactivo';
 
                 badge.className = nuevoActivo
@@ -569,15 +567,35 @@ document.addEventListener('DOMContentLoaded', function() {
             const datos=Object.fromEntries(new FormData(this).entries());
             const id=datos.edIdUsuario;
             const datosFiltrados=Object.fromEntries(Object.entries(datos).filter(([_,v]) => v !== ''));            
-
+            
             const fila = document.querySelector(`tr[data-id-usuarioT="${id}"]`);
-            if (fila && datos.edNombreUsuario) {
-                const celda = fila.querySelector('[data-nombre-usuarioT]');
-                if (celda) celda.textContent = datos.edNombreUsuario;
+            let nombreUsuarioActual = '';
+            let correoActual = '';
+            
+            if(fila){
+                const celda = fila.querySelector('td[data-nombre-usuarioT]');
+                if(celda){
+                    const spanNombre = celda.querySelector('span.fw-bold');
+                    const smallCorreo = celda.querySelector('small.text-muted');
+                    nombreUsuarioActual = spanNombre ? spanNombre.textContent : '';
+                    correoActual = smallCorreo ? smallCorreo.textContent : '';
+                }
             }
 
             try{
-                await peticion(`/admin/usuario/${id}/editar`,{body:datos});
+                await peticion(`/admin/usuario/${id}/editar`,{body:datosFiltrados});
+                
+                if(fila){
+                    const celda = fila.querySelector('td[data-nombre-usuarioT]');
+                    if(celda){
+                        const nuevoNombre = datos.edNombreUsuario || nombreUsuarioActual;
+                        const nuevoCorreo = datos.edCorreo || correoActual;
+                        
+                        celda.setAttribute('data-nombre-usuarioT', nuevoNombre);
+                        celda.innerHTML = `<span class="fw-bold">${nuevoNombre}</span><br><small class="text-muted">${nuevoCorreo}</small>`;
+                    }
+                }
+                
                 const modal=bootstrap.Modal.getInstance(document.getElementById('modalEditarUsuario'));
                 if(modal) modal.hide();
                 mostrarNotificacion('Usuario editado correctamente','success');

@@ -411,12 +411,12 @@
 
                             <div class="mb-3">
                                 <label for="nombre" class="form-label small fw-bold">Nombre</label>
-                                <input type="text" name="nombre" class="form-control" placeholder="">
+                                <input type="text" name="nombre" class="form-control" placeholder="<?= htmlspecialchars($usuario->getNombre()) ?>">
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label small fw-bold">Nombre de Usuario (Username)</label>
-                                <input type="text" name="nombreUsuario" class="form-control" placeholder="@usuario">
+                                <input type="text" name="nombre_usuario" class="form-control" placeholder="<?= htmlspecialchars($usuario->getNombreUsuario()) ?>">
                             </div>
 
                             <div class="mb-3">
@@ -430,7 +430,7 @@
                             
                             <div class="mb-3">
                                 <label class="form-label small fw-bold">Correo electrónico</label>
-                                <input type="email" name="correo" class="form-control">
+                                <input type="email" name="correo" class="form-control" placeholder="<?= htmlspecialchars($usuario->getCorreo()) ?>">
                             </div>
 
                             <div class="row mb-3">
