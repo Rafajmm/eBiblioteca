@@ -12,10 +12,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if(contLibros){
         contLibros.addEventListener('click',async function(e){
             const btnEliminar=e.target.closest('[data-action="eliminar-libro"]');
+            if(!btnEliminar) return;
+            
             const idObra=btnEliminar.dataset.idObra;
             const idLista=btnEliminar.dataset.idLista;
 
-            if(!btnEliminar || !idObra || !idLista) return;
+            if(!idObra || !idLista) return;
 
             try{
                 const data=await peticion(`/lista/${idLista}/eliminar-obra`,{body:{idObra:idObra}});

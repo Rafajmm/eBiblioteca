@@ -58,8 +58,8 @@ class ComentarioController {
     }
 
     public function crear(){
-        $contenido=trim($_POST['contenido']) ?? '';
-        $idObra=(int)($_POST['idObra']) ?? 0;
+        $contenido=trim($_POST['contenido'] ?? '');
+        $idObra=(int)($_POST['idObra'] ?? 0);
         
         if(empty($contenido)){
             http_response_code(400);

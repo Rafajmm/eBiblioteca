@@ -152,7 +152,9 @@ class Autor {
         $consulta = urlencode($nombre);
         $url = "https://openlibrary.org/search/authors.json?q=" . $consulta;
 
-        $response = @file_get_contents($url);
+        $contexto = stream_context_create(['http' => ['timeout' => 8]]);
+        $response = @file_get_contents($url, false, $contexto);
+        
         if ($response === FALSE) return null;
 
         $data = json_decode($response, true);

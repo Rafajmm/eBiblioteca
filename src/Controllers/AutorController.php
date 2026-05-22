@@ -57,7 +57,10 @@ class AutorController {
         $autor=Autor::crearInstancia($id);
         if(!$autor){
             http_response_code(404);
-            require_once __DIR__ . '/../Views/404.php';
+            ob_start();
+            include __DIR__ . '/../Views/404.php';
+            $contenido = ob_get_clean();
+            require_once __DIR__ . '/../Views/layout.php';
             return;
         }
 
@@ -86,12 +89,12 @@ class AutorController {
     }
 
     public function crearAutor(){
-        $nombre=$_POST['nombre'];
-        $pais=$_POST['pais'];
-        $fecha_nacimiento=$_POST['fechaNacimiento'];
-        $biografia=$_POST['biografia'];
+        $nombre=trim($_POST['nombre'] ?? '');
+        $pais=trim($_POST['pais'] ?? '');
+        $fecha_nacimiento=trim($_POST['fechaNacimiento'] ?? '');
+        $biografia=trim($_POST['biografia'] ?? '');
 
-        if(empty($_POST['nombre']) || empty($_POST['pais']) || empty($_POST['fechaNacimiento']) || empty($_POST['biografia'])) {
+        if(empty($nombre) || empty($pais) || empty($fecha_nacimiento) || empty($biografia)) {
             http_response_code(400);
             header('Content-Type: application/json');
             echo json_encode(['error' => 'Todos los campos son obligatorios']);
@@ -114,10 +117,10 @@ class AutorController {
             return;
         }
         
-        $nombre=$_POST['edNombreAutor'];
-        $pais=$_POST['edPais'];
-        $fecha_nacimiento=$_POST['edFechaNacimiento'];
-        $biografia=$_POST['edBiografia'];
+        $nombre=trim($_POST['edNombreAutor'] ?? '');
+        $pais=trim($_POST['edPais'] ?? '');
+        $fecha_nacimiento=trim($_POST['edFechaNacimiento'] ?? '');
+        $biografia=trim($_POST['edBiografia'] ?? '');
         
         if(!empty($nombre)) $autor->setNombre($nombre);
         if(!empty($pais)) $autor->setPais($pais);

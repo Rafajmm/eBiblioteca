@@ -149,10 +149,8 @@ class ListaController {
         if(!$lista){
             http_response_code(404);
             header('Content-Type: application/json');
-            ob_start();
-            include __DIR__ . '/../Views/404.php';
-            $contenido=ob_get_clean();
-            require_once __DIR__ . '/../Views/layout.php';
+            echo json_encode(['error'=>'Lista no encontrada']);
+            return;
         }
 
         $lista->meGusta($_SESSION['id_usuario']);
@@ -166,10 +164,8 @@ class ListaController {
         if(!$lista){
             http_response_code(404);
             header('Content-Type: application/json');
-            ob_start();
-            include __DIR__ . '/../Views/404.php';
-            $contenido=ob_get_clean();
-            require_once __DIR__ . '/../Views/layout.php';
+            echo json_encode(['error'=>'Lista no encontrada']);
+            return;
         }
 
         $lista->quitarMeGusta($_SESSION['id_usuario']);

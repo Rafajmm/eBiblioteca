@@ -135,8 +135,8 @@ class Obra {
         $stmt->execute();
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
         $obras=[];
-        foreach($datos as $obra) {
-            $obras[] = Obra::crearInstancia($obra['id']);
+        foreach($datos as $d) {
+            $obras[] = new Obra($d['id'],$d['titulo'],$d['sinopsis'],$d['paginas'],$d['anio_publicacion'],$d['fecha_registro'],$d['fecha_borrado'],$d['ruta_pdf'],$d['ruta_epub'],$d['genero'],$d['portada']);
         }
         if($obras){
             return $obras;
@@ -342,7 +342,8 @@ class Obra {
         $consulta = urlencode($titulo);
         $url = "https://openlibrary.org/search.json?title=" . $consulta;
 
-        $response = @file_get_contents($url);
+        $contexto = stream_context_create(['http' => ['timeout' => 8]]);
+        $response = @file_get_contents($url, false, $contexto);
         
         if ($response === FALSE) {
             return null;

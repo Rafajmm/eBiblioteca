@@ -59,6 +59,14 @@ function actualizarBotonTema(modo) {
     }
 }
 
+function scapeHtml(text){
+    if(!text) return '';
+    const div=document.createElement('div');
+
+    div.textContent=text;
+    return div.innerHTML;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const lectorPDF = document.getElementById('lectorPDF');
     const lectorEPUB= document.getElementById('lectorEPUB');
@@ -466,14 +474,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-    }
-
-    function escapeHtml(text){
-        if(!text) return '';
-        const div=document.createElement('div');
-
-        div.textContent=text;
-        return div.innerHTML;
     }
 });
 

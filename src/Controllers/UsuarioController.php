@@ -435,6 +435,33 @@ class UsuarioController {
         $ruta_foto=trim($_POST['edRutaFoto'] ?? '');
         $pass=trim($_POST['edPass'] ?? '');
         
+        if(!empty($correo) && !filter_var($correo, FILTER_VALIDATE_EMAIL)){
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'El correo no es válido']);
+            return;
+        }
+
+        if(!empty($nombre_usuario) && $nombre_usuario !== $usuario->getNombreUsuario()){
+            $existente = Usuario::buscarPorUsuario($nombre_usuario);
+            if($existente){
+                http_response_code(409);
+                header('Content-Type: application/json');
+                echo json_encode(['error'=>'Ese nombre de usuario ya está en uso']);
+                return;
+            }
+        }
+
+        if(!empty($correo) && $correo !== $usuario->getCorreo()){
+            $existente = Usuario::buscarPorCorreo($correo);
+            if($existente){
+                http_response_code(409);
+                header('Content-Type: application/json');
+                echo json_encode(['error'=>'Ese correo ya está en uso']);
+                return;
+            }
+        }
+
         if(!empty($nombre)) $usuario->setNombre($nombre);
         if(!empty($nombre_usuario)) $usuario->setNombreUsuario($nombre_usuario);
         if(!empty($correo)) $usuario->setCorreo($correo);
@@ -449,16 +476,11 @@ class UsuarioController {
     public function fiableUsuario($id){
         $id=(int)$id;
         $usuario=Usuario::crearInstanciaId($id);
-        if(!$usuario){
-            http_response_code(404);
-            echo json_encode(['error'=>'Usuario no encontrado']);
-            return;
-        }
+        if(!$usuario) return;
         
         $usuario->fiable();
         
-        header('Content-Type: application/json');
-        echo json_encode(['ok'=>true]);
+        return true;
     }
 }
 ?>
