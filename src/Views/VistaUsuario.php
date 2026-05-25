@@ -303,6 +303,7 @@
                             <button class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2 border-0 z-1"
                                     data-action="eliminar-lista"
                                     data-id-lista="<?= $lista['id'] ?>"
+                                    data-nombre-lista="<?= htmlspecialchars($lista['nombre']) ?>"
                                     title="Eliminar lista">
                                 <i class="bi bi-trash"></i>
                             </button>
@@ -483,6 +484,39 @@
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="btnCrearLista">
                     <i class="bi bi-plus-lg me-1"></i>Crear lista
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalConfirmarEliminarLista" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <div>
+                    <h5 class="modal-title fw-bold">Eliminar lista</h5>
+                    <p class="text-muted small mb-0">Esta acción no se puede deshacer.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body py-4">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="bg-danger-subtle text-danger rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                        <i class="bi bi-trash fs-4"></i>
+                    </div>
+                    <div>
+                        <p class="mb-1 fw-semibold">¿Seguro que quieres eliminar esta lista?</p>
+                        <p class="text-muted mb-0">
+                            Vas a eliminar <span class="fw-semibold text-dark" id="nombreListaEliminar"></span>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-light rounded-bottom-4">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger rounded-pill px-4" id="btnConfirmarEliminarLista">
+                    <i class="bi bi-trash me-2"></i>Eliminar lista
                 </button>
             </div>
         </div>

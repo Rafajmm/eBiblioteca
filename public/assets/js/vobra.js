@@ -316,13 +316,21 @@ document.addEventListener('DOMContentLoaded', function() {
     let idUsuario=null;
     let listas=[];
 
-    if(modalAgregarObra){
-        modalAgregarObra.addEventListener('show.bs.modal',async function(e){
-            idObra=e.relatedTarget.dataset.idObra;
-            idUsuario=e.relatedTarget.dataset.idUsuario;
+    if(btnAbrir){
+        btnAbrir.addEventListener('click',async function(){
+            idObra=btnAbrir.dataset.idObra;
+            idUsuario=btnAbrir.dataset.idUsuario;
+
+            if(!idUsuario){
+                mostrarNotificacion('Debes iniciar sesión para añadir obras a una lista','warning');
+                return;
+            }
 
             if(buscadorListas) buscadorListas.value='';
             if(sinCoincidencias) sinCoincidencias.classList.add('d-none');
+
+            const modal=bootstrap.Modal.getOrCreateInstance(modalAgregarObra);
+            modal.show();
 
             await cargarListas();
         });

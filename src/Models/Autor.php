@@ -159,17 +159,21 @@ class Autor {
 
         $data = json_decode($response, true);
 
-        if (isset($data['docs'][0]['key'])) {
-            $olid = $data['docs'][0]['key'];
-            
+        foreach (($data['docs'] ?? []) as $doc) {
+            if (!isset($doc['key'])) continue;
+
+            $olid = str_replace('/authors/', '', $doc['key']);
             $urlBase = "https://covers.openlibrary.org/a/olid/" . $olid . "-M.jpg";
-            
             $urlPrueba = $urlBase . "?default=false";
 
             $headers = @get_headers($urlPrueba);
 
-            if ($headers && strpos($headers[0], '200') !== false) {
-                return $urlBase;
+            if ($headers) {
+                $httpCode = intval(substr($headers[0], 9, 3));
+
+                if ($httpCode === 200 || $httpCode === 302) {
+                    return $urlBase;
+                }
             }
         }
 

@@ -351,8 +351,21 @@ class Obra {
 
         $data = json_decode($response, true);
 
-        if (isset($data['docs'][0]['cover_edition_key'])) {
-            return $data['docs'][0]['cover_edition_key'];
+        foreach (($data['docs'] ?? []) as $doc) {
+            if (!isset($doc['cover_edition_key'])) continue;
+
+            $coverKey = $doc['cover_edition_key'];
+            $urlPrueba = "https://covers.openlibrary.org/b/olid/" . $coverKey . "-L.jpg?default=false";
+
+            $headers = @get_headers($urlPrueba);
+
+            if ($headers) {
+                $httpCode = intval(substr($headers[0], 9, 3));
+
+                if ($httpCode === 200 || $httpCode === 302) {
+                    return $coverKey;
+                }
+            }
         }
 
         return null;

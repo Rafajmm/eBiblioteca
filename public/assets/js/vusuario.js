@@ -117,27 +117,59 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Eliminar lista
-    document.body.addEventListener('click',async function(e){
+    let idListaAEliminar=null;
+    let tarjetaListaAEliminar=null;
+    const modalEliminarLista=document.getElementById('modalConfirmarEliminarLista');
+    const nombreListaEliminar=document.getElementById('nombreListaEliminar');
+    const btnConfirmarEliminarLista=document.getElementById('btnConfirmarEliminarLista');
+
+    document.body.addEventListener('click',function(e){
         const btnEliminarLista=e.target.closest('[data-action="eliminar-lista"]');
         if(!btnEliminarLista) return;
         e.preventDefault();
         e.stopPropagation();
 
-        if(!confirm('¿Estás seguro de que quieres eliminar esta lista?')) return;
+        idListaAEliminar=btnEliminarLista.dataset.idLista;
+        tarjetaListaAEliminar=btnEliminarLista.closest('.col-12');
 
-        const idLista=btnEliminarLista.dataset.idLista;
-
-        try{
-            await peticion(`/lista/${idLista}/eliminar`,{body:{idLista}});
-            const tarjeta=btnEliminarLista.closest('.col-12');
-            if(tarjeta) tarjeta.remove();
-
-            mostrarNotificacion('Lista eliminada','success');
+        if(nombreListaEliminar){
+            nombreListaEliminar.textContent=btnEliminarLista.dataset.nombreLista || 'esta lista';
         }
-        catch(error){
-            mostrarNotificacion(error.message,'danger');
+
+        if(modalEliminarLista){
+            bootstrap.Modal.getOrCreateInstance(modalEliminarLista).show();
         }
     });
+
+    if(btnConfirmarEliminarLista){
+        btnConfirmarEliminarLista.addEventListener('click',async function(){
+            if(!idListaAEliminar) return;
+
+            btnConfirmarEliminarLista.disabled=true;
+            btnConfirmarEliminarLista.innerHTML='Eliminando...';
+
+            try{
+                await peticion(`/lista/${idListaAEliminar}/eliminar`,{body:{idLista:idListaAEliminar}});
+                if(tarjetaListaAEliminar) tarjetaListaAEliminar.remove();
+
+                if(modalEliminarLista){
+                    const modal=bootstrap.Modal.getInstance(modalEliminarLista);
+                    if(modal) modal.hide();
+                }
+
+                mostrarNotificacion('Lista eliminada','success');
+                idListaAEliminar=null;
+                tarjetaListaAEliminar=null;
+            }
+            catch(error){
+                mostrarNotificacion(error.message,'danger');
+            }
+            finally{
+                btnConfirmarEliminarLista.disabled=false;
+                btnConfirmarEliminarLista.innerHTML='<i class="bi bi-trash me-2"></i>Eliminar lista';
+            }
+        });
+    }
 
     // Editar perfil
     const formPerfil = document.querySelector('#formPerfil');

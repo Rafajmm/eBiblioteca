@@ -83,8 +83,6 @@
 
                             <button class="btn btn-light border btn-lg"
                             type="button"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modalAgregarObra"
                             data-id-obra="<?= $obra->getId() ?>"
                             data-id-usuario="<?= $_SESSION['id_usuario'] ?? '' ?>"
                             id="abrirModalAgregarObra">

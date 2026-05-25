@@ -97,6 +97,13 @@ class ListaController {
     }
 
     public function agregarObra($id){
+        if(!isset($_SESSION['id_usuario'])){
+            http_response_code(401);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Debes iniciar sesión para realizar esta acción']);
+            return;
+        }
+
         $idObra=(int)($_POST['idObra'] ?? 0);
         
         $lista=Lista::crearInstancia($id);
@@ -190,6 +197,13 @@ class ListaController {
     }
 
     public function eliminar($id){
+        if(!isset($_SESSION['id_usuario'])){
+            http_response_code(401);
+            header('Content-Type: application/json');
+            echo json_encode(['error'=>'Debes iniciar sesión para realizar esta acción']);
+            return;
+        }
+
         $lista=Lista::crearInstancia($id);
         if(!$lista){
             http_response_code(404);
